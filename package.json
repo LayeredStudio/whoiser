@@ -1,0 +1,31 @@
+{
+  "name": "whoiser",
+  "version": "1.0.0",
+  "description": "Whois info for TLDs, domains and IPs",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
+  },
+  "keywords": [
+    "whois",
+    "domain",
+    "tld",
+    "ip"
+  ],
+  "author": "Andrei Igna",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LayeredStudio/whoiser/issues"
+  },
+  "homepage": "https://github.com/LayeredStudio/whoiser#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "validator": "^10.11.0"
+  }
+}
