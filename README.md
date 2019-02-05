@@ -34,7 +34,7 @@ const whoiser = require('whoiser');
     console.log(domainInfo, domainInfo2)
 })();
 ```
-Returns a promise which resolves with an object of WHOIS servers checked:
+Returns a promise which resolves with an `Object` of WHOIS servers checked:
 ```js
 {
     "whois.verisign-grs.com": {
@@ -82,10 +82,10 @@ const whoiser = require('whoiser');
 	// OR with options for whois server
 	let ipInfo2 = await whoiser.ip('8.8.8.8', {whoisServer: 'whois.arin.net'})
 
-    console.log(domainInfo, domainInfo2)
+    console.log(ipInfo, ipInfo2)
 })();
 ```
-Returns a promise which resolves with an Array of WHOIS info lines:
+Returns a promise which resolves with an `Array` of WHOIS info lines:
 ```js
 [
     "% [whois.apnic.net]",
