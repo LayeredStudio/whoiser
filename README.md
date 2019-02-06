@@ -10,6 +10,14 @@ Has support for auto-discovering WHOIS servers for TLDs and IPs allocators, maki
 * Discover available TLDs
 * Get status or importand dates for domains
 
+## Roadmap
+Aiming to have these features:
+[x] helper function to query WHOIS servers -> `whoiser.query()`
+[x] query whois for TLDs with parsed result -> `whoiser.tld()`
+[ ] query whois for domains with parsed result -> `whoiser.domain()`. Needs better parser for WHOIS result with format "label: \n value"
+[ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Atm returns raw whois result
+[ ] query whois for ASN with parsed result
+
 ## Getting Started
 
 #### Installation
@@ -18,6 +26,7 @@ Has support for auto-discovering WHOIS servers for TLDs and IPs allocators, maki
 
 #### Usage
 The library has a simple API.
+Use `whoiser(query)` with any query you would want OR use specific functions with options like `whoiser.domain(domain, {options})`, `whoiser.ip(ip, {options})`
 
 **Domain whois** - Get WHOIS info for domains:
 ```js
