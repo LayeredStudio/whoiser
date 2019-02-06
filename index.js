@@ -283,14 +283,14 @@ const parseSimpleWhois = whois => {
 }
 
 
-module.exports = function(query) {
+module.exports = async function(query) {
 
 	if (net.isIP(query)) {
 		return whoisIp(query)
 	} else if (validator.isFQDN(query)) {
 		return whoisDomain(query)
-	} else if (validator.isAlpha(query)) {
-		return whoisTld(query);
+	} else if (validator.isAlpha(query) && query.length > 1 && query.length < 32) {
+		return whoisTld(query)
 	}
 
 	throw new Error('Unrecognized query. Try a domain (google.com), IP (1.1.1.1) or TLD (blog)')

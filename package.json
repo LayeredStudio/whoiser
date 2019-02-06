@@ -4,7 +4,7 @@
   "description": "Whois info for TLDs, domains and IPs",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha -t 5000 -s 3000"
   },
   "repository": {
     "type": "git",
