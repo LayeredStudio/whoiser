@@ -12,11 +12,11 @@ Has support for auto-discovering WHOIS servers for TLDs and IPs allocators, maki
 
 ## Roadmap
 Aiming to have these features:
-[x] helper function to query WHOIS servers -> `whoiser.query()`
-[x] query whois for TLDs with parsed result -> `whoiser.tld()`
-[ ] query whois for domains with parsed result -> `whoiser.domain()`. Needs better parser for WHOIS result with format "label: \n value"
-[ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Atm returns raw whois result
-[ ] query whois for ASN with parsed result
+- [x] helper function to query WHOIS servers -> `whoiser.query()`
+- [x] query whois for TLDs with parsed result -> `whoiser.tld()`
+- [ ] query whois for domains with parsed result -> `whoiser.domain()`. Needs better parser for WHOIS result with format "label: \n value"
+- [ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Atm returns raw whois result
+- [ ] query whois for ASN with parsed result
 
 ## Getting Started
 
