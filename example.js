@@ -8,7 +8,7 @@ const whoiser = require('./index.js');
 	let ipInfo = await whoiser('1.1.1.1')
 
 	// OR use specific functions
-	let domainInfo2 = await whoiser.domain('cloudflare.com', {whoisServer: 'whois.cloudflare.com'})
+	let domainInfo2 = await whoiser.domain('cloudflare.com', {host: 'whois.cloudflare.com'})
 
 	console.log(tldInfo, domainInfo, ipInfo, domainInfo2)
 })();

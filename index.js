@@ -40,13 +40,14 @@ const allTlds = async () => {
 }
 
 
-const whoisTld = async tld => {
+const whoisTld = async (tld, {timeout = 15000} = {}) => {
 	let result;
 
 	try {
 		result = await whoisQuery({
-			host:	'whois.iana.org',
-			query:	tld
+			host:		'whois.iana.org',
+			query:		tld,
+			timeout:	timeout
 		});
 	} catch (err) {
 		throw err
@@ -62,36 +63,37 @@ const whoisTld = async tld => {
 }
 
 
-const whoisDomain = async (domain, {whoisServer = null, follow = 2} = {}) => {
+const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = {}) => {
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
 
 	// find WHOIS server in cache
-	if (!whoisServer && cacheTldWhoisServer[domainTld]) {
-		whoisServer = cacheTldWhoisServer[domainTld]
+	if (!host && cacheTldWhoisServer[domainTld]) {
+		host = cacheTldWhoisServer[domainTld]
 	}
 
 	// find WHOIS server for TLD
-	if (!whoisServer) {
+	if (!host) {
 		try {
-			const tld = await whoisTld(domain);
+			const tld = await whoisTld(domain, {timeout: timeout});
 
 			if (!tld.whois) {
 				throw new Error(`TLD for "${domain}" not supported`)
 			}
 
-			whoisServer = tld.whois
+			host = tld.whois
 			cacheTldWhoisServer[domainTld] = tld.whois
 		} catch (err) {
 			throw new Error(`TLD WHOIS error "${err.message}"`)
 		}
 	}
 
-	while (whoisServer && follow) {
+	while (host && follow) {
 		try {
 			result = await whoisQuery({
-				host:	whoisServer,
-				query:	domain
+				host:		host,
+				query:		domain,
+				timeout:	timeout
 			});
 
 			result = parseDomainWhois(result);
@@ -101,7 +103,7 @@ const whoisDomain = async (domain, {whoisServer = null, follow = 2} = {}) => {
 			};
 		}
 
-		results[whoisServer] = result;
+		results[host] = result;
 		follow--;
 
 		// check for next WHOIS server
@@ -123,7 +125,7 @@ const whoisDomain = async (domain, {whoisServer = null, follow = 2} = {}) => {
 			nextWhoisServer = !results[nextWhoisServer] ? nextWhoisServer : false
 		}
 
-		whoisServer = nextWhoisServer;
+		host = nextWhoisServer;
 	}
 
 	return results
@@ -176,21 +178,22 @@ const parseDomainWhois = whois => {
 }
 
 
-const whoisIp = async (ip, {whoisServer = null, follow = 2} = {}) => {
+const whoisIp = async (ip, {host = null, timeout = 15000, follow = 2} = {}) => {
 	let data = {}
 
 	// find WHOIS server for IP
-	if (!whoisServer) {
+	if (!host) {
 		try {
 			let whoisIp = await whoisQuery({
-				host:	'whois.iana.org',
-				query:	ip
+				host:		'whois.iana.org',
+				query:		ip,
+				timeout:	timeout
 			});
 
 			whoisIp = parseSimpleWhois(whoisIp);
 
 			if (whoisIp.whois) {
-				whoisServer = whoisIp.whois;
+				host = whoisIp.whois;
 			}
 
 		} catch (err) {
@@ -198,7 +201,7 @@ const whoisIp = async (ip, {whoisServer = null, follow = 2} = {}) => {
 		}
 	}
 
-	if (!whoisServer) {
+	if (!host) {
 		throw new Error(`No WHOIS server for "${ip}"`)
 	}
 
@@ -206,13 +209,14 @@ const whoisIp = async (ip, {whoisServer = null, follow = 2} = {}) => {
 		let query = ip;
 
 		// hardcoded custom queries..
-		if (whoisServer === 'whois.arin.net') {
+		if (host === 'whois.arin.net') {
 			query = `+ n ${query}`;
 		}
 
 		let whoisIp = await whoisQuery({
-			host:	whoisServer,
-			query:	query
+			host:		host,
+			query:		query,
+			timeout:	timeout
 		});
 
 		//data = parseSimpleWhois(whoisIp);

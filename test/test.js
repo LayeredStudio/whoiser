@@ -64,8 +64,8 @@ describe('Whoiser', function() {
 			assert.equal(whois['whois.nic.google']['Registry Domain ID'], '27CAA9F68-GOOGLE', 'Registry Domain ID doesn\'t match')
 		});
 
-		it('should return WHOIS for "cloudflare.com" from "whois.cloudflare.com" server (whoisServer option)', async function() {
-			let whois = await whoiser.domain('cloudflare.com', {whoisServer: 'whois.cloudflare.com'})
+		it('should return WHOIS for "cloudflare.com" from "whois.cloudflare.com" server (host option)', async function() {
+			let whois = await whoiser.domain('cloudflare.com', {host: 'whois.cloudflare.com'})
 			assert.equal(Object.values(whois).length, 1, 'Has less or more than 1 WHOIS result')
 			assert.deepStrictEqual(Object.keys(whois), ['whois.cloudflare.com'], 'Has whois result from server different than "whois.cloudflare.com"')
 			assert.equal(whois['whois.cloudflare.com']['Domain Name'], 'CLOUDFLARE.COM', 'Domain name doesn\'t match')

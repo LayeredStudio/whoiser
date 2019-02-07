@@ -3,6 +3,7 @@
 **whoiser** is a WHOIS client for Node.js than helps with querying WHOIS servers for TLDs, domain names and IPs.
 
 Has support for auto-discovering WHOIS servers for TLDs and IPs allocators, making it easy to get WHOIS info with a single call like `whoiser('google.com')` or `whoiser('1.1.1.1')`.
+Applies minimal parsing to results, returning same data format from different WHOIS servers.
 
 ## Use cases
 * Get WHOIS info for any domian
@@ -38,7 +39,7 @@ const whoiser = require('whoiser');
 	let domainInfo = await whoiser('google.com')
 
 	// OR with options for whois server and how many servers to check
-	let domainInfo2 = await whoiser.domain('blog.google', {whoisServer: 'whois.nic.google', follow: 3})
+	let domainInfo2 = await whoiser.domain('blog.google', {host: 'whois.nic.google', follow: 3})
 
     console.log(domainInfo, domainInfo2)
 })();
@@ -89,7 +90,7 @@ const whoiser = require('whoiser');
 	let ipInfo = await whoiser('1.1.1.1')
 
 	// OR with options for whois server
-	let ipInfo2 = await whoiser.ip('8.8.8.8', {whoisServer: 'whois.arin.net'})
+	let ipInfo2 = await whoiser.ip('8.8.8.8', {host: 'whois.arin.net'})
 
     console.log(ipInfo, ipInfo2)
 })();
