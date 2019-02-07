@@ -108,11 +108,17 @@ const whoisDomain = async (domain, {whoisServer = null, follow = 2} = {}) => {
 		let nextWhoisServer = result['Registrar WHOIS Server'] || result['ReferralServer'] || result['Registrar Whois'] || result['Whois Server'] || result['WHOIS Server'] || false;
 
 		if (nextWhoisServer) {
-			try {
-				// if found, remove protocal and path
-				let parsedUrl = new URL(nextWhoisServer);
+
+			// if found, remove protocol and path
+			if (nextWhoisServer.includes('://')) {
+				let parsedUrl = url.parse(nextWhoisServer);
 				nextWhoisServer = parsedUrl.host
-			} catch (err) {}
+			}
+
+			// hardcoded whois server fixes..
+			if (nextWhoisServer === 'www.gandi.net/whois') {
+				nextWhoisServer = 'whois.gandi.net';	// whois.nic.link returns incorrect URL for registrar WHOIS
+			}
 
 			nextWhoisServer = !results[nextWhoisServer] ? nextWhoisServer : false
 		}
