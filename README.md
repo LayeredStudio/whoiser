@@ -15,7 +15,7 @@ Applies minimal parsing to results, returning same data format from different WH
 Aiming to have these features:
 - [x] helper function to query WHOIS servers -> `whoiser.query()`
 - [x] query whois for TLDs with parsed result -> `whoiser.tld()`
-- [ ] query whois for domains with parsed result -> `whoiser.domain()`. Needs better parser for WHOIS result with format "label: \n value"
+- [x] query whois for domains with parsed result -> `whoiser.domain()`
 - [ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Atm returns raw whois result
 - [ ] query whois for ASN with parsed result
 
@@ -35,13 +35,13 @@ const whoiser = require('whoiser');
 
 (async () => {
 
-    // WHOIS info with auto-discovering for WHOIS server
+	// WHOIS info with auto-discovering for WHOIS server
 	let domainInfo = await whoiser('google.com')
 
 	// OR with options for whois server and how many servers to check
 	let domainInfo2 = await whoiser.domain('blog.google', {host: 'whois.nic.google', follow: 3})
 
-    console.log(domainInfo, domainInfo2)
+	console.log(domainInfo, domainInfo2)
 })();
 ```
 Returns a promise which resolves with an `Object` of WHOIS servers checked:
@@ -86,13 +86,13 @@ const whoiser = require('whoiser');
 
 (async () => {
 
-    // WHOIS info with auto-discovering for WHOIS server
+	// WHOIS info with auto-discovering for WHOIS server
 	let ipInfo = await whoiser('1.1.1.1')
 
 	// OR with options for whois server
 	let ipInfo2 = await whoiser.ip('8.8.8.8', {host: 'whois.arin.net'})
 
-    console.log(ipInfo, ipInfo2)
+	console.log(ipInfo, ipInfo2)
 })();
 ```
 Returns a promise which resolves with an `Array` of WHOIS info lines:

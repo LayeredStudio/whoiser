@@ -133,13 +133,32 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 
 const parseDomainWhois = whois => {
-	const shouldBeArray = ['Domain Status', 'Name Server', 'Nameserver', 'Nserver'];
+	const shouldBeArray = ['Domain Status', 'Name Server', 'Nameserver', 'Nserver', 'Name servers'];
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider'];
 	const ignoreTexts = ['more information', 'lawful purposes', 'to contact', 'use this data', 'register your domain', 'copy and paste', 'find out more', 'this', 'please', 'important', 'prices', 'payment', 'you agree', 'terms'];
 
 	let text = [];
 	let data = {};
 	let lines = whois.trim().split('\n').map(line => line.trim());
+
+	// Fix "label: \n value" format
+	lines.forEach((line, index) => {
+		if (!line.startsWith('%') && line.endsWith(':')) {
+			let addedLabel = false;
+
+			for (let i = 1; i <= 5; i++) {
+				if (!lines[index + i] || !lines[index + i].length || lines[index + i].includes(': ') || lines[index + i].endsWith(':')) {
+					break;
+				}
+
+				lines[index + i] = line + ' ' + lines[index + i];
+			}
+
+			if (addedLabel) {
+				lines[index] = '';
+			}
+		}
+	});
 
 	lines.forEach(line => {
 
@@ -162,17 +181,14 @@ const parseDomainWhois = whois => {
 
 	});
 
-	// remove empty lines at text start
-	while (text.length && !text[0]) {
-		text.shift();
+
+	// remove multiple empty lines
+	text = text.join("\n").trim();
+	while (text.includes("\n\n\n")) {
+		text = text.replace("\n\n\n", "\n")
 	}
 
-	// remove empty lines at text end
-	while (text.length && !text[text.length - 1]) {
-		text.pop();
-	}
-
-	data.text = text;
+	data.text = text.split("\n");
 
 	return data;
 }

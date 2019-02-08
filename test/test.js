@@ -77,6 +77,19 @@ describe('Whoiser', function() {
 			assert.deepStrictEqual(Object.keys(whois), ['whois.afilias.net'], 'Has whois result from server different than "whois.afilias.net"')
 			assert.equal(whois['whois.afilias.net']['Domain Name'], 'LAYE.RED', 'Domain name doesn\'t match')
 		});
+
+		it('should return WHOIS for "google.li" when whois data is "label:_EOL_value"', async function() {
+			let whois = await whoiser.domain('google.li', {follow: 1})
+			assert.equal(whois['whois.nic.li']['Domain name'], 'google.li', 'Domain name doesn\'t match')
+			assert.notStrictEqual(whois['whois.nic.li']['Name servers'].length, 0, 'Does not return NS')
+			assert.equal(whois['whois.nic.li']['First registration date'], '2000-08-04', 'Reg date doesn\'t match')
+		});
+
+		it('should return WHOIS for "google.eu" when whois data is "label:_EOL_value"', async function() {
+			let whois = await whoiser.domain('google.eu', {follow: 1})
+			assert.equal(whois['whois.eu']['Domain'], 'google.eu', 'Domain name doesn\'t match')
+			assert.notStrictEqual(whois['whois.eu']['Name servers'].length, 0, 'Does not return NS')
+		});
 	});
 
 	describe('#whoiser.ip()', function() {
