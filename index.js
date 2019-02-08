@@ -16,7 +16,10 @@ const requestGetBody = url => {
 }
 
 // cache
-let cacheTldWhoisServer = {}
+let cacheTldWhoisServer = {
+	com:	'whois.verisign-grs.com',
+	shop:	'whois.nic.shop'
+}
 
 
 
@@ -90,9 +93,16 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 	while (host && follow) {
 		try {
+			let query = domain;
+
+			// hardcoded WHOIS queries..
+			if (host === 'whois.denic.de') {
+				query = `-T dn ${query}`;
+			}
+
 			result = await whoisQuery({
 				host:		host,
-				query:		domain,
+				query:		query,
 				timeout:	timeout
 			});
 
@@ -337,8 +347,8 @@ module.exports = async function(query, options) {
 	if (net.isIP(query)) {
 		return whoisIp(query, options)
 	} else if (validator.isFQDN(query)) {
-	} else if (validator.isAlpha(query) && query.length > 1 && query.length < 32) {
 		return whoisDomain(query, options)
+	} else if (validator.matches(query, /^\.?[a-z]{2,64}$/i)) {
 		return whoisTld(query, options)
 	} else if (validator.matches(query, /^(as)?\d+$/i)) {
 		return whoisAsn(query, options)
