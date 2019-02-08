@@ -20,12 +20,10 @@ describe('Whoiser', function() {
 			assert.ok(whois.length)
 		});
 
-		/*
-		it('should return ASN WHOIS for "1234"', async function() {
+		it('should return AS WHOIS for "1234"', async function() {
 			let whois = await whoiser('1234')
-			assert.ok(whois.length)
+			assert.equal(whois['as-block'], '1234-1235', 'AS Block range doesn\'t match')
 		});
-		*/
 
 		it('should reject for unrecognised query "-abc"', function() {
 			assert.rejects(whoiser('-abc'))
@@ -89,6 +87,18 @@ describe('Whoiser', function() {
 			let whois = await whoiser.domain('google.eu', {follow: 1})
 			assert.equal(whois['whois.eu']['Domain'], 'google.eu', 'Domain name doesn\'t match')
 			assert.notStrictEqual(whois['whois.eu']['Name servers'].length, 0, 'Does not return NS')
+		});
+	});
+
+	describe('#whoiser.asn()', function() {
+		it('should return WHOIS for "1234"', async function() {
+			let whois = await whoiser.asn(1234)
+			assert.equal(whois['as-block'], '1234-1235', 'AS Block range doesn\'t match')
+		});
+
+		it('should return WHOIS for "AS13335"', async function() {
+			let whois = await whoiser.asn('AS13335')
+			assert.equal(whois['as-block'], '13321-13352', 'AS Block range doesn\'t match')
 		});
 	});
 

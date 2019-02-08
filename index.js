@@ -194,6 +194,29 @@ const parseDomainWhois = whois => {
 }
 
 
+const whoisAsn = async (asn, {timeout = 15000} = {}) => {
+	let result;
+
+	try {
+		result = await whoisQuery({
+			host:		'whois.iana.org',
+			query:		asn,
+			timeout:	timeout
+		});
+	} catch (err) {
+		throw err
+	}
+
+	const data = parseSimpleWhois(result);
+
+	if (!data['as-block']) {
+		throw new Error(`AS "${asn}" not found`)
+	}
+
+	return data
+}
+
+
 const whoisIp = async (ip, {host = null, timeout = 15000, follow = 2} = {}) => {
 	let data = {}
 
@@ -317,6 +340,8 @@ module.exports = async function(query) {
 		return whoisDomain(query)
 	} else if (validator.isAlpha(query) && query.length > 1 && query.length < 32) {
 		return whoisTld(query)
+	} else if (validator.matches(query, /^(as)?\d+$/i)) {
+		return whoisAsn(query, options)
 	}
 
 	throw new Error('Unrecognized query. Try a domain (google.com), IP (1.1.1.1) or TLD (blog)')
@@ -325,5 +350,6 @@ module.exports = async function(query) {
 module.exports.query = whoisQuery
 module.exports.tld = whoisTld
 module.exports.domain = whoisDomain
+module.exports.asn = whoisAsn
 module.exports.ip = whoisIp
 module.exports.allTlds = allTlds
