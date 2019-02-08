@@ -332,14 +332,14 @@ const parseSimpleWhois = whois => {
 }
 
 
-module.exports = async function(query) {
+module.exports = async function(query, options) {
 
 	if (net.isIP(query)) {
-		return whoisIp(query)
+		return whoisIp(query, options)
 	} else if (validator.isFQDN(query)) {
-		return whoisDomain(query)
 	} else if (validator.isAlpha(query) && query.length > 1 && query.length < 32) {
-		return whoisTld(query)
+		return whoisDomain(query, options)
+		return whoisTld(query, options)
 	} else if (validator.matches(query, /^(as)?\d+$/i)) {
 		return whoisAsn(query, options)
 	}
