@@ -21,6 +21,11 @@ let cacheTldWhoisServer = {
 	shop:	'whois.nic.shop'
 }
 
+// misspelled whois servers..
+const misspelledWhoisServer = {
+	'whois.google.com':		'whois.nic.google',		// found in dailyrun.club, andreiigna.com
+	'www.gandi.net/whois':	'whois.gandi.net'		// found in kuro.link
+}
 
 
 const whoisQuery = ({host = null, port = 43, timeout = 15000, query = '', querySuffix = "\r\n"} = {}) => {
@@ -127,11 +132,10 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 				nextWhoisServer = parsedUrl.host
 			}
 
-			// hardcoded whois server fixes..
-			if (nextWhoisServer === 'www.gandi.net/whois') {
-				nextWhoisServer = 'whois.gandi.net';	// whois.nic.link returns incorrect URL for registrar WHOIS
-			}
+			// check if found server is in misspelled list
+			nextWhoisServer = misspelledWhoisServer[nextWhoisServer] || nextWhoisServer;
 
+			// check if found server was queried already
 			nextWhoisServer = !results[nextWhoisServer] ? nextWhoisServer : false
 		}
 
@@ -143,7 +147,7 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 
 const parseDomainWhois = whois => {
-	const shouldBeArray = ['Domain Status', 'Name Server', 'Nameserver', 'Nserver', 'Name servers'];
+	const shouldBeArray = ['Domain Status', 'Name Server', 'Nameserver', 'Nserver', 'nserver', 'Name servers'];
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider'];
 	const ignoreTexts = ['more information', 'lawful purposes', 'to contact', 'use this data', 'register your domain', 'copy and paste', 'find out more', 'this', 'please', 'important', 'prices', 'payment', 'you agree', 'terms'];
 
