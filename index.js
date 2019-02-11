@@ -6,7 +6,7 @@ const validator = require('validator')
 const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
 const requestGetBody = url => {
 	return new Promise((resolve, reject) => {
-		https.get(url, (resp) => {
+		https.get(url, resp => {
 			let data = '';
 			resp.on('data', chunk => data += chunk);
 			resp.on('end', () => resolve(data));

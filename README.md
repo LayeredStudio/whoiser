@@ -18,6 +18,7 @@ Aiming to have these features:
 - [x] query whois for domains with parsed result -> `whoiser.domain()`
 - [ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Atm returns raw whois result
 - [x] query whois for ASN with parsed result -> `whoiser.asn()`
+- [ ] Punycode support
 
 ## Getting Started
 
