@@ -2,6 +2,7 @@ const net = require('net')
 const https = require('https')
 const url = require('url')
 const validator = require('validator')
+const punycode = require('punycode')
 
 const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
 const requestGetBody = url => {
@@ -72,6 +73,7 @@ const whoisTld = async (tld, {timeout = 15000} = {}) => {
 
 
 const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = {}) => {
+	domain = punycode.toASCII(domain);
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
 
@@ -350,15 +352,15 @@ module.exports = async function(query, options) {
 
 	if (net.isIP(query)) {
 		return whoisIp(query, options)
-	} else if (validator.isFQDN(query)) {
-		return whoisDomain(query, options)
-	} else if (validator.matches(query, /^\.?[a-z]{2,64}$/i)) {
-		return whoisTld(query, options)
-	} else if (validator.matches(query, /^(as)?\d+$/i)) {
+	} else if (query.match(/^(as)?\d+$/i)) {
 		return whoisAsn(query, options)
+	} else if (query.match(/^\.?([a-z\u00a1-\uffff]{2,}|xn[a-z0-9-]{2,})$/i)) {
+		return whoisTld(query, options)
+	} else if (validator.isFQDN((query))) {
+		return whoisDomain(query, options)
 	}
 
-	throw new Error('Unrecognized query. Try a domain (google.com), IP (1.1.1.1) or TLD (blog)')
+	throw new Error('Unrecognized query. Try a domain (google.com), IP (1.1.1.1) or TLD (.blog)')
 }
 
 module.exports.query = whoisQuery

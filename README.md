@@ -5,20 +5,23 @@
 Has support for auto-discovering WHOIS servers for TLDs and IPs allocators, making it easy to get WHOIS info with a single call like `whoiser('google.com')` or `whoiser('1.1.1.1')`.
 Applies minimal parsing to results, returning same data format from different WHOIS servers.
 
-## Use cases
-* Get WHOIS info for any domian
-* Get ASN or route for IPs
+## Highlights
+* Returns WHOIS info for any internet address.
+* Zero-config, but configurable when needed.
+* Recognises queries and routes the query to correct server
+* Extracts domain if query includes subdomain(s)
+* Minimal parsing to provide consistent results across WHOIS servers
+* Uses WHOIS servers from IANA, if not provided
 * Discover available TLDs
-* Get status or importand dates for domains
 
 ## Roadmap
 Aiming to have these features:
 - [x] helper function to query WHOIS servers -> `whoiser.query()`
 - [x] query whois for TLDs with parsed result -> `whoiser.tld()`
 - [x] query whois for domains with parsed result -> `whoiser.domain()`
-- [ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Atm returns raw whois result
+- [ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Returns raw whois result atm
 - [x] query whois for ASN with parsed result -> `whoiser.asn()`
-- [ ] Punycode support
+- [x] Punycode support
 
 ## Getting Started
 
