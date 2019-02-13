@@ -100,7 +100,7 @@ describe('Whoiser', function() {
 		it('should return WHOIS for "google.eu" when whois data is "label:_EOL_value"', async function() {
 			let whois = await whoiser.domain('google.eu', {follow: 1})
 			assert.equal(whois['whois.eu']['Domain'], 'google.eu', 'Domain name doesn\'t match')
-			assert.notStrictEqual(whois['whois.eu']['Name servers'].length, 0, 'Does not return NS')
+			assert.notStrictEqual(whois['whois.eu']['Name Server'].length, 0, 'Does not return NS')
 		});
 
 		it('should return WHOIS for "mañana.com" - IDN', async function() {

@@ -149,12 +149,19 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 
 const parseDomainWhois = whois => {
-	const shouldBeArray = ['Domain Status', 'Name Server', 'Nameserver', 'Nserver', 'nserver', 'Name servers'];
+	const renameLabels = {
+		'nameserver':	'Name Server',
+		'nserver':		'Name Server',
+		'name servers':	'Name Server'
+	};
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider'];
 	const ignoreTexts = ['more information', 'lawful purposes', 'to contact', 'use this data', 'register your domain', 'copy and paste', 'find out more', 'this', 'please', 'important', 'prices', 'payment', 'you agree', 'terms'];
 
 	let text = [];
-	let data = {};
+	let data = {
+		'Domain Status':	[],
+		'Name Server':		[]
+	};
 	let lines = whois.trim().split('\n').map(line => line.trim());
 
 	// Fix "label: \n value" format
@@ -179,13 +186,14 @@ const parseDomainWhois = whois => {
 	lines.forEach(line => {
 
 		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%')) {
-			const [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
+			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
 
-			if (shouldBeArray.includes(label)) {
-				if (value) {
-					data[label] = data[label] || [];
-					data[label].push(value);
-				}
+			if (renameLabels[label.toLowerCase()]) {
+				label = renameLabels[label.toLowerCase()]
+			}
+
+			if (data[label] && Array.isArray(data[label])) {
+				data[label].push(value);
 			} else if (!ignoreLabels.includes(label.toLowerCase()) && !ignoreTexts.some(text => label.toLowerCase().includes(text))) {
 				data[label] = data[label] ? data[label] + ' ' + value : value;
 			} else {
@@ -197,6 +205,8 @@ const parseDomainWhois = whois => {
 
 	});
 
+	// remove invalid Name Servers (not valid hostname)
+	data['Name Server'] = data['Name Server'].filter(nameServer => validator.isFQDN(nameServer))
 
 	// remove multiple empty lines
 	text = text.join("\n").trim();

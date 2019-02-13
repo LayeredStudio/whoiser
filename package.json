@@ -1,6 +1,6 @@
 {
   "name": "whoiser",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Whois info for TLDs, domains and IPs",
   "main": "index.js",
   "scripts": {
