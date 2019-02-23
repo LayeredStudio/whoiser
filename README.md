@@ -8,8 +8,7 @@ Applies minimal parsing to results, returning same data format from different WH
 ## Highlights
 * Returns WHOIS info for any internet address.
 * Zero-config, but configurable when needed.
-* Recognises queries and routes the query to correct server
-* Extracts domain if query includes subdomain(s)
+* Recognises queries and routes the request to correct server
 * Minimal parsing to provide consistent results across WHOIS servers
 * Uses WHOIS servers from IANA, if not provided
 * Discover available TLDs
@@ -59,7 +58,6 @@ Returns a promise which resolves with an `Object` of WHOIS servers checked:
     "whois.markmonitor.com": {
         "Domain Name": "google.com",
         "Registrar WHOIS Server": "whois.markmonitor.com",
-        "Registrar URL": "http://www.markmonitor.com",
         "Creation Date": "1997-09-15T00:00:00-0700",
         "Registrar Registration Expiration Date": "2020-09-13T21:00:00-0700",
         "Registrar": "MarkMonitor, Inc.",
@@ -75,7 +73,6 @@ Returns a promise which resolves with an `Object` of WHOIS servers checked:
             "ns3.google.com",
             "ns4.google.com"
         ],
-        "DNSSEC": "unsigned",
         "text": [
             "For more information on WHOIS status codes, please visit:",
             ...

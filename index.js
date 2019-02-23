@@ -170,12 +170,31 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 const parseDomainWhois = whois => {
 	const renameLabels = {
+		'domain name':	'Domain Name',
 		'nameserver':	'Name Server',
 		'nserver':		'Name Server',
 		'name servers':	'Name Server'
 	};
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider'];
-	const ignoreTexts = ['more information', 'lawful purposes', 'to contact', 'use this data', 'register your domain', 'copy and paste', 'find out more', 'this', 'please', 'important', 'prices', 'payment', 'you agree', 'terms'];
+	const ignoreTexts = [
+		'more information',
+		'lawful purposes',
+		'to contact',
+		'use this data',
+		'register your domain',
+		'copy and paste',
+		'find out more',
+		'this',
+		'please',
+		'important',
+		'prices',
+		'payment',
+		'you agree',
+		'restrictions',		// found on .co.uk domains
+		'queried object',	// found in abc.tech
+		'service',			// found in .au domains
+		'terms'
+	];
 
 	let text = [];
 	let data = {

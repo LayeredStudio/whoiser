@@ -49,7 +49,7 @@ describe('Whoiser', function() {
 			assert.equal(whois.whois, 'whois.hkirc.hk', 'WHOIS server doesn\'t match')
 		});
 
-		it('should return WHOIS for "XN--J6W193G" - IDN', async function() {
+		it('should return WHOIS for ".XN--J6W193G" - IDN', async function() {
 			let whois = await whoiser('.XN--J6W193G')
 			assert.equal(whois.domain, '香港', 'TLD doesn\'t match')
 			assert.equal(whois.whois, 'whois.hkirc.hk', 'WHOIS server doesn\'t match')
