@@ -23,10 +23,9 @@
   },
   "homepage": "https://github.com/LayeredStudio/whoiser#readme",
   "devDependencies": {
-    "mocha": "^5.2.0"
+    "mocha": "^6.0.0"
   },
   "dependencies": {
-    "punycode": "^2.1.1",
-    "validator": "^10.11.0"
+    "punycode": "^2.1.1"
   }
 }

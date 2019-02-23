@@ -1,7 +1,6 @@
 const net = require('net')
 const https = require('https')
 const url = require('url')
-const validator = require('validator')
 const punycode = require('punycode')
 
 const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
@@ -14,6 +13,27 @@ const requestGetBody = url => {
 			resp.on('error', reject);
 		}).on('error', reject);
 	});
+}
+
+const isTld = tld => {
+	if (tld.startsWith('.')) {
+		tld = tld.substring(1)
+	}
+
+	return /^([a-z]{2,64}|xn[a-z0-9-]{5,})$/i.test(punycode.toASCII(tld))
+}
+
+const isDomain = domain => {
+	if (domain.endsWith('.')) {
+		domain = domain.substring(0, domain.length - 1);
+	}
+
+	const labels = punycode.toASCII(domain).split('.').reverse()
+	const labelTest = /^([a-z0-9-]{2,64}|xn[a-z0-9-]{5,})$/i
+
+	return labels.length > 1 && labels.every((label, index) => {
+		return index ? labelTest.test(label) && !label.startsWith('-') && !label.endsWith('-') : isTld(label)
+	})
 }
 
 // cache
@@ -206,7 +226,7 @@ const parseDomainWhois = whois => {
 	});
 
 	// remove invalid Name Servers (not valid hostname)
-	data['Name Server'] = data['Name Server'].filter(nameServer => validator.isFQDN(nameServer))
+	data['Name Server'] = data['Name Server'].map(nameServer => nameServer.split(' ')[0]).filter(isDomain)
 
 	// remove multiple empty lines
 	text = text.join("\n").trim();
@@ -362,11 +382,11 @@ module.exports = async function(query, options) {
 
 	if (net.isIP(query)) {
 		return whoisIp(query, options)
-	} else if (query.match(/^(as)?\d+$/i)) {
+	} else if (/^(as)?\d+$/i.test(query)) {
 		return whoisAsn(query, options)
-	} else if (query.match(/^\.?([a-z\u00a1-\uffff]{2,}|xn[a-z0-9-]{2,})$/i)) {
+	} else if (isTld(query)) {
 		return whoisTld(query, options)
-	} else if (validator.isFQDN((query))) {
+	} else if (isDomain((query))) {
 		return whoisDomain(query, options)
 	}
 
