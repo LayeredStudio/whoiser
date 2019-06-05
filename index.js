@@ -45,7 +45,8 @@ let cacheTldWhoisServer = {
 // misspelled whois servers..
 const misspelledWhoisServer = {
 	'whois.google.com':		'whois.nic.google',		// found in dailyrun.club, andreiigna.com
-	'www.gandi.net/whois':	'whois.gandi.net'		// found in kuro.link
+	'www.gandi.net/whois':	'whois.gandi.net',		// found in kuro.link
+	'who.godaddy.com/':		'whois.godaddy.com',	// found in trail.run
 }
 
 
@@ -405,7 +406,7 @@ module.exports = async function(query, options) {
 		return whoisAsn(query, options)
 	} else if (isTld(query)) {
 		return whoisTld(query, options)
-	} else if (isDomain((query))) {
+	} else if (isDomain(query)) {
 		return whoisDomain(query, options)
 	}
 
