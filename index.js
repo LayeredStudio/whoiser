@@ -1,5 +1,4 @@
 const net = require('net')
-const https = require('https')
 const url = require('url')
 const punycode = require('punycode')
 const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
@@ -21,41 +20,36 @@ const misspelledWhoisServer = {
 
 const whoisQuery = ({host = null, port = 43, timeout = 15000, query = '', querySuffix = "\r\n"} = {}) => {
 	return new Promise((resolve, reject) => {
-		let data = '';
+		let data = ''
 		const socket = net.connect({host: host, port: port}, () => socket.write(query + querySuffix))
 		socket.setTimeout(timeout)
 		socket.on('data', chunk => data += chunk)
 		socket.on('close', hadError => resolve(data))
 		socket.on('timeout', () => socket.destroy(new Error('Timeout')))
 		socket.on('error', reject)
-	});
+	})
 }
 
 
 const allTlds = async () => {
-	const tlds = await requestGetBody('https://data.iana.org/TLD/tlds-alpha-by-domain.txt');
+	const tlds = await requestGetBody('https://data.iana.org/TLD/tlds-alpha-by-domain.txt')
 
-	return tlds.split("\n").filter(tld => tld && !tld.startsWith('#'))
+	return tlds.split("\n").filter(tld => Boolean(tld) && !tld.startsWith('#'))
 }
 
 
-const whoisTld = async (tld, {timeout = 15000} = {}) => {
-	let result
+const whoisTld = async (query, {timeout = 15000} = {}) => {
 
-	try {
-		result = await whoisQuery({
-			host:		'whois.iana.org',
-			query:		tld,
-			timeout
-		});
-	} catch (err) {
-		throw err
-	}
+	let result = await whoisQuery({
+		host:	'whois.iana.org',
+		query,
+		timeout
+	})
 
-	const data = parseSimpleWhois(result);
+	const data = parseSimpleWhois(result)
 
 	if (!data.domain || !data.domain.length) {
-		throw new Error(`TLD "${tld}" not found`)
+		throw new Error(`TLD "${query}" not found`)
 	}
 
 	return data
@@ -63,7 +57,7 @@ const whoisTld = async (tld, {timeout = 15000} = {}) => {
 
 
 const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = {}) => {
-	domain = punycode.toASCII(domain);
+	domain = punycode.toASCII(domain)
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
 
@@ -74,64 +68,50 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 	// find WHOIS server for TLD
 	if (!host) {
-		try {
-			const tld = await whoisTld(domain, {timeout: timeout});
+		const tld = await whoisTld(domain, {timeout: timeout})
 
-			if (!tld.whois) {
-				throw new Error(`TLD for "${domain}" not supported`)
-			}
-
-			host = tld.whois
-			cacheTldWhoisServer[domainTld] = tld.whois
-		} catch (err) {
-			throw new Error(`TLD WHOIS error "${err.message}"`)
+		if (!tld.whois) {
+			throw new Error(`TLD for "${domain}" not supported`)
 		}
+
+		host = tld.whois
+		cacheTldWhoisServer[domainTld] = tld.whois
 	}
 
+	// query WHOIS servers for data
 	while (host && follow) {
-		try {
-			let query = domain;
+		let query = domain
 
-			// hardcoded WHOIS queries..
-			if (host === 'whois.denic.de') {
-				query = `-T dn ${query}`;
-			}
-
-			result = await whoisQuery({
-				host:		host,
-				query:		query,
-				timeout:	timeout
-			});
-
-			result = parseDomainWhois(result);
-		} catch (err) {
-			result = {
-				error:	`WHOIS Error: ${err.message}`
-			};
+		// hardcoded WHOIS queries..
+		if (host === 'whois.denic.de') {
+			query = `-T dn ${query}`
 		}
 
-		results[host] = result;
-		follow--;
+		result = await whoisQuery({ host, query, timeout })
+		result = parseDomainWhois(result)
+
+		results[host] = result
+		follow--
 
 		// check for next WHOIS server
-		let nextWhoisServer = result['Registrar WHOIS Server'] || result['ReferralServer'] || result['Registrar Whois'] || result['Whois Server'] || result['WHOIS Server'] || false;
+		let nextWhoisServer = result['Registrar WHOIS Server'] || result['ReferralServer'] || result['Registrar Whois'] || result['Whois Server'] || result['WHOIS Server'] || false
 
 		if (nextWhoisServer) {
 
 			// if found, remove protocol and path
 			if (nextWhoisServer.includes('://')) {
-				let parsedUrl = url.parse(nextWhoisServer);
+				let parsedUrl = url.parse(nextWhoisServer)
 				nextWhoisServer = parsedUrl.host
 			}
 
 			// check if found server is in misspelled list
-			nextWhoisServer = misspelledWhoisServer[nextWhoisServer] || nextWhoisServer;
+			nextWhoisServer = misspelledWhoisServer[nextWhoisServer] || nextWhoisServer
 
 			// check if found server was queried already
 			nextWhoisServer = !results[nextWhoisServer] ? nextWhoisServer : false
 		}
 
-		host = nextWhoisServer;
+		host = nextWhoisServer
 	}
 
 	return results
@@ -140,25 +120,20 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
 	let data = {}
-	const type = net.isIP(query) ? 'ip' : 'asn'
 	query = String(query)
 
 	// find WHOIS server for IP
 	if (!host) {
-		try {
-			let whoisResult = await whoisQuery({
-				host:	'whois.iana.org',
-				query,
-				timeout
-			})
+		let whoisResult = await whoisQuery({
+			host:	'whois.iana.org',
+			query,
+			timeout
+		})
 
-			whoisResult = parseSimpleWhois(whoisResult)
+		whoisResult = parseSimpleWhois(whoisResult)
 
-			if (whoisResult.whois) {
-				host = whoisResult.whois;
-			}
-		} catch (err) {
-			throw new Error(`WHOIS error "${err.message}"`)
+		if (whoisResult.whois) {
+			host = whoisResult.whois
 		}
 	}
 
@@ -166,31 +141,24 @@ const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
 		throw new Error(`No WHOIS server for "${query}"`)
 	}
 
-	try {
+	const type = net.isIP(query) ? 'ip' : 'asn'
 
-		// hardcoded custom queries..
-		if (host === 'whois.arin.net' && type === 'ip') {
-			query = `+ n ${query}`
-		} else if (host === 'whois.arin.net' && type === 'asn') {
-			query = `+ a ${query}`
-		}
-
-		data = await whoisQuery({ host, query, timeout })
-		data = parseSimpleWhois(data)
-
-	} catch (err) {
-		throw new Error(`WHOIS error "${err.message}"`)
+	// hardcoded custom queries..
+	if (host === 'whois.arin.net' && type === 'ip') {
+		query = `+ n ${query}`
+	} else if (host === 'whois.arin.net' && type === 'asn') {
+		query = `+ a ${query}`
 	}
 
-	return data
+	data = await whoisQuery({ host, query, timeout })
+
+	return parseSimpleWhois(data)
 }
 
 
 module.exports = (query, options) => {
 
-	if (net.isIP(query)) {
-		return whoisIpOrAsn(query, options)
-	} else if (/^(as)?\d+$/i.test(query)) {
+	if (net.isIP(query) || /^(as)?\d+$/i.test(query)) {
 		return whoisIpOrAsn(query, options)
 	} else if (isTld(query)) {
 		return whoisTld(query, options)
