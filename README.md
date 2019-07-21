@@ -18,9 +18,11 @@ Aiming to have these features:
 - [x] helper function to query WHOIS servers -> `whoiser.query()`
 - [x] query whois for TLDs with parsed result -> `whoiser.tld()`
 - [x] query whois for domains with parsed result -> `whoiser.domain()`
-- [ ] query whois for IPs and return parsed result -> `whoiser.ip()`. Returns raw whois result atm
+- [x] query whois for IPs and return parsed result -> `whoiser.ip()`
 - [x] query whois for ASN with parsed result -> `whoiser.asn()`
 - [x] Punycode support
+- [ ] Normalize Domain whois field names, removing inconsistencies between whois servers
+- [ ] Test more IPs and ASNs to deliver consistent whois results
 
 ## Getting Started
 
@@ -32,7 +34,10 @@ Aiming to have these features:
 The library has a simple API.
 Use `whoiser(query)` with any query you would want OR use specific functions with options like `whoiser.domain(domain, {options})`, `whoiser.ip(ip, {options})`
 
-**Domain whois** - Get WHOIS info for domains:
+### Domain whois
+
+Get WHOIS info for domains
+
 ```js
 const whoiser = require('whoiser');
 
@@ -81,7 +86,10 @@ Returns a promise which resolves with an `Object` of WHOIS servers checked:
 }
 ```
 
-**IP whois** - get WHOIS info for IPs:
+### IP whois
+
+Get WHOIS info for IPs
+
 ```js
 const whoiser = require('whoiser');
 
@@ -98,23 +106,47 @@ const whoiser = require('whoiser');
 ```
 Returns a promise which resolves with an `Array` of WHOIS info lines:
 ```js
-[
-    "% [whois.apnic.net]",
-    "% Whois data copyright terms    http://www.apnic.net/db/dbcopyright.html",
-    "",
-    "% Information related to '1.1.1.0 - 1.1.1.255'",
-    "",
-    "inetnum:        1.1.1.0 - 1.1.1.255",
-    "netname:        APNIC-LABS",
-    "country:        AU",
-    "last-modified:  2018-03-30T01:51:28Z",
-    "source:         APNIC",
-    ...
-    "route:          1.1.1.0/24",
-    "origin:         AS13335",
-    "descr:          APNIC Research and Development",
-    "                6 Cordelia St",
-]
+{
+  range: '2606:4700:: - 2606:4700:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF',
+  route: '2606:4700::/32',
+  NetName: 'CLOUDFLARENET',
+  NetHandle: 'NET6-2606-4700-1',
+  Parent: 'NET6-2600 (NET6-2600-1)',
+  NetType: 'Direct Allocation',
+  asn: 'AS13335',
+  Organization: 'Cloudflare, Inc. (CLOUD14)',
+  RegDate: '2011-11-01',
+  Updated: '2017-02-17',
+  Comment: 'All Cloudflare abuse reporting can be done via  https://www.cloudflare.com/abuse',
+  Ref: 'https://rdap.arin.net/registry/ip/2606:4700::',
+}
+```
+
+### AS Number whois
+
+Get WHOIS info for an AS number
+
+```js
+const whoiser = require('whoiser');
+
+(async () => {
+
+    // WHOIS info for ASN15169
+    let whois = await whoiser.asn(15169)
+
+    console.log(whois)
+})();
+```
+Returns a promise which resolves with an `Object` of WHOIS info:
+```js
+{
+  ASNumber: '15169',
+  ASName: 'GOOGLE',
+  ASHandle: 'AS15169',
+  RegDate: '2000-03-30',
+  Updated: '2012-02-24',
+  Ref: 'https://rdap.arin.net/registry/autnum/15169',
+}
 ```
 
 ## More

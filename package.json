@@ -23,7 +23,7 @@
     "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
   },
   "devDependencies": {
-    "mocha": "^6.1.4"
+    "mocha": "^6.2.0"
   },
   "dependencies": {
     "punycode": "^2.1.1"
