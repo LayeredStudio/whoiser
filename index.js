@@ -250,64 +250,49 @@ const whoisAsn = async (asn, {timeout = 15000} = {}) => {
 	return data
 }
 
-
-const whoisIp = async (ip, {host = null, timeout = 15000, follow = 2} = {}) => {
+const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
 	let data = {}
+	const type = net.isIP(query) ? 'ip' : 'asn'
+	query = String(query)
 
 	// find WHOIS server for IP
 	if (!host) {
 		try {
-			let whoisIp = await whoisQuery({
-				host:		'whois.iana.org',
-				query:		ip,
-				timeout:	timeout
-			});
+			let whoisResult = await whoisQuery({
+				host:	'whois.iana.org',
+				query,
+				timeout
+			})
 
-			whoisIp = parseSimpleWhois(whoisIp);
+			whoisResult = parseSimpleWhois(whoisResult)
 
-			if (whoisIp.whois) {
-				host = whoisIp.whois;
+			if (whoisResult.whois) {
+				host = whoisResult.whois;
 			}
-
 		} catch (err) {
-			throw new Error(`IP WHOIS error "${err.message}"`)
+			throw new Error(`WHOIS error "${err.message}"`)
 		}
 	}
 
 	if (!host) {
-		throw new Error(`No WHOIS server for "${ip}"`)
+		throw new Error(`No WHOIS server for "${query}"`)
 	}
 
 	try {
 		let query = ip;
 
 		// hardcoded custom queries..
-		if (host === 'whois.arin.net') {
-			query = `+ n ${query}`;
+		if (host === 'whois.arin.net' && type === 'ip') {
+			query = `+ n ${query}`
+		} else if (host === 'whois.arin.net' && type === 'asn') {
+			query = `+ a ${query}`
 		}
 
-		let whoisIp = await whoisQuery({
-			host:		host,
-			query:		query,
-			timeout:	timeout
-		});
-
-		//data = parseSimpleWhois(whoisIp);
-		data = whoisIp.split("\n");
+		data = await whoisQuery({ host, query, timeout })
+		data = parseSimpleWhois(data)
 
 	} catch (err) {
-		throw new Error(`IP WHOIS error "${err.message}"`)
-	}
-
-	return data
-}
-
-
-const parseSimpleWhois = whois => {
-	let data = {}
-
-	if (whois.includes('returned 0 objects')) {
-		return data;
+		throw new Error(`WHOIS error "${err.message}"`)
 	}
 
 	const groups = whois.split("\n\n").map(group => {
@@ -366,12 +351,12 @@ const parseSimpleWhois = whois => {
 }
 
 
-module.exports = async function(query, options) {
+module.exports = (query, options) => {
 
 	if (net.isIP(query)) {
-		return whoisIp(query, options)
+		return whoisIpOrAsn(query, options)
 	} else if (/^(as)?\d+$/i.test(query)) {
-		return whoisAsn(query, options)
+		return whoisIpOrAsn(query, options)
 	} else if (isTld(query)) {
 		return whoisTld(query, options)
 	} else if (isDomain(query)) {
@@ -384,6 +369,6 @@ module.exports = async function(query, options) {
 module.exports.query = whoisQuery
 module.exports.tld = whoisTld
 module.exports.domain = whoisDomain
-module.exports.asn = whoisAsn
-module.exports.ip = whoisIp
+module.exports.asn = whoisIpOrAsn
+module.exports.ip = whoisIpOrAsn
 module.exports.allTlds = allTlds
