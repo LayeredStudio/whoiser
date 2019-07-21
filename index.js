@@ -2,6 +2,7 @@ const net = require('net')
 const https = require('https')
 const url = require('url')
 const punycode = require('punycode')
+const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
 const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
 
 // cache
@@ -21,12 +22,12 @@ const misspelledWhoisServer = {
 const whoisQuery = ({host = null, port = 43, timeout = 15000, query = '', querySuffix = "\r\n"} = {}) => {
 	return new Promise((resolve, reject) => {
 		let data = '';
-		const socket = net.connect({host: host, port: port}, () => socket.write(query + querySuffix));
-		socket.setTimeout(timeout);
-		socket.on('data', chunk => data += chunk);
-		socket.on('close', hadError => resolve(data));
-		socket.on('timeout', () => socket.destroy(new Error('Timeout')));
-		socket.on('error', reject);
+		const socket = net.connect({host: host, port: port}, () => socket.write(query + querySuffix))
+		socket.setTimeout(timeout)
+		socket.on('data', chunk => data += chunk)
+		socket.on('close', hadError => resolve(data))
+		socket.on('timeout', () => socket.destroy(new Error('Timeout')))
+		socket.on('error', reject)
 	});
 }
 
@@ -39,13 +40,13 @@ const allTlds = async () => {
 
 
 const whoisTld = async (tld, {timeout = 15000} = {}) => {
-	let result;
+	let result
 
 	try {
 		result = await whoisQuery({
 			host:		'whois.iana.org',
 			query:		tld,
-			timeout:	timeout
+			timeout
 		});
 	} catch (err) {
 		throw err
@@ -137,119 +138,6 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 }
 
 
-const parseDomainWhois = whois => {
-	const renameLabels = {
-		'domain name':	'Domain Name',
-		'nameserver':	'Name Server',
-		'nserver':		'Name Server',
-		'name servers':	'Name Server'
-	};
-	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider'];
-	const ignoreTexts = [
-		'more information',
-		'lawful purposes',
-		'to contact',
-		'use this data',
-		'register your domain',
-		'copy and paste',
-		'find out more',
-		'this',
-		'please',
-		'important',
-		'prices',
-		'payment',
-		'you agree',
-		'restrictions',		// found on .co.uk domains
-		'queried object',	// found in abc.tech
-		'service',			// found in .au domains
-		'terms'
-	];
-
-	let text = [];
-	let data = {
-		'Domain Status':	[],
-		'Name Server':		[]
-	};
-	let lines = whois.trim().split('\n').map(line => line.trim());
-
-	// Fix "label: \n value" format
-	lines.forEach((line, index) => {
-		if (!line.startsWith('%') && line.endsWith(':')) {
-			let addedLabel = false;
-
-			for (let i = 1; i <= 5; i++) {
-				if (!lines[index + i] || !lines[index + i].length || lines[index + i].includes(': ') || lines[index + i].endsWith(':')) {
-					break;
-				}
-
-				lines[index + i] = line + ' ' + lines[index + i];
-			}
-
-			if (addedLabel) {
-				lines[index] = '';
-			}
-		}
-	});
-
-	lines.forEach(line => {
-
-		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%')) {
-			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
-
-			if (renameLabels[label.toLowerCase()]) {
-				label = renameLabels[label.toLowerCase()]
-			}
-
-			if (data[label] && Array.isArray(data[label])) {
-				data[label].push(value);
-			} else if (!ignoreLabels.includes(label.toLowerCase()) && !ignoreTexts.some(text => label.toLowerCase().includes(text))) {
-				data[label] = data[label] ? data[label] + ' ' + value : value;
-			} else {
-				text.push(line);
-			}
-		} else {
-			text.push(line);
-		}
-
-	});
-
-	// remove invalid Name Servers (not valid hostname)
-	data['Name Server'] = data['Name Server'].map(nameServer => nameServer.split(' ')[0]).filter(isDomain)
-
-	// remove multiple empty lines
-	text = text.join("\n").trim();
-	while (text.includes("\n\n\n")) {
-		text = text.replace("\n\n\n", "\n")
-	}
-
-	data.text = text.split("\n");
-
-	return data;
-}
-
-
-const whoisAsn = async (asn, {timeout = 15000} = {}) => {
-	let result;
-
-	try {
-		result = await whoisQuery({
-			host:		'whois.iana.org',
-			query:		asn,
-			timeout:	timeout
-		});
-	} catch (err) {
-		throw err
-	}
-
-	const data = parseSimpleWhois(result);
-
-	if (!data['as-block']) {
-		throw new Error(`AS "${asn}" not found`)
-	}
-
-	return data
-}
-
 const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
 	let data = {}
 	const type = net.isIP(query) ? 'ip' : 'asn'
@@ -279,7 +167,6 @@ const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
 	}
 
 	try {
-		let query = ip;
 
 		// hardcoded custom queries..
 		if (host === 'whois.arin.net' && type === 'ip') {
@@ -294,58 +181,6 @@ const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
 	} catch (err) {
 		throw new Error(`WHOIS error "${err.message}"`)
 	}
-
-	const groups = whois.split("\n\n").map(group => {
-		let lines = group.split("\n").filter(line => line && !line.startsWith('%'));
-		let type = false;
-		let contactType = false;
-
-		lines.forEach(line => {
-			const [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
-
-			if (!type) {
-				type = ['organisation', 'contact'].includes(label) ? label : 'line';
-			}
-
-			if (type === 'contact') {
-				if (!data.contact) {
-					data.contact = {};
-				}
-
-				if (label === 'contact') {
-					contactType = value;
-					data.contact[contactType] = {};
-				} else {
-					if (data.contact[contactType][label]) {
-						data.contact[contactType][label] += "\n" + value;
-					} else {
-						data.contact[contactType][label] = value;
-					}
-				}
-			} else if (type === 'organisation') {
-				if (!data.organisation) {
-					data.organisation = {};
-				}
-
-				if (data.organisation[label]) {
-					data.organisation[label] += "\n" + value;
-				} else {
-					data.organisation[label] = value;
-				}
-			} else {
-				if (data[label]) {
-					if (!Array.isArray(data[label])) {
-						data[label] = [data[label]];
-					}
-					data[label].push(value);
-				} else {
-					data[label] = value;
-				}
-			}
-		});
-
-		return lines
-	});
 
 	return data
 }

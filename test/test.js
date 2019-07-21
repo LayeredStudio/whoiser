@@ -17,16 +17,17 @@ describe('Whoiser', function() {
 
 		it('should return IP WHOIS for "1.1.1.1"', async function() {
 			let whois = await whoiser('1.1.1.1')
-			assert.ok(whois.length)
+			assert.equal(whois.range, '1.1.1.0 - 1.1.1.255', 'IP Range doesn\'t match')
+			assert.equal(whois.route, '1.1.1.0/24', 'IP Route doesn\'t match')
 		});
 
-		it('should return AS WHOIS for "1234"', async function() {
-			let whois = await whoiser('1234')
-			assert.equal(whois['as-block'], '1234-1235', 'AS Block range doesn\'t match')
+		it('should return AS WHOIS for "15169"', async function() {
+			let whois = await whoiser('15169')
+			assert.equal(whois.ASName, 'GOOGLE', 'AS Name doesn\'t match')
 		});
 
 		it('should reject for unrecognised query "-abc"', function() {
-			assert.rejects(whoiser('-abc'))
+			assert.throws(() => whoiser('-abc'), Error)
 		});
 	});
 
@@ -117,29 +118,30 @@ describe('Whoiser', function() {
 	});
 
 	describe('#whoiser.asn()', function() {
-		it('should return WHOIS for "1234"', async function() {
-			let whois = await whoiser.asn(1234)
-			assert.equal(whois['as-block'], '1234-1235', 'AS Block range doesn\'t match')
+		it('should return WHOIS for "15169"', async function() {
+			let whois = await whoiser.asn(15169)
+			assert.equal(whois.ASNumber, '15169', 'AS Number doesn\'t match')
+			assert.equal(whois.ASName, 'GOOGLE', 'AS Name doesn\'t match')
 		});
 
 		it('should return WHOIS for "AS13335"', async function() {
 			let whois = await whoiser.asn('AS13335')
-			assert.equal(whois['as-block'], '13321-13352', 'AS Block range doesn\'t match')
+			assert.equal(whois.ASNumber, '13335', 'AS Number doesn\'t match')
+			assert.equal(whois.ASName, 'CLOUDFLARENET', 'AS Name doesn\'t match')
 		});
 	});
 
 	describe('#whoiser.ip()', function() {
 		it('should return WHOIS for "8.8.8.8"', async function() {
 			let whois = await whoiser.ip('8.8.8.8')
-			whois = whois.join("\n")
-			assert.notStrictEqual(whois.indexOf('NetRange:       8.8.8.0 - 8.8.8.255'), -1, 'IP range doesn\'t match')
+			assert.equal(whois.range, '8.0.0.0 - 8.127.255.255', 'IP Range doesn\'t match')
+			assert.equal(whois.route, '8.0.0.0/9', 'IP Route doesn\'t match')
 		});
 
 		it('should return WHOIS for "2606:4700:4700::1111"', async function() {
 			let whois = await whoiser.ip('2606:4700:4700::1111')
-			whois = whois.join("\n")
-			assert.notStrictEqual(whois.indexOf('NetRange:       2606:4700:: - 2606:4700:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF'), -1, 'IP range doesn\'t match')
-			assert.notStrictEqual(whois.indexOf('NetName:        CLOUDFLARENET'), -1, 'NetName doesn\'t match')
+			assert.equal(whois.range, '2606:4700:: - 2606:4700:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF', 'IP Range doesn\'t match')
+			assert.equal(whois.route, '2606:4700::/32', 'IP Route doesn\'t match')
 		});
 	});
 
