@@ -170,7 +170,7 @@ const parseDomainWhois = whois => {
 
 	lines.forEach(line => {
 
-		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%')) {
+		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';')) {
 			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
 
 			if (renameLabels[label.toLowerCase()]) {
