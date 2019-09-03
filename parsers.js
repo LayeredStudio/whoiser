@@ -117,9 +117,13 @@ const parseSimpleWhois = whois => {
 const parseDomainWhois = whois => {
 	const renameLabels = {
 		'domain name':	'Domain Name',
+		'domain':		'Domain Name',
 		'nameserver':	'Name Server',
+		'nameservers':	'Name Server',
 		'nserver':		'Name Server',
-		'name servers':	'Name Server'
+		'name servers':	'Name Server',
+		'flags':		'Domain Status',
+		'status':		'Domain Status'
 	}
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']
 	const ignoreTexts = [
@@ -192,6 +196,7 @@ const parseDomainWhois = whois => {
 
 	// remove invalid Name Servers (not valid hostname)
 	data['Name Server'] = data['Name Server'].map(nameServer => nameServer.split(' ')[0]).filter(isDomain)
+	data['Domain Status'] = data['Domain Status'].filter(status => Boolean(status))
 
 	// remove multiple empty lines
 	text = text.join("\n").trim()
