@@ -116,14 +116,30 @@ const parseSimpleWhois = whois => {
 
 const parseDomainWhois = whois => {
 	const renameLabels = {
-		'domain name':	'Domain Name',
-		'domain':		'Domain Name',
-		'nameserver':	'Name Server',
-		'nameservers':	'Name Server',
-		'nserver':		'Name Server',
-		'name servers':	'Name Server',
-		'flags':		'Domain Status',
-		'status':		'Domain Status'
+		'domain name':			'Domain Name',
+		'domain':				'Domain Name',
+		'nameserver':			'Name Server',
+		'nameservers':			'Name Server',
+		'nserver':				'Name Server',
+		'name servers':			'Name Server',
+		'flags':				'Domain Status',
+		'status':				'Domain Status',
+		'sponsoring registrar iana id':	'Registrar IANA ID',
+		'registrar':			'Registrar',
+		'creation date':		'Created Date',
+		'registered on':		'Created Date',
+		'created':				'Created Date',
+		'registration time':	'Created Date',
+		'registered on':		'Created Date',
+		'last updated':			'Updated Date',
+		'changed':				'Updated Date',
+		'registrar registration expiration date':	'Expiry Date',
+		'registry expiry date':	'Expiry date',
+		'expires on':			'Expiry Date',
+		'expiration time':		'Expiry Date',
+		'expire date':			'Expiry Date',
+		'paid-till':			'Expiry Date',
+		'expiry date':			'Expiry Date'
 	}
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']
 	const ignoreTexts = [
@@ -184,7 +200,7 @@ const parseDomainWhois = whois => {
 			if (data[label] && Array.isArray(data[label])) {
 				data[label].push(value)
 			} else if (!ignoreLabels.includes(label.toLowerCase()) && !ignoreTexts.some(text => label.toLowerCase().includes(text))) {
-				data[label] = data[label] ? data[label] + ' ' + value : value
+				data[label] = data[label] && data[label] !== value ? data[label] + ' ' + value : value
 			} else {
 				text.push(line)
 			}

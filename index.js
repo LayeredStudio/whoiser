@@ -12,9 +12,10 @@ let cacheTldWhoisServer = {
 
 // misspelled whois servers..
 const misspelledWhoisServer = {
-	'whois.google.com':		'whois.nic.google',		// found in dailyrun.club, andreiigna.com
-	'www.gandi.net/whois':	'whois.gandi.net',		// found in kuro.link
-	'who.godaddy.com/':		'whois.godaddy.com',	// found in trail.run
+	'whois.google.com':		'whois.nic.google',
+	'www.gandi.net/whois':	'whois.gandi.net',
+	'who.godaddy.com/':		'whois.godaddy.com',
+	'whois.godaddy.com/':	'whois.godaddy.com',
 }
 
 
@@ -94,7 +95,7 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 		follow--
 
 		// check for next WHOIS server
-		let nextWhoisServer = result['Registrar WHOIS Server'] || result['ReferralServer'] || result['Registrar Whois'] || result['Whois Server'] || result['WHOIS Server'] || false
+		let nextWhoisServer = result['Registrar WHOIS Server'] || result['Registry WHOIS Server'] || result['ReferralServer'] || result['Registrar Whois'] || result['Whois Server'] || result['WHOIS Server'] || false
 
 		if (nextWhoisServer) {
 
