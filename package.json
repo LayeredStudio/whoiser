@@ -1,6 +1,6 @@
 {
   "name": "whoiser",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Whois info for TLDs, domains and IPs",
   "keywords": [
     "whois",
@@ -23,7 +23,7 @@
     "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
   },
   "devDependencies": {
-    "mocha": "^6.2.0"
+    "mocha": "^6.2.2"
   },
   "dependencies": {
     "punycode": "^2.1.1"
