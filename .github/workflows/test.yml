@@ -1,10 +1,9 @@
-name: Node CI
+name: Test
 
 on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
