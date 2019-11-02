@@ -21,8 +21,8 @@ Aiming to have these features:
 - [x] query whois for IPs and return parsed result -> `whoiser.ip()`
 - [x] query whois for ASN with parsed result -> `whoiser.asn()`
 - [x] Punycode support
-- [ ] Normalize Domain whois field names, removing inconsistencies between whois servers
-- [ ] Test more IPs and ASNs to deliver consistent whois results
+- [ ] Normalize Domain WHOIS field names, removing inconsistencies between WHOIS servers
+- [ ] Test more IPs and ASNs to deliver consistent WHOIS results
 
 ## Getting Started
 
@@ -64,7 +64,7 @@ Returns a promise which resolves with an `Object` of WHOIS servers checked:
         "Domain Name": "google.com",
         "Registrar WHOIS Server": "whois.markmonitor.com",
         "Creation Date": "1997-09-15T00:00:00-0700",
-        "Registrar Registration Expiration Date": "2020-09-13T21:00:00-0700",
+        "Expiry Date": "2020-09-13T21:00:00-0700",
         "Registrar": "MarkMonitor, Inc.",
         "Domain Status": [
             "clientUpdateProhibited",

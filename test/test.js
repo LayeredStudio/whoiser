@@ -13,6 +13,10 @@ describe('Whoiser', function() {
 			let whois = await whoiser('google.com')
 			assert.equal(whois['whois.verisign-grs.com']['Domain Name'], 'GOOGLE.COM', 'Domain name doesn\'t match')
 			assert.equal(whois['whois.verisign-grs.com']['Registry Domain ID'], '2138514_DOMAIN_COM-VRSN', 'Registry Domain ID doesn\'t match')
+
+			for (const whoisServer in whois) {
+				assert(Object.keys(whois[whoisServer]).includes('Expiry Date'), 'Whois result doesn\'t have "Expiry Date"')
+			}
 		});
 
 		it('should return IP WHOIS for "1.1.1.1"', async function() {
