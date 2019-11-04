@@ -115,6 +115,7 @@ const parseSimpleWhois = whois => {
 
 
 const parseDomainWhois = whois => {
+	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy']
 	const renameLabels = {
 		'domain name':					'Domain Name',
 		'domain':						'Domain Name',
@@ -138,12 +139,13 @@ const parseDomainWhois = whois => {
 		'registrar registration expiration date':	'Expiry Date',
 		'registry expiry date':			'Expiry Date',
 		'expires on':					'Expiry Date',
+		'expires':						'Expiry Date',
 		'expiration time':				'Expiry Date',
 		'expire date':					'Expiry Date',
 		'paid-till':					'Expiry Date',
 		'expiry date':					'Expiry Date',
 		'registrant':					'Registrant Name',
-		'Registrant Contact Email':		'Registrant Email'
+		'registrant Contact Email':		'registrant Email'
 	}
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']
 	const ignoreTexts = [
@@ -197,8 +199,14 @@ const parseDomainWhois = whois => {
 		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';')) {
 			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
 
+			// rename labels to more common format
 			if (renameLabels[label.toLowerCase()]) {
 				label = renameLabels[label.toLowerCase()]
+			}
+
+			// remove redacted data
+			if (noData.includes(value.toLowerCase())) {
+				value = ''
 			}
 
 			if (data[label] && Array.isArray(data[label])) {
@@ -215,8 +223,10 @@ const parseDomainWhois = whois => {
 	})
 
 	// remove invalid Name Servers (not valid hostname)
-	data['Name Server'] = data['Name Server'].map(nameServer => nameServer.split(' ')[0]).filter(isDomain)
-	data['Domain Status'] = data['Domain Status'].filter(status => Boolean(status))
+	data['Name Server'] = data['Name Server'].map(nameServer => nameServer.split(' ')).flat().filter(isDomain)
+
+	// filter out empty status lines
+	data['Domain Status'] = data['Domain Status'].filter(Boolean)
 
 	// remove multiple empty lines
 	text = text.join("\n").trim()
