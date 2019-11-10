@@ -1,27 +1,26 @@
 const { splitStringBy, isDomain } = require('./utils.js')
 
-
 const parseSimpleWhois = whois => {
 	let data = {}
 	let text = []
 
 	const renameLabels = {
-		NetRange:	'range',
-		inetnum:	'range',
-		CIDR:		'route',
-		origin:		'asn',
-		OriginAS:	'asn',
+		NetRange: 'range',
+		inetnum: 'range',
+		CIDR: 'route',
+		origin: 'asn',
+		OriginAS: 'asn',
 	}
 	const lineToGroup = {
-		OrgName:		'organisation',
-		organisation:	'organisation',
-		OrgAbuseHandle:	'contactAbuse',
-		irt:			'contactAbuse',
-		RAbuseHandle:	'contactAbuse',
-		OrgTechHandle:	'contactTechnical',
-		RTechHandle:	'contactTechnical',
-		OrgNOCHandle:	'contactNoc',
-		RNOCHandle:		'contactNoc',
+		OrgName: 'organisation',
+		organisation: 'organisation',
+		OrgAbuseHandle: 'contactAbuse',
+		irt: 'contactAbuse',
+		RAbuseHandle: 'contactAbuse',
+		OrgTechHandle: 'contactTechnical',
+		RTechHandle: 'contactTechnical',
+		OrgNOCHandle: 'contactNoc',
+		RNOCHandle: 'contactNoc',
 	}
 
 	if (whois.includes('returned 0 objects') || whois.includes('No match found')) {
@@ -32,11 +31,9 @@ const parseSimpleWhois = whois => {
 	let groups = [{}]
 	let lastLabel
 
-	whois.split("\n").forEach(line => {
-
+	whois.split('\n').forEach(line => {
 		// catch comment lines
 		if (line.startsWith('%') || line.startsWith('#')) {
-
 			// detect if an ASN or IP has multiple WHOIS results
 			if (line.includes('# start')) {
 				// nothing
@@ -45,12 +42,10 @@ const parseSimpleWhois = whois => {
 			} else {
 				text.push(line)
 			}
-
 		} else if (resultNum === 0) {
 			// for the moment, parse only first WHOIS result
 
 			if (line) {
-
 				if (line.includes(':')) {
 					const [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
 					lastLabel = label
@@ -59,53 +54,50 @@ const parseSimpleWhois = whois => {
 					if (value.includes('---')) {
 						// do nothing with useless data
 					} else if (groups[groups.length - 1][label]) {
-						groups[groups.length - 1][label] += "\n" + value
+						groups[groups.length - 1][label] += '\n' + value
 					} else {
 						groups[groups.length - 1][label] = value
 					}
-
 				} else {
-					groups[groups.length - 1][lastLabel] += "\n" + line.trim()
+					groups[groups.length - 1][lastLabel] += '\n' + line.trim()
 				}
-
 			} else if (Object.keys(groups[groups.length - 1]).length) {
-
 				// if empty line, means another info group starts
 				groups.push({})
 			}
 		}
-
 	})
 
-	groups.filter(group => Object.keys(group).length).forEach(group => {
-		const groupLabels = Object.keys(group)
-		let isGroup = false
+	groups
+		.filter(group => Object.keys(group).length)
+		.forEach(group => {
+			const groupLabels = Object.keys(group)
+			let isGroup = false
 
-		// check if a label is marked as group
-		groupLabels.forEach(groupLabel => {
-			if (Object.keys(lineToGroup).includes(groupLabel)) {
-				isGroup = lineToGroup[groupLabel]
+			// check if a label is marked as group
+			groupLabels.forEach(groupLabel => {
+				if (Object.keys(lineToGroup).includes(groupLabel)) {
+					isGroup = lineToGroup[groupLabel]
+				}
+			})
+
+			// check if a info group is a Contact in APNIC result
+			// @Link https://www.apnic.net/manage-ip/using-whois/guide/role/
+			if (!isGroup && groupLabels.includes('role')) {
+				isGroup = 'Contact ' + group.role.split(' ')[1]
+			} else if (!isGroup && groupLabels.includes('person')) {
+				isGroup = 'Contact ' + group['nic-hdl']
+			}
+
+			if (isGroup) {
+				data[isGroup] = group
+			} else {
+				for (key in group) {
+					const label = renameLabels[key] || key
+					data[label] = group[key]
+				}
 			}
 		})
-
-		// check if a info group is a Contact in APNIC result
-		// @Link https://www.apnic.net/manage-ip/using-whois/guide/role/
-		if (!isGroup && groupLabels.includes('role')) {
-			isGroup = 'Contact ' + group.role.split(' ')[1]
-		} else if (!isGroup && groupLabels.includes('person')) {
-			isGroup = 'Contact ' + group['nic-hdl']
-		}
-
-		if (isGroup) {
-			data[isGroup] = group
-		} else {
-			for (key in group) {
-				const label = renameLabels[key] || key
-				data[label] = group[key]
-			}
-		}
-
-	})
 
 	// Append the WHOIS comments
 	data.text = text
@@ -113,40 +105,39 @@ const parseSimpleWhois = whois => {
 	return data
 }
 
-
 const parseDomainWhois = whois => {
 	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy', 'gdpr redacted', 'non-public data']
 	const renameLabels = {
-		'domain name':					'Domain Name',
-		'domain':						'Domain Name',
-		'idn tag':						'IDN',
-		'internationalized domain name':	'IDN',
-		'nameserver':					'Name Server',
-		'nameservers':					'Name Server',
-		'nserver':						'Name Server',
-		'name servers':					'Name Server',
-		'name server information':		'Name Server',
-		'flags':						'Domain Status',
-		'status':						'Domain Status',
-		'sponsoring registrar iana id':	'Registrar IANA ID',
-		'registrar':					'Registrar',
-		'creation date':				'Created Date',
-		'registered on':				'Created Date',
-		'created':						'Created Date',
-		'registration time':			'Created Date',
-		'registered on':				'Created Date',
-		'last updated':					'Updated Date',
-		'changed':						'Updated Date',
-		'registrar registration expiration date':	'Expiry Date',
-		'registry expiry date':			'Expiry Date',
-		'expires on':					'Expiry Date',
-		'expires':						'Expiry Date',
-		'expiration time':				'Expiry Date',
-		'expire date':					'Expiry Date',
-		'paid-till':					'Expiry Date',
-		'expiry date':					'Expiry Date',
-		'registrant':					'Registrant Name',
-		'registrant Contact Email':		'registrant Email'
+		'domain name': 'Domain Name',
+		domain: 'Domain Name',
+		'idn tag': 'IDN',
+		'internationalized domain name': 'IDN',
+		nameserver: 'Name Server',
+		nameservers: 'Name Server',
+		nserver: 'Name Server',
+		'name servers': 'Name Server',
+		'name server information': 'Name Server',
+		flags: 'Domain Status',
+		status: 'Domain Status',
+		'sponsoring registrar iana id': 'Registrar IANA ID',
+		registrar: 'Registrar',
+		'creation date': 'Created Date',
+		'registered on': 'Created Date',
+		created: 'Created Date',
+		'registration time': 'Created Date',
+		'registered on': 'Created Date',
+		'last updated': 'Updated Date',
+		changed: 'Updated Date',
+		'registrar registration expiration date': 'Expiry Date',
+		'registry expiry date': 'Expiry Date',
+		'expires on': 'Expiry Date',
+		expires: 'Expiry Date',
+		'expiration time': 'Expiry Date',
+		'expire date': 'Expiry Date',
+		'paid-till': 'Expiry Date',
+		'expiry date': 'Expiry Date',
+		registrant: 'Registrant Name',
+		'registrant Contact Email': 'registrant Email',
 	}
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']
 	const ignoreTexts = [
@@ -163,18 +154,21 @@ const parseDomainWhois = whois => {
 		'prices',
 		'payment',
 		'you agree',
-		'restrictions',		// found on .co.uk domains
-		'queried object',	// found in abc.tech
-		'service',			// found in .au domains
-		'terms'
+		'restrictions', // found on .co.uk domains
+		'queried object', // found in abc.tech
+		'service', // found in .au domains
+		'terms',
 	]
 
 	let text = []
 	let data = {
-		'Domain Status':	[],
-		'Name Server':		[]
+		'Domain Status': [],
+		'Name Server': [],
 	}
-	let lines = whois.trim().split('\n').map(line => line.trim())
+	let lines = whois
+		.trim()
+		.split('\n')
+		.map(line => line.trim())
 
 	// Fix "label: \n value" format
 	lines.forEach((line, index) => {
@@ -196,7 +190,6 @@ const parseDomainWhois = whois => {
 	})
 
 	lines.forEach(line => {
-
 		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';')) {
 			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
 			value = value.trim()
@@ -221,26 +214,27 @@ const parseDomainWhois = whois => {
 		} else {
 			text.push(line)
 		}
-
 	})
 
 	// remove invalid Name Servers (not valid hostname)
-	data['Name Server'] = data['Name Server'].map(nameServer => nameServer.split(' ')).flat().filter(isDomain)
+	data['Name Server'] = data['Name Server']
+		.map(nameServer => nameServer.split(' '))
+		.flat()
+		.filter(isDomain)
 
 	// filter out empty status lines
 	data['Domain Status'] = data['Domain Status'].filter(Boolean)
 
 	// remove multiple empty lines
-	text = text.join("\n").trim()
-	while (text.includes("\n\n\n")) {
-		text = text.replace("\n\n\n", "\n")
+	text = text.join('\n').trim()
+	while (text.includes('\n\n\n')) {
+		text = text.replace('\n\n\n', '\n')
 	}
 
-	data.text = text.split("\n")
+	data.text = text.split('\n')
 
 	return data
 }
-
 
 module.exports.parseSimpleWhois = parseSimpleWhois
 module.exports.parseDomainWhois = parseDomainWhois

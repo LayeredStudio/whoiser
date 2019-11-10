@@ -16,6 +16,8 @@
   "homepage": "https://github.com/LayeredStudio/whoiser#readme",
   "main": "index.js",
   "scripts": {
+    "prettier": "prettier \"src/*.js\"",
+    "prettier:write": "npm run prettier -- --write",
     "test": "mocha -t 5000 -s 3000"
   },
   "repository": {
@@ -23,7 +25,8 @@
     "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
   },
   "devDependencies": {
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.2",
+    "prettier": "^1.19.1"
   },
   "dependencies": {
     "array-flat-polyfill": "^1.0.1",
