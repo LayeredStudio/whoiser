@@ -7,23 +7,23 @@ require('array-flat-polyfill')
 
 // cache
 let cacheTldWhoisServer = {
-	com:	'whois.verisign-grs.com',
-	shop:	'whois.nic.shop'
+	com: 'whois.verisign-grs.com',
+	shop: 'whois.nic.shop'
 }
 
 // misspelled whois servers..
 const misspelledWhoisServer = {
-	'whois.google.com':		'whois.nic.google',
-	'www.gandi.net/whois':	'whois.gandi.net',
-	'who.godaddy.com/':		'whois.godaddy.com',
-	'whois.godaddy.com/':	'whois.godaddy.com',
+	'whois.google.com': 'whois.nic.google',
+	'www.gandi.net/whois': 'whois.gandi.net',
+	'who.godaddy.com/': 'whois.godaddy.com',
+	'whois.godaddy.com/': 'whois.godaddy.com',
 }
 
 
-const whoisQuery = ({host = null, port = 43, timeout = 15000, query = '', querySuffix = "\r\n"} = {}) => {
+const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', querySuffix = "\r\n" } = {}) => {
 	return new Promise((resolve, reject) => {
 		let data = ''
-		const socket = net.connect({host: host, port: port}, () => socket.write(query + querySuffix))
+		const socket = net.connect({ host: host, port: port }, () => socket.write(query + querySuffix))
 		socket.setTimeout(timeout)
 		socket.on('data', chunk => data += chunk)
 		socket.on('close', hadError => resolve(data))
@@ -40,15 +40,19 @@ const allTlds = async () => {
 }
 
 
-const whoisTld = async (query, {timeout = 15000} = {}) => {
+const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {
 
 	let result = await whoisQuery({
-		host:	'whois.iana.org',
+		host: 'whois.iana.org',
 		query,
 		timeout
 	})
 
 	const data = parseSimpleWhois(result)
+
+	if (raw) {
+		data.__raw = result;
+	}
 
 	if (!data.domain || !data.domain.length) {
 		throw new Error(`TLD "${query}" not found`)
@@ -58,7 +62,7 @@ const whoisTld = async (query, {timeout = 15000} = {}) => {
 }
 
 
-const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = {}) => {
+const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
 	domain = punycode.toASCII(domain)
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
@@ -70,7 +74,7 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 
 	// find WHOIS server for TLD
 	if (!host) {
-		const tld = await whoisTld(domain, {timeout: timeout})
+		const tld = await whoisTld(domain, { timeout: timeout, raw })
 
 		if (!tld.whois) {
 			throw new Error(`TLD for "${domain}" not supported`)
@@ -89,8 +93,11 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 			query = `-T dn ${query}`
 		}
 
-		result = await whoisQuery({ host, query, timeout })
-		result = parseDomainWhois(result)
+		raw_result = await whoisQuery({ host, query, timeout })
+		result = parseDomainWhois(raw_result)
+		if (raw) {
+			result.__raw = raw_result;
+		}
 
 		results[host] = result
 		follow--
@@ -120,14 +127,14 @@ const whoisDomain = async (domain, {host = null, timeout = 15000, follow = 2} = 
 }
 
 
-const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
+const whoisIpOrAsn = async (query, { host = null, timeout = 15000, raw = false } = {}) => {
 	let data = {}
 	query = String(query)
 
 	// find WHOIS server for IP
 	if (!host) {
 		let whoisResult = await whoisQuery({
-			host:	'whois.iana.org',
+			host: 'whois.iana.org',
 			query,
 			timeout
 		})
@@ -152,9 +159,13 @@ const whoisIpOrAsn = async (query, {host = null, timeout = 15000} = {}) => {
 		query = `+ a ${query}`
 	}
 
-	data = await whoisQuery({ host, query, timeout })
+	const raw_result = await whoisQuery({ host, query, timeout })
 
-	return parseSimpleWhois(data)
+	data = parseSimpleWhois(raw_result)
+	if (raw) {
+		data.__raw = raw_result;
+	}
+	return data;
 }
 
 
