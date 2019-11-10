@@ -1,6 +1,9 @@
 ---
-name: 🐛 Bug Report
+name: "\U0001F41B Bug Report"
 about: Report errors and problems
+title: ''
+labels: bug
+assignees: AndreiIgna
 
 ---
 
