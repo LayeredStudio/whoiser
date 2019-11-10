@@ -115,7 +115,7 @@ const parseSimpleWhois = whois => {
 
 
 const parseDomainWhois = whois => {
-	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy']
+	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy', 'gdpr redacted', 'non-public data']
 	const renameLabels = {
 		'domain name':					'Domain Name',
 		'domain':						'Domain Name',
@@ -125,6 +125,7 @@ const parseDomainWhois = whois => {
 		'nameservers':					'Name Server',
 		'nserver':						'Name Server',
 		'name servers':					'Name Server',
+		'name server information':		'Name Server',
 		'flags':						'Domain Status',
 		'status':						'Domain Status',
 		'sponsoring registrar iana id':	'Registrar IANA ID',
@@ -198,6 +199,7 @@ const parseDomainWhois = whois => {
 
 		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';')) {
 			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
+			value = value.trim()
 
 			// rename labels to more common format
 			if (renameLabels[label.toLowerCase()]) {
