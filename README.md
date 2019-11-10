@@ -50,6 +50,7 @@ Get WHOIS info for domains.
   - `host` - WHOIS server to query. Default: WHOIS server from IANA
   - `timeout` - WHOIS server request timeout in ms. Default: 1500
   - `follow` - If discovered, how many WHOIS server to query. Default: 2
+  - `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
 const whoiser = require('whoiser');
@@ -104,6 +105,7 @@ Get WHOIS info for IPs
 - `options` - Object of options to use, all optional:
   - `host` - WHOIS server to query. Default: WHOIS server from IANA
   - `timeout` - WHOIS server request timeout in ms. Default: 1500
+  - `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
 const whoiser = require('whoiser');
@@ -145,6 +147,7 @@ Get WHOIS info for an AS number
 - `options` - Object of options to use, all optional:
   - `host` - WHOIS server to query. Default: WHOIS server from IANA
   - `timeout` - WHOIS server request timeout in ms. Default: 1500
+  - `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
 const whoiser = require('whoiser');
@@ -187,6 +190,6 @@ Please report any issues here on GitHub.
 
 ## License
 
-[MIT](http://opensource.org/licenses/MIT)
+[MIT](LICENSE)
 
 Copyright (c) Andrei Igna, Layered
