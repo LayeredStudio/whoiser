@@ -106,7 +106,7 @@ const parseSimpleWhois = whois => {
 }
 
 const parseDomainWhois = whois => {
-	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy', 'gdpr redacted', 'non-public data']
+	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked']
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
@@ -123,6 +123,8 @@ const parseDomainWhois = whois => {
 		status: 'Domain Status',
 		'sponsoring registrar iana id': 'Registrar IANA ID',
 		registrar: 'Registrar',
+		'registrar name': 'Registrar',
+		url: 'Registrar URL',
 		'creation date': 'Created Date',
 		'registered on': 'Created Date',
 		created: 'Created Date',
@@ -130,6 +132,7 @@ const parseDomainWhois = whois => {
 		'registered': 'Created Date',
 		'last updated': 'Updated Date',
 		changed: 'Updated Date',
+		'last modified': 'Updated Date',
 		'registrar registration expiration date': 'Expiry Date',
 		'registry expiry date': 'Expiry Date',
 		'expires on': 'Expiry Date',
@@ -139,7 +142,9 @@ const parseDomainWhois = whois => {
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
 		registrant: 'Registrant Name',
-		'registrant Contact Email': 'registrant Email',
+		'registrant contact name': 'Registrant Name',
+		'registrant contact email': 'Registrant Email',
+		dnssec: 'DNSSEC',
 	}
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']
 	const ignoreTexts = [

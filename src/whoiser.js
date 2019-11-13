@@ -17,6 +17,7 @@ const misspelledWhoisServer = {
 	'www.gandi.net/whois': 'whois.gandi.net',
 	'who.godaddy.com/': 'whois.godaddy.com',
 	'whois.godaddy.com/': 'whois.godaddy.com',
+	': whois.nic.so': 'whois.nic.so',
 }
 
 const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', querySuffix = '\r\n' } = {}) => {
@@ -64,7 +65,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 
 	// find WHOIS server for TLD
 	if (!host) {
-		const tld = await whoisTld(domain, { timeout: timeout, raw })
+		const tld = await whoisTld(domain, { timeout })
 
 		if (!tld.whois) {
 			throw new Error(`TLD for "${domain}" not supported`)
