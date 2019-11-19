@@ -148,6 +148,8 @@ const parseDomainWhois = whois => {
 		registrant: 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
 		'registrant contact email': 'Registrant Email',
+		'registrant organisation': 'Registrant Organization',
+		'registrant state': 'Registrant State/Province',
 		dnssec: 'DNSSEC',
 	}
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']

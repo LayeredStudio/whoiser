@@ -1,5 +1,7 @@
 # Whoiser change log
 
+#### 1.6.2 - 19 Nov 2019
+- Updated - Merge more WHOIS domain labels
 - Fixed - Return contact info for TLD WHOIS
 
 #### 1.6.1 - 13 Nov 2019
