@@ -12,6 +12,7 @@ const parseSimpleWhois = whois => {
 		OriginAS: 'asn',
 	}
 	const lineToGroup = {
+		contact: 'contact',
 		OrgName: 'organisation',
 		organisation: 'organisation',
 		OrgAbuseHandle: 'contactAbuse',
@@ -76,7 +77,7 @@ const parseSimpleWhois = whois => {
 
 			// check if a label is marked as group
 			groupLabels.forEach(groupLabel => {
-				if (Object.keys(lineToGroup).includes(groupLabel)) {
+				if (!isGroup && Object.keys(lineToGroup).includes(groupLabel)) {
 					isGroup = lineToGroup[groupLabel]
 				}
 			})
@@ -89,7 +90,10 @@ const parseSimpleWhois = whois => {
 				isGroup = 'Contact ' + group['nic-hdl']
 			}
 
-			if (isGroup) {
+			if (isGroup === 'contact') {
+				data.contacts = data.contacts || {}
+				data.contacts[group['contact']] = group
+			} else if (isGroup) {
 				data[isGroup] = group
 			} else {
 				for (key in group) {
