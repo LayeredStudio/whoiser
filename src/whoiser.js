@@ -13,7 +13,7 @@ let cacheTldWhoisServer = {
 
 // misspelled whois servers..
 const misspelledWhoisServer = {
-	'whois.google.com': 'whois.nic.google',
+	//'whois.google.com': 'whois.nic.google',	// Why was this added??
 	'www.gandi.net/whois': 'whois.gandi.net',
 	'who.godaddy.com/': 'whois.godaddy.com',
 	'whois.godaddy.com/': 'whois.godaddy.com',
@@ -102,6 +102,11 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 			result['Whois Server'] ||
 			result['WHOIS Server'] ||
 			false
+
+		// fill in WHOIS servers when missing
+		if (!nextWhoisServer && result['Registrar URL'] && result['Registrar URL'].includes('domains.google')) {
+			nextWhoisServer = 'whois.google.com'
+		}
 
 		if (nextWhoisServer) {
 			// if found, remove protocol and path

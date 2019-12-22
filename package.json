@@ -1,6 +1,6 @@
 {
   "name": "whoiser",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Whois info for TLDs, domains and IPs",
   "keywords": [
     "whois",
@@ -10,6 +10,10 @@
   ],
   "author": "Andrei Igna <andrei@laye.red>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
+  },
   "bugs": {
     "url": "https://github.com/LayeredStudio/whoiser/issues"
   },
@@ -19,10 +23,6 @@
     "prettier": "prettier \"src/*.js\"",
     "prettier:write": "npm run prettier -- --write",
     "test": "mocha -t 5000 -s 3000"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
   },
   "devDependencies": {
     "mocha": "^6.2.2",

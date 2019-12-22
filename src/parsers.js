@@ -126,6 +126,7 @@ const parseDomainWhois = whois => {
 		flags: 'Domain Status',
 		status: 'Domain Status',
 		'sponsoring registrar iana id': 'Registrar IANA ID',
+		organisation: 'Registrar',
 		registrar: 'Registrar',
 		'registrar name': 'Registrar',
 		url: 'Registrar URL',
@@ -149,7 +150,9 @@ const parseDomainWhois = whois => {
 		'registrant contact name': 'Registrant Name',
 		'registrant contact email': 'Registrant Email',
 		'registrant organisation': 'Registrant Organization',
+		'trading as': 'Registrant Organization',
 		'registrant state': 'Registrant State/Province',
+		'registrant\'s address': 'Registrant Street',
 		dnssec: 'DNSSEC',
 	}
 	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']
