@@ -78,16 +78,23 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 	// query WHOIS servers for data
 	while (host && follow) {
 		let query = domain
+		let result
+		let resultRaw
 
 		// hardcoded WHOIS queries..
 		if (host === 'whois.denic.de') {
 			query = `-T dn ${query}`
 		}
 
-		raw_result = await whoisQuery({ host, query, timeout })
-		result = parseDomainWhois(raw_result)
+		try {
+			resultRaw = await whoisQuery({ host, query, timeout })
+			result = parseDomainWhois(resultRaw)
+		} catch (err) {
+			result = { error: err.message }
+		}
+
 		if (raw) {
-			result.__raw = raw_result
+			result.__raw = resultRaw
 		}
 
 		results[host] = result
