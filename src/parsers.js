@@ -137,6 +137,7 @@ const parseDomainWhois = whois => {
 		'registered': 'Created Date',
 		'last updated': 'Updated Date',
 		changed: 'Updated Date',
+		modified: 'Updated Date',
 		'last modified': 'Updated Date',
 		'registrar registration expiration date': 'Expiry Date',
 		'registry expiry date': 'Expiry Date',
