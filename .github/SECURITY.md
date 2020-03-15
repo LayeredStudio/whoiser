@@ -11,6 +11,6 @@ Only latest major version is being supported and receives constant security upda
 
 ## Reporting a Vulnerability
 
-If you found any issues that might have security implications, please send a report to security[at]laye.red
+If you found any issues that might have security implications, please send a report to `security[at]laye.red` email address.
 
-DO NOT PUBLISH SECURITY REPORTS PUBLICLY.
+PLEASE DO NOT PUBLISH SECURITY REPORTS PUBLICLY.
