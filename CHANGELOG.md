@@ -1,5 +1,9 @@
 # Whoiser change log
 
+#### 1.6.6 - 8 April 2020
+- Updated - detect more redacted whois text
+- Fixed - Parse WHOIS lines with double colon #6
+
 #### 1.6.2 - 19 Nov 2019
 - Updated - Merge more WHOIS domain labels
 - Fixed - Return contact info for TLD WHOIS

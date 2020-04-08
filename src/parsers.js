@@ -110,7 +110,7 @@ const parseSimpleWhois = whois => {
 }
 
 const parseDomainWhois = whois => {
-	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked']
+	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'not disclosed', 'statutory masking enabled', 'redacted by privacy']
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
