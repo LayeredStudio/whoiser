@@ -102,6 +102,16 @@ describe('Whoiser', function() {
 		});
 		*/
 
+		it('should return WHOIS for "notion.so" with correct registrar WHOIS server', async function() {
+			let whois = await whoiser.domain('notion.so', {follow: 1})
+			assert.equal(whois['whois.nic.so']['Registry WHOIS Server'], 'whois.nic.so', 'Parsing error for WHOIS server')
+		});
+
+		it('should return WHOIS for "goo.gl" with correct registrar WHOIS server', async function() {
+			let whois = await whoiser.domain('goo.gl', {follow: 1})
+			assert.equal(whois['whois.nic.gl']['Registry WHOIS Server'], 'whois.nic.gl', 'Parsing error for WHOIS server')
+		});
+
 		it('should return WHOIS for "google.eu" when whois data is "label:_EOL_value"', async function() {
 			let whois = await whoiser.domain('google.eu', {follow: 1})
 			assert.equal(whois['whois.eu']['Domain Name'], 'google.eu', 'Domain name doesn\'t match')

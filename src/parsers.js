@@ -209,6 +209,12 @@ const parseDomainWhois = whois => {
 	lines.forEach(line => {
 		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';')) {
 			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
+
+			// fix whois line with double color, ex: "Label:: value"
+			if (value.startsWith(':')) {
+				value = value.slice(1)
+			}
+
 			value = value.trim()
 
 			// rename labels to more common format

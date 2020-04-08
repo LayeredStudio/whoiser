@@ -17,7 +17,6 @@ const misspelledWhoisServer = {
 	'www.gandi.net/whois': 'whois.gandi.net',
 	'who.godaddy.com/': 'whois.godaddy.com',
 	'whois.godaddy.com/': 'whois.godaddy.com',
-	': whois.nic.so': 'whois.nic.so',
 	'www.nic.ru/whois/en/': 'whois.nic.ru',
 	'www.whois.corporatedomains.com': 'whois.corporatedomains.com',
 	'www.safenames.net/DomainNames/WhoisSearch.aspx': 'whois.safenames.net',
