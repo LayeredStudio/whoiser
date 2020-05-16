@@ -49,7 +49,7 @@ Get WHOIS info for domains.
 - `options` - Object of options to use, all optional:
   - `host` - WHOIS server to query. Default: WHOIS server from IANA
   - `timeout` - WHOIS server request timeout in ms. Default: 1500
-  - `follow` - If discovered, how many WHOIS server to query. Default: 2
+  - `follow` - How many WHOIS server to query. 1 = registry server (faster), 2 = registry + registrar (more domain details). Default: 2
   - `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
@@ -57,11 +57,11 @@ const whoiser = require('whoiser');
 
 (async () => {
 
-	// WHOIS info with auto-discovering for WHOIS server
+	// WHOIS info from Registry (Verisign) AND Registrar (MarkMonitor) whois servers
 	let domainInfo = await whoiser('google.com')
 
-	// OR with options for whois server and how many servers to check
-	let domainInfo2 = await whoiser.domain('blog.google', {host: 'whois.nic.google', follow: 3})
+	// OR with options for whois server and how many WHOIS servers to query
+	let domainInfo2 = await whoiser.domain('blog.google', {host: 'whois.nic.google', follow: 1})
 
 	console.log(domainInfo, domainInfo2)
 })();
