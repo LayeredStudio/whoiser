@@ -110,7 +110,7 @@ const parseSimpleWhois = whois => {
 }
 
 const parseDomainWhois = whois => {
-	const noData = ['-', 'data protected, not disclosed', 'data redacted', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'not disclosed', 'statutory masking enabled', 'redacted by privacy']
+	const noData = ['-', 'data protected', 'not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy']
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
@@ -147,6 +147,7 @@ const parseDomainWhois = whois => {
 		'expire date': 'Expiry Date',
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
+		'expire': 'Expiry Date',
 		registrant: 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
 		'registrant contact email': 'Registrant Email',
@@ -185,29 +186,49 @@ const parseDomainWhois = whois => {
 	let lines = whois
 		.trim()
 		.split('\n')
-		.map(line => line.trim())
+		.map(line => line.replace("\t", '  '))
+
 
 	// Fix "label: \n value" format
 	lines.forEach((line, index) => {
-		if (!line.startsWith('%') && line.endsWith(':')) {
+
+		// if line is just a WHOIS label ending with ":", then verify next lines
+		if (!line.startsWith('*') && !line.startsWith('%') && line.trim().endsWith(':')) {
 			let addedLabel = false
 
+			// Check next lines
 			for (let i = 1; i <= 5; i++) {
-				if (!lines[index + i] || !lines[index + i].length || lines[index + i].includes(': ') || lines[index + i].endsWith(':')) {
+
+				// if no line or empty line
+				if (!lines[index + i] || !lines[index + i].trim().length) {
 					break
 				}
 
-				lines[index + i] = line + ' ' + lines[index + i]
+				// if tabbed line or line with value only, prefix the line with main label
+				if ((lines[index + i].startsWith('  ') && lines[index + i].includes(': ')) || !lines[index + i].endsWith(':')) {
+					let label = line.trim()
+
+					if (lines[index + i].includes(':') && label.endsWith(':')) {
+						label = label.slice(0, -1)
+					}
+
+					lines[index + i] = label + ' ' + lines[index + i].replace('\t', ' ').trim()
+
+					addedLabel = true
+				}
 			}
 
+			// remove this line if it was just a label for other lines
 			if (addedLabel) {
 				lines[index] = ''
 			}
 		}
 	})
 
+	lines = lines.map(l => l.trim())
+
 	lines.forEach(line => {
-		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';')) {
+		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';') && !line.startsWith('*')) {
 			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
 
 			// fix whois line with double color, ex: "Label:: value"
