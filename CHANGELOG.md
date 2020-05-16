@@ -1,5 +1,9 @@
 # Whoiser change log
 
+#### 1.7.0 - 16 May 2020
+- Updated - Improved WHOIS parsing for multi line info (for .be, .eu domains and hopefully others)
+- Updated - Detect & remove more redacted whois text
+
 #### 1.6.6 - 8 April 2020
 - Updated - detect more redacted whois text
 - Fixed - Parse WHOIS lines with double colon #6
