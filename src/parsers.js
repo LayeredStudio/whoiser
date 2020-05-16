@@ -109,7 +109,7 @@ const parseSimpleWhois = whois => {
 	return data
 }
 
-const parseDomainWhois = whois => {
+const parseDomainWhois = (domain, whois) => {
 	const noData = ['-', 'data protected', 'not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy']
 	const renameLabels = {
 		'domain name': 'Domain Name',
@@ -130,6 +130,7 @@ const parseDomainWhois = whois => {
 		registrar: 'Registrar',
 		'registrar name': 'Registrar',
 		url: 'Registrar URL',
+		'registrar website': 'Registrar URL',
 		'creation date': 'Created Date',
 		'registered on': 'Created Date',
 		created: 'Created Date',
@@ -189,41 +190,9 @@ const parseDomainWhois = whois => {
 		.map(line => line.replace("\t", '  '))
 
 
-	// Fix "label: \n value" format
-	lines.forEach((line, index) => {
-
-		// if line is just a WHOIS label ending with ":", then verify next lines
-		if (!line.startsWith('*') && !line.startsWith('%') && line.trim().endsWith(':')) {
-			let addedLabel = false
-
-			// Check next lines
-			for (let i = 1; i <= 5; i++) {
-
-				// if no line or empty line
-				if (!lines[index + i] || !lines[index + i].trim().length) {
-					break
-				}
-
-				// if tabbed line or line with value only, prefix the line with main label
-				if ((lines[index + i].startsWith('  ') && lines[index + i].includes(': ')) || !lines[index + i].endsWith(':')) {
-					let label = line.trim()
-
-					if (lines[index + i].includes(':') && label.endsWith(':')) {
-						label = label.slice(0, -1)
-					}
-
-					lines[index + i] = label + ' ' + lines[index + i].replace('\t', ' ').trim()
-
-					addedLabel = true
-				}
-			}
-
-			// remove this line if it was just a label for other lines
-			if (addedLabel) {
-				lines[index] = ''
-			}
-		}
-	})
+	if (domain.endsWith('.be') || domain.endsWith('.eu')) {
+		lines = handleMultiLines(lines)
+	}
 
 	lines = lines.map(l => l.trim())
 
@@ -278,6 +247,45 @@ const parseDomainWhois = whois => {
 	data.text = text.split('\n')
 
 	return data
+}
+
+// Fix "label: \n value" format
+const handleMultiLines = lines => {
+	lines.forEach((line, index) => {
+
+		// if line is just a WHOIS label ending with ":", then verify next lines
+		if (!line.startsWith('*') && !line.startsWith('%') && line.trim().endsWith(':')) {
+			let addedLabel = false
+
+			// Check next lines
+			for (let i = 1; i <= 5; i++) {
+
+				// if no line or empty line
+				if (!lines[index + i] || !lines[index + i].trim().length) {
+					break
+				}
+
+				// if tabbed line or line with value only, prefix the line with main label
+				if ((lines[index + i].startsWith('  ') && lines[index + i].includes(': ')) || !lines[index + i].endsWith(':')) {
+					let label = line.trim()
+
+					if (lines[index + i].includes(':') && label.endsWith(':')) {
+						label = label.slice(0, -1)
+					}
+
+					lines[index + i] = label + ' ' + lines[index + i].replace('\t', ' ').trim()
+					addedLabel = true
+				}
+			}
+
+			// remove this line if it was just a label for other lines
+			if (addedLabel) {
+				lines[index] = ''
+			}
+		}
+	})
+
+	return lines
 }
 
 module.exports.parseSimpleWhois = parseSimpleWhois

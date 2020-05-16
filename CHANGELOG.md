@@ -1,5 +1,8 @@
 # Whoiser change log
 
+#### 1.7.1 - 16 May 2020
+- Fixed - Apply multi lines fix only for TLDs that need it
+
 #### 1.7.0 - 16 May 2020
 - Updated - Improved WHOIS parsing for multi line info (for .be, .eu domains and hopefully others)
 - Updated - Detect & remove more redacted whois text

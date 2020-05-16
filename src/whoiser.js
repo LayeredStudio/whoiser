@@ -94,7 +94,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 
 		try {
 			resultRaw = await whoisQuery({ host, query, timeout })
-			result = parseDomainWhois(resultRaw)
+			result = parseDomainWhois(domain, resultRaw)
 		} catch (err) {
 			result = { error: err.message }
 		}
