@@ -1,5 +1,8 @@
 # Whoiser change log
 
+#### 1.7.2 - 16 May 2020
+- Fixed - Enable WHOIS multi line parser for .uk TLD
+
 #### 1.7.1 - 16 May 2020
 - Fixed - Apply multi lines fix only for TLDs that need it
 
