@@ -5,9 +5,13 @@ const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
 const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
 require('array-flat-polyfill')
 
-// cache
+// Cache WHOIS servers
+// Basic list of servers, more will be auto-discovered
 let cacheTldWhoisServer = {
 	com: 'whois.verisign-grs.com',
+	net: 'whois.verisign-grs.com',
+	org: 'whois.pir.org',
+	co: 'whois.nic.co',
 	shop: 'whois.nic.shop',
 }
 
