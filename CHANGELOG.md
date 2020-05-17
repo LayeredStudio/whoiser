@@ -1,5 +1,8 @@
 # Whoiser change log
 
+#### 1.7.3 - 16 May 2020
+- Updated - WHOIS date fields for .uk domains are now converted to common format
+
 #### 1.7.2 - 16 May 2020
 - Fixed - Enable WHOIS multi line parser for .uk TLD
 
