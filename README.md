@@ -47,10 +47,10 @@ Get WHOIS info for domains.
 `whoiser.domain(domain, options): Promise<Object<whoisServer>>`
 - `domain` - Domain name, excluding any subdomain. Ex: 'google.com'
 - `options` - Object of options to use, all optional:
-  - `host` - WHOIS server to query. Default: WHOIS server from IANA
-  - `timeout` - WHOIS server request timeout in ms. Default: 1500
-  - `follow` - How many WHOIS server to query. 1 = registry server (faster), 2 = registry + registrar (more domain details). Default: 2
-  - `raw` - Return the raw WHOIS result in response. Added to `__raw`
+	- `host` - WHOIS server to query. Default: WHOIS server from IANA
+	- `timeout` - WHOIS server request timeout in ms. Default: 1500
+	- `follow` - How many WHOIS server to query. 1 = registry server (faster), 2 = registry + registrar (more domain details). Default: 2
+	- `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
 const whoiser = require('whoiser');
@@ -69,30 +69,30 @@ const whoiser = require('whoiser');
 Returns a promise which resolves with an `Object` of WHOIS servers checked:
 ```js
 {
-    "whois.verisign-grs.com": {
-        "Domain Name": "GOOGLE.COM",
-        "Registrar WHOIS Server": "whois.markmonitor.com",
-        ...
-    },
-    "whois.markmonitor.com": {
-        "Domain Name": "google.com",
-        "Creation Date": "1997-09-15T00:00:00-0700",
-        "Expiry Date": "2020-09-13T21:00:00-0700",
-        "Registrar": "MarkMonitor, Inc.",
-        "Domain Status": [
-            "clientUpdateProhibited",
-            "clientTransferProhibited"
-        ],
-        ...
-        "Name Server": [
-            "ns1.google.com",
-            "ns2.google.com"
-        ],
-        "text": [
-            "For more information on WHOIS status codes, please visit:",
-            ...
-        ]
-    }
+		"whois.verisign-grs.com": {
+				"Domain Name": "GOOGLE.COM",
+				"Registrar WHOIS Server": "whois.markmonitor.com",
+				...
+		},
+		"whois.markmonitor.com": {
+				"Domain Name": "google.com",
+				"Creation Date": "1997-09-15T00:00:00-0700",
+				"Expiry Date": "2020-09-13T21:00:00-0700",
+				"Registrar": "MarkMonitor, Inc.",
+				"Domain Status": [
+						"clientUpdateProhibited",
+						"clientTransferProhibited"
+				],
+				...
+				"Name Server": [
+						"ns1.google.com",
+						"ns2.google.com"
+				],
+				"text": [
+						"For more information on WHOIS status codes, please visit:",
+						...
+				]
+		}
 }
 ```
 
@@ -103,9 +103,9 @@ Get WHOIS info for IPs
 `whoiser.ip(ip, options): Promise<Object>`
 - `ip` - IP. Ex: '1.1.1.1'
 - `options` - Object of options to use, all optional:
-  - `host` - WHOIS server to query. Default: WHOIS server from IANA
-  - `timeout` - WHOIS server request timeout in ms. Default: 1500
-  - `raw` - Return the raw WHOIS result in response. Added to `__raw`
+	- `host` - WHOIS server to query. Default: WHOIS server from IANA
+	- `timeout` - WHOIS server request timeout in ms. Default: 1500
+	- `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
 const whoiser = require('whoiser');
@@ -124,17 +124,17 @@ const whoiser = require('whoiser');
 Returns a promise which resolves with an `Array` of WHOIS info lines:
 ```js
 {
-  range: '2606:4700:: - 2606:4700:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF',
-  route: '2606:4700::/32',
-  NetName: 'CLOUDFLARENET',
-  NetHandle: 'NET6-2606-4700-1',
-  Parent: 'NET6-2600 (NET6-2600-1)',
-  NetType: 'Direct Allocation',
-  asn: 'AS13335',
-  Organization: 'Cloudflare, Inc. (CLOUD14)',
-  RegDate: '2011-11-01',
-  Updated: '2017-02-17',
-  Comment: 'All Cloudflare abuse reporting can be done via  https://www.cloudflare.com/abuse',
+	range: '2606:4700:: - 2606:4700:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF',
+	route: '2606:4700::/32',
+	NetName: 'CLOUDFLARENET',
+	NetHandle: 'NET6-2606-4700-1',
+	Parent: 'NET6-2600 (NET6-2600-1)',
+	NetType: 'Direct Allocation',
+	asn: 'AS13335',
+	Organization: 'Cloudflare, Inc. (CLOUD14)',
+	RegDate: '2011-11-01',
+	Updated: '2017-02-17',
+	Comment: 'All Cloudflare abuse reporting can be done via  https://www.cloudflare.com/abuse',
 }
 ```
 
@@ -145,30 +145,30 @@ Get WHOIS info for an AS number
 `whoiser.asn(asn, options): Promise<Object>`
 - `asn` - ASN. Ex: 'AS15169' or `15169`
 - `options` - Object of options to use, all optional:
-  - `host` - WHOIS server to query. Default: WHOIS server from IANA
-  - `timeout` - WHOIS server request timeout in ms. Default: 1500
-  - `raw` - Return the raw WHOIS result in response. Added to `__raw`
+	- `host` - WHOIS server to query. Default: WHOIS server from IANA
+	- `timeout` - WHOIS server request timeout in ms. Default: 1500
+	- `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
 const whoiser = require('whoiser');
 
 (async () => {
 
-    // WHOIS info for ASN15169
-    let whois = await whoiser.asn(15169)
+		// WHOIS info for ASN15169
+		let whois = await whoiser.asn(15169)
 
-    console.log(whois)
+		console.log(whois)
 })();
 ```
 Returns a promise which resolves with an `Object` of WHOIS info:
 ```js
 {
-  ASNumber: '15169',
-  ASName: 'GOOGLE',
-  ASHandle: 'AS15169',
-  RegDate: '2000-03-30',
-  Updated: '2012-02-24',
-  Ref: 'https://rdap.arin.net/registry/autnum/15169',
+	ASNumber: '15169',
+	ASName: 'GOOGLE',
+	ASHandle: 'AS15169',
+	RegDate: '2000-03-30',
+	Updated: '2012-02-24',
+	Ref: 'https://rdap.arin.net/registry/autnum/15169',
 }
 ```
 
@@ -182,6 +182,9 @@ Aiming to have these features:
 - [x] Punycode support
 - [ ] Normalize Domain WHOIS field names, removing inconsistencies between WHOIS servers
 - [ ] Test more IPs and ASNs to deliver consistent WHOIS results
+
+## Unsupported TLDs
+- `.ch` - WHOIS server for .ch doesn't return WHOIS info, works only in browser https://www.nic.ch/whois/. This library can be used only to check .ch domain availability, example here https://runkit.com/andreiigna/5efdeaa8e4f2d8001a00312d
 
 ## More
 
