@@ -110,7 +110,7 @@ const parseSimpleWhois = whois => {
 }
 
 const parseDomainWhois = (domain, whois) => {
-	const noData = ['-', 'data protected', 'not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy']
+	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable']
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
@@ -162,7 +162,7 @@ const parseDomainWhois = (domain, whois) => {
 		'registrant\'s address': 'Registrant Street',
 		dnssec: 'DNSSEC',
 	}
-	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider']
+	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider', 'you acknowledge that']
 	const ignoreTexts = [
 		'more information',
 		'lawful purposes',
