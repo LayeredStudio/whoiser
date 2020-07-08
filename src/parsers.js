@@ -151,7 +151,7 @@ const parseDomainWhois = (domain, whois) => {
 		expires: 'Expiry Date',
 		'expiration time': 'Expiry Date',
 		'expire date': 'Expiry Date',
-		'Expiration date': 'Expiry Date',
+		'expiration date': 'Expiry Date',
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
 		'expire': 'Expiry Date',
