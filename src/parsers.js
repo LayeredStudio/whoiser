@@ -194,7 +194,7 @@ const parseDomainWhois = (domain, whois) => {
 		.map(line => line.replace("\t", '  '))
 
 
-	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.eu')) {
+	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu')) {
 		lines = handleMultiLines(lines)
 	}
 
