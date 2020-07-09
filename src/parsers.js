@@ -110,10 +110,16 @@ const parseSimpleWhois = whois => {
 }
 
 const parseDomainWhois = (domain, whois) => {
-	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable']
+
+	// Text saying there's no useful data in a field
+	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable', 'na']
+
+	// WHOIS labels to rename. "From" must be lowercase
+	// from -> to
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
+		'domain...............': 'Domain Name',					// found in .ax
 		'idn tag': 'IDN',
 		'internationalized domain name': 'IDN',
 		nameserver: 'Name Server',
@@ -122,8 +128,9 @@ const parseDomainWhois = (domain, whois) => {
 		'name servers': 'Name Server',
 		'name server information': 'Name Server',
 		dns: 'Name Server',
-		'nserver..............': 'Name Server',
+		'nserver..............': 'Name Server',					// found in .ax
 		'hostname': 'Name Server',
+		'domain nameservers': 'Name Server',
 		flags: 'Domain Status',
 		status: 'Domain Status',
 		'registration status': 'Domain Status',
@@ -131,12 +138,12 @@ const parseDomainWhois = (domain, whois) => {
 		organisation: 'Registrar',
 		registrar: 'Registrar',
 		'registrar name': 'Registrar',
-		'registrar............': 'Registrar',
+		'registrar............': 'Registrar',					// found in .ax
 		'record maintained by': 'Registrar',
 		'sponsoring registrar': 'Registrar',
 		url: 'Registrar URL',
 		'registrar website': 'Registrar URL',
-		'www..................': 'Registrar URL',
+		'www..................': 'Registrar URL',				// found in .ax
 		'web': 'Registrar URL',
 		'creation date': 'Created Date',
 		'registered on': 'Created Date',
@@ -145,14 +152,14 @@ const parseDomainWhois = (domain, whois) => {
 		created: 'Created Date',
 		'registration time': 'Created Date',
 		'registered': 'Created Date',
-		'created..............': 'Created Date',
+		'created..............': 'Created Date',				// found in .ax
 		'domain registered': 'Created Date',
 		'last updated': 'Updated Date',
 		changed: 'Updated Date',
 		modified: 'Updated Date',
 		'modification date': 'Updated Date',
 		'last modified': 'Updated Date',
-		'relevant dates last updated': 'Updated Date',
+		'relevant dates last updated': 'Updated Date',			// found in .uk, .co.uk
 		'registrar registration expiration date': 'Expiry Date',
 		'registry expiry date': 'Expiry Date',
 		'expires on': 'Expiry Date',
@@ -160,17 +167,17 @@ const parseDomainWhois = (domain, whois) => {
 		'expiration time': 'Expiry Date',
 		'expire date': 'Expiry Date',
 		'expiration date': 'Expiry Date',
-		'expires..............': 'Expiry Date',
+		'expires..............': 'Expiry Date',					// found in .ax
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
 		'expire': 'Expiry Date',
-		'relevant dates expiry date': 'Expiry Date',
+		'relevant dates expiry date': 'Expiry Date',			// found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
 		registrant: 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
 		'registrant contact email': 'Registrant Email',
 		'registrant organisation': 'Registrant Organization',
-		'trading as': 'Registrant Organization',
+		'trading as': 'Registrant Organization',				// found in .uk, .co.uk
 		'registrant state': 'Registrant State/Province',
 		'registrant\'s address': 'Registrant Street',
 		dnssec: 'DNSSEC',

@@ -1,6 +1,6 @@
 {
   "name": "whoiser",
-  "version": "1.7.4",
+  "version": "1.8.0",
   "description": "Whois info for TLDs, domains and IPs",
   "keywords": [
     "whois",
