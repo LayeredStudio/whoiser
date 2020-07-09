@@ -114,7 +114,6 @@ const parseDomainWhois = (domain, whois) => {
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
-		dns: 'Domain Name',
 		'idn tag': 'IDN',
 		'internationalized domain name': 'IDN',
 		nameserver: 'Name Server',
@@ -122,6 +121,8 @@ const parseDomainWhois = (domain, whois) => {
 		nserver: 'Name Server',
 		'name servers': 'Name Server',
 		'name server information': 'Name Server',
+		dns: 'Name Server',
+		'nserver..............': 'Name Server',
 		'hostname': 'Name Server',
 		flags: 'Domain Status',
 		status: 'Domain Status',
@@ -130,17 +131,26 @@ const parseDomainWhois = (domain, whois) => {
 		organisation: 'Registrar',
 		registrar: 'Registrar',
 		'registrar name': 'Registrar',
+		'registrar............': 'Registrar',
+		'record maintained by': 'Registrar',
+		'sponsoring registrar': 'Registrar',
 		url: 'Registrar URL',
 		'registrar website': 'Registrar URL',
+		'www..................': 'Registrar URL',
+		'web': 'Registrar URL',
 		'creation date': 'Created Date',
 		'registered on': 'Created Date',
+		'registration date': 'Created Date',
 		'relevant dates registered on': 'Created Date',
 		created: 'Created Date',
 		'registration time': 'Created Date',
 		'registered': 'Created Date',
+		'created..............': 'Created Date',
+		'domain registered': 'Created Date',
 		'last updated': 'Updated Date',
 		changed: 'Updated Date',
 		modified: 'Updated Date',
+		'modification date': 'Updated Date',
 		'last modified': 'Updated Date',
 		'relevant dates last updated': 'Updated Date',
 		'registrar registration expiration date': 'Expiry Date',
@@ -149,10 +159,13 @@ const parseDomainWhois = (domain, whois) => {
 		expires: 'Expiry Date',
 		'expiration time': 'Expiry Date',
 		'expire date': 'Expiry Date',
+		'expiration date': 'Expiry Date',
+		'expires..............': 'Expiry Date',
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
 		'expire': 'Expiry Date',
 		'relevant dates expiry date': 'Expiry Date',
+		'record will expire on': 'Expiry Date',
 		registrant: 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
 		'registrant contact email': 'Registrant Email',
@@ -194,7 +207,7 @@ const parseDomainWhois = (domain, whois) => {
 		.map(line => line.replace("\t", '  '))
 
 
-	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.eu')) {
+	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu')) {
 		lines = handleMultiLines(lines)
 	}
 
