@@ -72,65 +72,6 @@ describe('Whoiser', function() {
 		});
 	});
 
-	describe('#whoiser.domain()', function() {
-		it('should return WHOIS for "blog.google"', async function() {
-			let whois = await whoiser.domain('blog.google')
-			assert.equal(whois['whois.nic.google']['Domain Name'], 'blog.google', 'Domain name doesn\'t match')
-			assert.equal(whois['whois.nic.google']['Registry Domain ID'], '27CAA9F68-GOOGLE', 'Registry Domain ID doesn\'t match')
-		});
-
-		it('should return WHOIS for "cloudflare.com" from "whois.cloudflare.com" server (host option)', async function() {
-			let whois = await whoiser.domain('cloudflare.com', {host: 'whois.cloudflare.com'})
-			assert.equal(Object.values(whois).length, 1, 'Has less or more than 1 WHOIS result')
-			assert.deepStrictEqual(Object.keys(whois), ['whois.cloudflare.com'], 'Has whois result from server different than "whois.cloudflare.com"')
-			assert.equal(whois['whois.cloudflare.com']['Domain Name'], 'CLOUDFLARE.COM', 'Domain name doesn\'t match')
-		});
-
-		it('should return WHOIS for "laye.red" from top-level whois server (follow option)', async function() {
-			let whois = await whoiser.domain('laye.red', {follow: 1})
-			assert.equal(Object.values(whois).length, 1, 'Has less or more than 1 WHOIS result')
-			assert.deepStrictEqual(Object.keys(whois), ['whois.afilias.net'], 'Has whois result from server different than "whois.afilias.net"')
-			assert.equal(whois['whois.afilias.net']['Domain Name'], 'LAYE.RED', 'Domain name doesn\'t match')
-		});
-
-		/* fails because of timeout error..
-		it('should return WHOIS for "google.li" when whois data is "label:_EOL_value"', async function() {
-			let whois = await whoiser.domain('google.li', {follow: 1})
-			assert.equal(whois['whois.nic.li']['Domain name'], 'google.li', 'Domain name doesn\'t match')
-			assert.notStrictEqual(whois['whois.nic.li']['Name servers'].length, 0, 'Does not return NS')
-			assert.equal(whois['whois.nic.li']['First registration date'], '2000-08-04', 'Reg date doesn\'t match')
-		});
-		*/
-
-		it('should return WHOIS for "notion.so" with correct registrar WHOIS server', async function() {
-			let whois = await whoiser.domain('notion.so', {follow: 1})
-			assert.equal(whois['whois.nic.so']['Registry WHOIS Server'], 'whois.nic.so', 'Parsing error for WHOIS server')
-		});
-
-		it('should return WHOIS for "goo.gl" with correct registrar WHOIS server', async function() {
-			let whois = await whoiser.domain('goo.gl', {follow: 1})
-			assert.equal(whois['whois.nic.gl']['Registry WHOIS Server'], 'whois.nic.gl', 'Parsing error for WHOIS server')
-		});
-
-		it('should return WHOIS for "google.eu" when whois data is "label:_EOL_value"', async function() {
-			let whois = await whoiser.domain('google.eu', {follow: 1})
-			assert.equal(whois['whois.eu']['Domain Name'], 'google.eu', 'Domain name doesn\'t match')
-			assert.notStrictEqual(whois['whois.eu']['Name Server'].length, 0, 'Does not return NS')
-		});
-
-		it('should return WHOIS for "mañana.com" - IDN', async function() {
-			let whois = await whoiser.domain('mañana.com')
-			assert.equal(whois['whois.verisign-grs.com']['Domain Name'], 'XN--MAANA-PTA.COM', 'Domain name doesn\'t match')
-			assert.equal(whois['whois.verisign-grs.com']['Registry Domain ID'], '123697069_DOMAIN_COM-VRSN', 'Domain ID doesn\'t match')
-		});
-
-		it('should return WHOIS for "XN--MAANA-PTA.COM" - IDN', async function() {
-			let whois = await whoiser.domain('XN--MAANA-PTA.COM')
-			assert.equal(whois['whois.verisign-grs.com']['Domain Name'], 'XN--MAANA-PTA.COM', 'Domain name doesn\'t match')
-			assert.equal(whois['whois.verisign-grs.com']['Registry Domain ID'], '123697069_DOMAIN_COM-VRSN', 'Domain ID doesn\'t match')
-		});
-	});
-
 	describe('#whoiser.asn()', function() {
 		it('should return WHOIS for "15169"', async function() {
 			let whois = await whoiser.asn(15169)
