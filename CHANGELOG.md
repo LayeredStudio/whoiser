@@ -1,5 +1,7 @@
 # Whoiser change log
 
+- Updated - Detect & remove more redacted whois text
+
 #### 1.8.0 - 9 July 2020
 - Updated - Improved parsing for .nl, .ax domain WHOIS [#18](https://github.com/LayeredStudio/whoiser/pull/18)
 - Updated - Detect & remove more redacted whois text

@@ -112,7 +112,7 @@ const parseSimpleWhois = whois => {
 const parseDomainWhois = (domain, whois) => {
 
 	// Text saying there's no useful data in a field
-	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable', 'na']
+	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable', 'na', 'redacted for privacy purposes']
 
 	// WHOIS labels to rename. "From" must be lowercase
 	// from -> to
