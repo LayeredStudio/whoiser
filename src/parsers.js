@@ -131,6 +131,7 @@ const parseDomainWhois = (domain, whois) => {
 		'nserver..............': 'Name Server',					// found in .ax
 		'hostname': 'Name Server',
 		'domain nameservers': 'Name Server',
+		'domain servers in listed order': 'Name Server',		// found in .ly
 		flags: 'Domain Status',
 		status: 'Domain Status',
 		'registration status': 'Domain Status',
@@ -157,6 +158,7 @@ const parseDomainWhois = (domain, whois) => {
 		'last updated': 'Updated Date',
 		changed: 'Updated Date',
 		modified: 'Updated Date',
+		updated: 'Updated Date',								// found in .ly
 		'modification date': 'Updated Date',
 		'last modified': 'Updated Date',
 		'relevant dates last updated': 'Updated Date',			// found in .uk, .co.uk
@@ -173,6 +175,7 @@ const parseDomainWhois = (domain, whois) => {
 		'expire': 'Expiry Date',
 		'relevant dates expiry date': 'Expiry Date',			// found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
+		expired: 'Expiry Date',									// found in .ly
 		registrant: 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
 		'registrant contact email': 'Registrant Email',
@@ -214,7 +217,7 @@ const parseDomainWhois = (domain, whois) => {
 		.map(line => line.replace("\t", '  '))
 
 
-	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu')) {
+	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly')) {
 		lines = handleMultiLines(lines)
 	}
 

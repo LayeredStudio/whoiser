@@ -1,5 +1,7 @@
 # Whoiser change log
 
+#### 1.8.1 - 13 July 2020
+- Updated - Improved parsing for .ly domains WHOIS
 - Updated - Detect & remove more redacted whois text
 
 #### 1.8.0 - 9 July 2020
