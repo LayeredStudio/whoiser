@@ -13,6 +13,8 @@ Applies minimal parsing to results, returning same data format from different WH
 * Uses WHOIS servers from IANA, if not provided
 * Discover all available TLDs
 
+→ See it in action here https://dmns.app
+
 ## Getting Started
 
 #### Installation
