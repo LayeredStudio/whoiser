@@ -3,7 +3,6 @@ const url = require('url')
 const punycode = require('punycode')
 const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
 const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
-require('array-flat-polyfill')
 
 // Cache WHOIS servers
 // Basic list of servers, more will be auto-discovered
