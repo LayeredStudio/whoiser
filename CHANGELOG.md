@@ -2,6 +2,7 @@
 
 #### 1.9.0 - 11 Sep 2020
 - Removed - Removed - Node.js 10 support, removed array-flat polyfill
+- Updated - Detect & remove more redacted whois text
 
 #### 1.8.1 - 13 July 2020
 - Updated - Improved parsing for .ly domains WHOIS
