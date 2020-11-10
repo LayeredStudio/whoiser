@@ -25,10 +25,15 @@ const misspelledWhoisServer = {
 	'www.safenames.net/DomainNames/WhoisSearch.aspx': 'whois.safenames.net',
 }
 
+// Translate WHOIS host to IP, so connection is faster
+const whoisHostToIp = {
+	'whois.google.com': '216.239.34.22',
+}
+
 const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', querySuffix = '\r\n' } = {}) => {
 	return new Promise((resolve, reject) => {
 		let data = ''
-		const socket = net.connect({ host: host, port: port }, () => socket.write(query + querySuffix))
+		const socket = net.connect({ host, port }, () => socket.write(query + querySuffix))
 		socket.setTimeout(timeout)
 		socket.on('data', chunk => (data += chunk))
 		socket.on('close', hadError => resolve(data))

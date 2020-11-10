@@ -1,9 +1,11 @@
 # Whoiser change log
 
+#### 1.9.1 - 10 Nov 2020
+- Added - Cache IP of WHOIS servers (experiment to see if faster)
 - Updated - Detect & remove more redacted whois text
 
 #### 1.9.0 - 11 Sep 2020
-- Removed - Removed - Node.js 10 support, removed array-flat polyfill
+- Removed - Node.js 10 support, removed array-flat polyfill
 - Updated - Detect & remove more redacted whois text
 
 #### 1.8.1 - 13 July 2020
