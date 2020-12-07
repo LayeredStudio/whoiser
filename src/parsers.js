@@ -112,7 +112,7 @@ const parseSimpleWhois = whois => {
 const parseDomainWhois = (domain, whois) => {
 
 	// Text saying there's no useful data in a field
-	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable', 'na', 'redacted for privacy purposes', 'redacted | eu registrar', 'registration private', 'none']
+	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable', 'na', 'redacted for privacy purposes', 'redacted | eu registrar', 'registration private', 'none', 'redacted.forprivacy']
 
 	// WHOIS labels to rename. "From" must be lowercase
 	// from -> to
@@ -132,6 +132,7 @@ const parseDomainWhois = (domain, whois) => {
 		'hostname': 'Name Server',
 		'domain nameservers': 'Name Server',
 		'domain servers in listed order': 'Name Server',		// found in .ly
+		'name servers dns': 'Name Server',						// found in .mx
 		flags: 'Domain Status',
 		status: 'Domain Status',
 		'registration status': 'Domain Status',
@@ -151,6 +152,7 @@ const parseDomainWhois = (domain, whois) => {
 		'registration date': 'Created Date',
 		'relevant dates registered on': 'Created Date',
 		created: 'Created Date',
+		'created on': 'Created Date',							// found in .mx
 		'registration time': 'Created Date',
 		'registered': 'Created Date',
 		'created..............': 'Created Date',				// found in .ax
@@ -162,6 +164,7 @@ const parseDomainWhois = (domain, whois) => {
 		'modification date': 'Updated Date',
 		'last modified': 'Updated Date',
 		'relevant dates last updated': 'Updated Date',			// found in .uk, .co.uk
+		'last updated on': 'Updated Date',						// found in .mx
 		'registrar registration expiration date': 'Expiry Date',
 		'registry expiry date': 'Expiry Date',
 		'expires on': 'Expiry Date',
@@ -217,7 +220,7 @@ const parseDomainWhois = (domain, whois) => {
 		.map(line => line.replace("\t", '  '))
 
 
-	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly')) {
+	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly') || domain.endsWith('.mx')) {
 		lines = handleMultiLines(lines)
 	}
 

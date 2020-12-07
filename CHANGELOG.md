@@ -1,5 +1,8 @@
 # Whoiser change log
 
+#### 1.9.2 - 7 Dec 2020
+- Updated - Parse WHOIS for .mx domains
+
 #### 1.9.1 - 10 Nov 2020
 - Added - Cache IP of WHOIS servers (experiment to see if faster)
 - Updated - Detect & remove more redacted whois text
