@@ -1,7 +1,7 @@
 const net = require('net')
 const url = require('url')
 const punycode = require('punycode')
-const { parseSimpleWhois, parseDomainWhois, parseUaDomainWhois } = require('./parsers.js')
+const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
 const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
 
 // Cache WHOIS servers
