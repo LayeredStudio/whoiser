@@ -77,7 +77,7 @@ describe('#whoiser.domain()', function() {
 			assert.notStrictEqual(whois['whois.ua']['Registrant ID'], false, 'Does not return registrant data')
 		});
 
-				it('returns WHOIS for "nic.ua" with fieldsfor all type of contacts', async function() {
+		it('returns WHOIS for "nic.ua" with fieldsfor all type of contacts', async function() {
 			let whois = await whoiser.domain('nic.ua')
 			assert.equal(whois['whois.ua']['Domain Name'], 'nic.ua', 'Domain name doesn\'t match')
 			assert.notStrictEqual(whois['whois.ua']['registrar organization-loc'], false, 'Does not return registrar name')
