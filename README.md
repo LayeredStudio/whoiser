@@ -34,6 +34,8 @@ const tldWhois = whoiser('.net')
 const ipWhois = whoiser('1.1.1.1')
 ```
 
+→ [See all examples](https://github.com/LayeredStudio/whoiser/tree/master/examples)
+
 ## Client API
 - `whoiser(query, options)` - Get WHOIS data for any internet address
 - [`whoiser.domain(domain, options)`](#domain-whois) - Get parsed WHOIS data for a domain
