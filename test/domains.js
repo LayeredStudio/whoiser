@@ -69,6 +69,22 @@ describe('#whoiser.domain()', function() {
 			assert.equal(whois['whois.domain-registry.nl']['Domain Name'], 'google.nl', 'Domain name doesn\'t match')
 			assert.equal(whois['whois.domain-registry.nl']['Name Server'].length, 4, 'Incorrect number of NS returned')
 		});
+
+		it('returns WHOIS for "nic.co.ua" with all fields', async function() {
+			let whois = await whoiser.domain('nic.co.ua')
+			assert.equal(whois['whois.ua']['Domain Name'], 'NIC.CO.UA', 'Domain name doesn\'t match')
+			assert.notStrictEqual(whois['whois.ua']['Name Server'].length, 0, 'Does not return NS')
+			assert.notStrictEqual(whois['whois.ua']['Registrant ID'], false, 'Does not return registrant data')
+		});
+
+				it('returns WHOIS for "nic.ua" with fieldsfor all type of contacts', async function() {
+			let whois = await whoiser.domain('nic.ua')
+			assert.equal(whois['whois.ua']['Domain Name'], 'nic.ua', 'Domain name doesn\'t match')
+			assert.notStrictEqual(whois['whois.ua']['registrar organization-loc'], false, 'Does not return registrar name')
+			assert.notStrictEqual(whois['whois.ua']['registrant organization-loc'], false, 'Does not return registrant name')
+			assert.notStrictEqual(whois['whois.ua']['administrative contacts organization-loc'], false, 'Does not return admin name')
+			assert.notStrictEqual(whois['whois.ua']['technical contacts organization-loc'], false, 'Does not return tech name')
+		});
 	});
 
 });

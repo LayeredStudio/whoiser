@@ -35,8 +35,8 @@ const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', query
 		let data = ''
 		const socket = net.connect({ host, port }, () => socket.write(query + querySuffix))
 		socket.setTimeout(timeout)
-		socket.on('data', chunk => (data += chunk))
-		socket.on('close', hadError => resolve(data))
+		socket.on('data', (chunk) => (data += chunk))
+		socket.on('close', (hadError) => resolve(data))
 		socket.on('timeout', () => socket.destroy(new Error('Timeout')))
 		socket.on('error', reject)
 	})
@@ -45,7 +45,7 @@ const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', query
 const allTlds = async () => {
 	const tlds = await requestGetBody('https://data.iana.org/TLD/tlds-alpha-by-domain.txt')
 
-	return tlds.split('\n').filter(tld => Boolean(tld) && !tld.startsWith('#'))
+	return tlds.split('\n').filter((tld) => Boolean(tld) && !tld.startsWith('#'))
 }
 
 const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {

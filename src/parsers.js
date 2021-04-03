@@ -1,6 +1,6 @@
 const { splitStringBy, isDomain } = require('./utils.js')
 
-const parseSimpleWhois = whois => {
+const parseSimpleWhois = (whois) => {
 	let data = {}
 	let text = []
 
@@ -32,7 +32,7 @@ const parseSimpleWhois = whois => {
 	let groups = [{}]
 	let lastLabel
 
-	whois.split('\n').forEach(line => {
+	whois.split('\n').forEach((line) => {
 		// catch comment lines
 		if (line.startsWith('%') || line.startsWith('#')) {
 			// detect if an ASN or IP has multiple WHOIS results
@@ -48,7 +48,7 @@ const parseSimpleWhois = whois => {
 
 			if (line) {
 				if (line.includes(':')) {
-					const [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
+					const [label, value] = splitStringBy(line, line.indexOf(':')).map((info) => info.trim())
 					lastLabel = label
 
 					// 1) Filter out unnecessary info, 2) then detect if the label is already added to group
@@ -70,13 +70,13 @@ const parseSimpleWhois = whois => {
 	})
 
 	groups
-		.filter(group => Object.keys(group).length)
-		.forEach(group => {
+		.filter((group) => Object.keys(group).length)
+		.forEach((group) => {
 			const groupLabels = Object.keys(group)
 			let isGroup = false
 
 			// check if a label is marked as group
-			groupLabels.forEach(groupLabel => {
+			groupLabels.forEach((groupLabel) => {
 				if (!isGroup && Object.keys(lineToGroup).includes(groupLabel)) {
 					isGroup = lineToGroup[groupLabel]
 				}
@@ -110,16 +110,36 @@ const parseSimpleWhois = whois => {
 }
 
 const parseDomainWhois = (domain, whois) => {
-
 	// Text saying there's no useful data in a field
-	const noData = ['-', '.', 'data protected', 'not disclosed', 'data protected, not disclosed', 'data redacted', 'not available', 'redacted for privacy', 'gdpr redacted', 'non-public data', 'gdpr masked', 'statutory masking enabled', 'redacted by privacy', 'not applicable', 'na', 'redacted for privacy purposes', 'redacted | eu registrar', 'registration private', 'none', 'redacted.forprivacy']
+	const noData = [
+		'-',
+		'.',
+		'data protected',
+		'not disclosed',
+		'data protected, not disclosed',
+		'data redacted',
+		'not available',
+		'redacted for privacy',
+		'gdpr redacted',
+		'non-public data',
+		'gdpr masked',
+		'statutory masking enabled',
+		'redacted by privacy',
+		'not applicable',
+		'na',
+		'redacted for privacy purposes',
+		'redacted | eu registrar',
+		'registration private',
+		'none',
+		'redacted.forprivacy',
+	]
 
 	// WHOIS labels to rename. "From" must be lowercase
 	// from -> to
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
-		'domain...............': 'Domain Name',					// found in .ax
+		'domain...............': 'Domain Name', // found in .ax
 		'idn tag': 'IDN',
 		'internationalized domain name': 'IDN',
 		nameserver: 'Name Server',
@@ -128,11 +148,11 @@ const parseDomainWhois = (domain, whois) => {
 		'name servers': 'Name Server',
 		'name server information': 'Name Server',
 		dns: 'Name Server',
-		'nserver..............': 'Name Server',					// found in .ax
-		'hostname': 'Name Server',
+		'nserver..............': 'Name Server', // found in .ax
+		hostname: 'Name Server',
 		'domain nameservers': 'Name Server',
-		'domain servers in listed order': 'Name Server',		// found in .ly
-		'name servers dns': 'Name Server',						// found in .mx
+		'domain servers in listed order': 'Name Server', // found in .ly
+		'name servers dns': 'Name Server', // found in .mx
 		flags: 'Domain Status',
 		status: 'Domain Status',
 		'registration status': 'Domain Status',
@@ -140,31 +160,32 @@ const parseDomainWhois = (domain, whois) => {
 		organisation: 'Registrar',
 		registrar: 'Registrar',
 		'registrar name': 'Registrar',
-		'registrar............': 'Registrar',					// found in .ax
+		'registrar organization': 'Registrar',
+		'registrar............': 'Registrar', // found in .ax
 		'record maintained by': 'Registrar',
 		'sponsoring registrar': 'Registrar',
 		url: 'Registrar URL',
 		'registrar website': 'Registrar URL',
-		'www..................': 'Registrar URL',				// found in .ax
-		'web': 'Registrar URL',
+		'www..................': 'Registrar URL', // found in .ax
+		'mnt-by': 'Registrar ID', // found in .ua
 		'creation date': 'Created Date',
 		'registered on': 'Created Date',
 		'registration date': 'Created Date',
 		'relevant dates registered on': 'Created Date',
 		created: 'Created Date',
-		'created on': 'Created Date',							// found in .mx
+		'created on': 'Created Date', // found in .mx
 		'registration time': 'Created Date',
-		'registered': 'Created Date',
-		'created..............': 'Created Date',				// found in .ax
+		registered: 'Created Date',
+		'created..............': 'Created Date', // found in .ax
 		'domain registered': 'Created Date',
 		'last updated': 'Updated Date',
 		changed: 'Updated Date',
 		modified: 'Updated Date',
-		updated: 'Updated Date',								// found in .ly
+		updated: 'Updated Date', // found in .ly
 		'modification date': 'Updated Date',
 		'last modified': 'Updated Date',
-		'relevant dates last updated': 'Updated Date',			// found in .uk, .co.uk
-		'last updated on': 'Updated Date',						// found in .mx
+		'relevant dates last updated': 'Updated Date', // found in .uk, .co.uk
+		'last updated on': 'Updated Date', // found in .mx
 		'registrar registration expiration date': 'Expiry Date',
 		'registry expiry date': 'Expiry Date',
 		'expires on': 'Expiry Date',
@@ -172,23 +193,37 @@ const parseDomainWhois = (domain, whois) => {
 		'expiration time': 'Expiry Date',
 		'expire date': 'Expiry Date',
 		'expiration date': 'Expiry Date',
-		'expires..............': 'Expiry Date',					// found in .ax
+		'expires..............': 'Expiry Date', // found in .ax
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
-		'expire': 'Expiry Date',
-		'relevant dates expiry date': 'Expiry Date',			// found in .uk, .co.uk
+		expire: 'Expiry Date',
+		'relevant dates expiry date': 'Expiry Date', // found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
-		expired: 'Expiry Date',									// found in .ly
+		expired: 'Expiry Date', // found in .ly
 		registrant: 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
+		'registrant person': 'Registrant Name', // found in .ua
+		'registrant email': 'Registrant Email', // found in .ua
 		'registrant contact email': 'Registrant Email',
 		'registrant organisation': 'Registrant Organization',
-		'trading as': 'Registrant Organization',				// found in .uk, .co.uk
+		'trading as': 'Registrant Organization', // found in .uk, .co.uk
 		'registrant state': 'Registrant State/Province',
-		'registrant\'s address': 'Registrant Street',
+		"registrant's address": 'Registrant Street',
 		dnssec: 'DNSSEC',
 	}
-	const ignoreLabels = ['note', 'notes', 'please note', 'important', 'notice', 'terms of use', 'web-based whois', 'https', 'to', 'registration service provider', 'you acknowledge that']
+	const ignoreLabels = [
+		'note',
+		'notes',
+		'please note',
+		'important',
+		'notice',
+		'terms of use',
+		'web-based whois',
+		'https',
+		'to',
+		'registration service provider',
+		'you acknowledge that',
+	]
 	const ignoreTexts = [
 		'more information',
 		'lawful purposes',
@@ -209,6 +244,10 @@ const parseDomainWhois = (domain, whois) => {
 		'terms',
 	]
 
+	const basicColonFormat = ': '
+	const uaColonFormat = ':'
+
+	let colon = basicColonFormat
 	let text = []
 	let data = {
 		'Domain Status': [],
@@ -217,18 +256,22 @@ const parseDomainWhois = (domain, whois) => {
 	let lines = whois
 		.trim()
 		.split('\n')
-		.map(line => line.replace("\t", '  '))
-
+		.map((line) => line.replace('\t', '  '))
 
 	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly') || domain.endsWith('.mx')) {
 		lines = handleMultiLines(lines)
 	}
 
-	lines = lines.map(l => l.trim())
+	if (domain.endsWith('.ua')) {
+		lines = handleDotUa(lines)
+		colon = uaColonFormat
+	}
 
-	lines.forEach(line => {
-		if ((line.includes(': ') || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';') && !line.startsWith('*')) {
-			let [label, value] = splitStringBy(line, line.indexOf(':')).map(info => info.trim())
+	lines = lines.map((l) => l.trim())
+
+	lines.forEach((line) => {
+		if ((line.includes(colon) || line.endsWith(':')) && !line.startsWith('%') && !line.startsWith(';') && !line.startsWith('*')) {
+			let [label, value] = splitStringBy(line, line.indexOf(':')).map((info) => info.trim())
 
 			// fix whois line with double color, ex: "Label:: value"
 			if (value.startsWith(':')) {
@@ -249,7 +292,7 @@ const parseDomainWhois = (domain, whois) => {
 
 			if (data[label] && Array.isArray(data[label])) {
 				data[label].push(value)
-			} else if (!ignoreLabels.includes(label.toLowerCase()) && !ignoreTexts.some(text => label.toLowerCase().includes(text))) {
+			} else if (!ignoreLabels.includes(label.toLowerCase()) && !ignoreTexts.some((text) => label.toLowerCase().includes(text))) {
 				data[label] = data[label] && data[label] !== value ? data[label] + ' ' + value : value
 			} else {
 				text.push(line)
@@ -261,7 +304,7 @@ const parseDomainWhois = (domain, whois) => {
 
 	// remove invalid Name Servers (not valid hostname)
 	data['Name Server'] = data['Name Server']
-		.map(nameServer => nameServer.split(' '))
+		.map((nameServer) => nameServer.split(' '))
 		.flat()
 		.filter(isDomain)
 
@@ -279,17 +322,32 @@ const parseDomainWhois = (domain, whois) => {
 	return data
 }
 
-// Fix "label: \n value" format
-const handleMultiLines = lines => {
+const handleDotUa = (lines) => {
+	const types = ['Registrar', 'Registrant', 'Admin', 'Technical']
+	let flag = ''
 	lines.forEach((line, index) => {
+		if (line.startsWith('%') && types.some((v) => line.includes(v))) {
+			flag = line
+				.substring(1, line.length - 1)
+				.trim()
+				.toLowerCase()
+		} else if (!line.startsWith('%') && line.includes(': ')) {
+			if (line.startsWith('registrar')) line = 'id'
+			lines[index] = flag + ' ' + line
+		}
+	})
+	return lines
+}
 
+// Fix "label: \n value" format
+const handleMultiLines = (lines) => {
+	lines.forEach((line, index) => {
 		// if line is just a WHOIS label ending with ":", then verify next lines
 		if (!line.startsWith('*') && !line.startsWith('%') && line.trim().endsWith(':')) {
 			let addedLabel = false
 
 			// Check next lines
 			for (let i = 1; i <= 5; i++) {
-
 				// if no line or empty line
 				if (!lines[index + i] || !lines[index + i].trim().length) {
 					break
