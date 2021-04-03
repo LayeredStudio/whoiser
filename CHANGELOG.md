@@ -2,6 +2,7 @@
 
 #### 1.9.2 - 8 March 2021
 - Updated - Parse WHOIS for co.ua/biz.ua domains; improve parsing for other .ua domains
+- Fixed - Trim whitespace from whois value when appending data
 
 #### 1.9.2 - 7 Dec 2020
 - Updated - Parse WHOIS for .mx domains

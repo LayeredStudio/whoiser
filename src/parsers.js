@@ -293,7 +293,14 @@ const parseDomainWhois = (domain, whois) => {
 			if (data[label] && Array.isArray(data[label])) {
 				data[label].push(value)
 			} else if (!ignoreLabels.includes(label.toLowerCase()) && !ignoreTexts.some((text) => label.toLowerCase().includes(text))) {
-				data[label] = data[label] && data[label] !== value ? data[label] + ' ' + value : value
+
+				// WHOIS field already exists, if so append data
+				if (data[label] && data[label] !== value) {
+					data[label] = `${data[label]} ${value}`.trim()
+				} else {
+					data[label] = value
+				}
+
 			} else {
 				text.push(line)
 			}
