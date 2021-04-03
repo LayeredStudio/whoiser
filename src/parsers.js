@@ -132,6 +132,8 @@ const parseDomainWhois = (domain, whois) => {
 		'registration private',
 		'none',
 		'redacted.forprivacy',
+		'redacted | registry policy',
+		'redacted for gdpr privacy',
 	]
 
 	// WHOIS labels to rename. "From" must be lowercase
@@ -155,6 +157,7 @@ const parseDomainWhois = (domain, whois) => {
 		'name servers dns': 'Name Server', // found in .mx
 		flags: 'Domain Status',
 		status: 'Domain Status',
+		state: 'Domain Status', // found in .ru
 		'registration status': 'Domain Status',
 		'sponsoring registrar iana id': 'Registrar IANA ID',
 		organisation: 'Registrar',
@@ -207,6 +210,7 @@ const parseDomainWhois = (domain, whois) => {
 		'registrant contact email': 'Registrant Email',
 		'registrant organisation': 'Registrant Organization',
 		'trading as': 'Registrant Organization', // found in .uk, .co.uk
+		org: 'Registrant Organization', // found in .ru
 		'registrant state': 'Registrant State/Province',
 		"registrant's address": 'Registrant Street',
 		dnssec: 'DNSSEC',
