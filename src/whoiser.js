@@ -95,6 +95,9 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 		if (host === 'whois.denic.de') {
 			query = `-T dn ${query}`
 		}
+		if (host === 'whois.jprs.jp') {
+			query = `${query}/e`
+		}
 
 		try {
 			resultRaw = await whoisQuery({ host, query, timeout })
