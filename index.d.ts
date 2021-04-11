@@ -65,11 +65,11 @@ interface Whoiser {
 	/**
 	 * Get WHOIS data for an AS number
 	 *
-	 * @param {string|number} ans
+	 * @param {string|number} asn
 	 * @param {Object} options
 	 * @returns {Promise<*>} Parsed WHOIS server response
 	 */
-	ans(ans: string | number, options?: CommonOptions): Promise<any>;
+	asn(asn: string | number, options?: CommonOptions): Promise<any>;
 
 	/**
 	 * Returns a list of all TLDs, [downloaded from IANA](https://www.iana.org/domains/root/db)
