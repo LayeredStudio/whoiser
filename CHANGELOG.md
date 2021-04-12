@@ -2,7 +2,7 @@
 
 ####
 
-- Updated - Parse WHOIS for .jp domains.
+- Updated - Parse WHOIS for .jp domains [#35](https://github.com/LayeredStudio/whoiser/pull/35) (thanks to @kuriyama)
 
 #### 1.10.0 - 13 April 2021
 - Updated - Parse WHOIS for co.ua/biz.ua domains; improve parsing for other .ua domains [#32](https://github.com/LayeredStudio/whoiser/pull/32) (thanks to @EPolishchuk)

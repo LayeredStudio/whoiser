@@ -396,8 +396,15 @@ const handleMultiLines = (lines) => {
 // [Name Server]                   ns2.jprs.jp
 const handleJpLines = (lines) => {
 	const ret = []
+
 	while (lines.length > 0) {
-		const line = lines.shift()
+		let line = lines.shift()
+
+		// handle lines that start with "a. [label]"
+		if (/^[a-z]. \[/.test(line)) {
+			line = line.replace(/^[a-z]. \[/, '[')
+		}
+
 		if (line.startsWith("[ ")) {
 			// skip
 		} else if (line.startsWith("[")) {
