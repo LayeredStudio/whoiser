@@ -2,6 +2,8 @@
   "name": "whoiser",
   "version": "1.10.0",
   "description": "Whois info for TLDs, domains and IPs",
+  "types": "./index.d.ts",
+  "typings": "./index.d.ts",
   "keywords": [
     "whois",
     "domain",
