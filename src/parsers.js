@@ -271,6 +271,10 @@ const parseDomainWhois = (domain, whois) => {
 		colon = uaColonFormat
 	}
 
+	if (domain.endsWith('.jp')) {
+		lines = handleJpLines(lines)
+	}
+
 	lines = lines.map((l) => l.trim())
 
 	lines.forEach((line) => {
@@ -385,6 +389,27 @@ const handleMultiLines = (lines) => {
 	})
 
 	return lines
+}
+
+// Handle formats like this:
+// [Name Server]                   ns1.jprs.jp
+// [Name Server]                   ns2.jprs.jp
+const handleJpLines = (lines) => {
+	const ret = []
+	while (lines.length > 0) {
+		const line = lines.shift()
+		if (line.startsWith("[ ")) {
+			// skip
+		} else if (line.startsWith("[")) {
+			ret.push(line)
+		} else if (line.startsWith(" ")) {
+			const prev = ret.pop()
+			ret.push(prev + "\n" + line.trim())
+		} else {
+			// skip
+		}
+	}
+	return ret.map((line) => line.replace(/\[(.*?)\]/g, '$1:'))
 }
 
 module.exports.parseSimpleWhois = parseSimpleWhois
