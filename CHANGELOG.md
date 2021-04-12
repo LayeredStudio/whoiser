@@ -1,10 +1,11 @@
 # Whoiser change log
 
-####
+#### 1.11.0 - 12 April 2021
 
+- Added - TypeScript Types [#34](https://github.com/LayeredStudio/whoiser/pull/34) (thanks to @AlexXanderGrib)
 - Updated - Parse WHOIS for .jp domains [#35](https://github.com/LayeredStudio/whoiser/pull/35) (thanks to @kuriyama)
 
-#### 1.10.0 - 13 April 2021
+#### 1.10.0 - 3 April 2021
 - Updated - Parse WHOIS for co.ua/biz.ua domains; improve parsing for other .ua domains [#32](https://github.com/LayeredStudio/whoiser/pull/32) (thanks to @EPolishchuk)
 - Updated - Detect & remove more redacted whois text
 - Fixed - Trim whitespace from whois value when appending data
