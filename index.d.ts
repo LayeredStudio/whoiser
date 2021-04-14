@@ -1,83 +1,115 @@
-type CommonOptions = {
-	/** WHOIS server to query. Default: WHOIS server from IANA */
-	host?: string
-	/** WHOIS server request timeout in ms. Default: `1500` */
-	timeout?: number
-	/** Return the raw WHOIS result in response. Added to `__raw` */
-	raw?: boolean
-}
+declare module 'whoiser' {
+	interface Options {
+		/**
+		 * WHOIS server to query.
+		 */
+		host?: string
 
-interface Whoiser {
-	/**
-	 * Get WHOIS data for any internet address
-	 *
-	 * @param {string|number} query
-	 * @param {Object} options
-	 * @returns {Promise<*>} Parsed WHOIS server response
-	 */
-	(query: string | number, options?: CommonOptions & Record<string, string>): Promise<any>
+		port?: number
 
+		/**
+		 * WHOIS server request timeout in ms.
+		 *
+		 * @default: 1500
+		 */
+		timeout?: number
 
-	/**
-	 * Get WHOIS data for a TLD
-	 *
-	 * @param {string} tld Ex. `.net`
-	 * @param {Object} options
-	 * @returns {Promise<*>} Parsed WHOIS server response
-	 */
-	tld(tld: string, options?: Omit<CommonOptions, 'host'>): Promise<any>;
+		/**
+		 * How many WHOIS server to query.
+		 * 1 = registry server (faster),
+		 * 2 = registry + registrar (more domain details).
+		 *
+		 * @default: 2
+		 */
+		follow?: number
 
-	/**
-	 * Query a WHOIS server for data
-	 *
-	 * @param {Object} options
-	 * @returns {Promise<string>} Raw WHOIS server response
-	 */
-	query(options: CommonOptions & {
-		query: string;
-		/** Low level end of query suffix. Default `\r\n` */
-		querySuffix?: string;
-	}): Promise<string>
+		/**
+		 * Return the raw WHOIS result in response.
+		 * Added to `__raw`
+		 */
+		raw?: boolean
 
-	/**
-	 * Get parsed WHOIS data for a domain
-	 *
-	 * @param domain
-	 * @param options
-	 */
-	domain(
-		domain: string,
-		options?: CommonOptions & {
-			/** How many WHOIS server to query. 1 = registry server (faster), 2 = registry + registrar (more domain details). Default: 2 */
-			follow?: number
-		}
-	): Promise<any>
+		query?: string
+
+		/**
+		 * Low level end of query suffix.
+		 *
+		 * @default '\r\n'
+		 */
+		querySuffix?: string
+	}
+
+	type OptionsIp = Pick<Options, 'host' | 'timeout' | 'raw'>
+	type OptionsAsn = OptionsIp
+	type OptionsQuery = Omit<Options, 'raw' | 'follow'>
+	type OptionsTld = Pick<Options, 'timeout' | 'raw'>
+	type OptionsDomain = Omit<Options, 'querySuffix' | 'query' | 'port'>
+	type OptionsGeneric = OptionsIp | OptionsTld | OptionsDomain
+
+	interface WhoisSearchResult {
+		[key: string]: string | Array<string> | WhoisSearchResult
+	}
 
 	/**
-	 * Get WHOIS data for a IP
+	 * Returns a list of all TLDs,
+	 * [downloaded from IANA](https://www.iana.org/domains/root/db)
 	 *
-	 * @param {string} ip
-	 * @param {Object} options
-	 * @returns {Promise<*>} Parsed WHOIS server response
+	 * @returns {Promise<string[]>}
 	 */
-	ip(ip: string, options?: CommonOptions): Promise<any>
+	function allTlds(): Promise<string[]>
 
 	/**
 	 * Get WHOIS data for an AS number
 	 *
 	 * @param {string|number} asn
-	 * @param {Object} options
-	 * @returns {Promise<*>} Parsed WHOIS server response
+	 * @param {OptionsAsn} options
+	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
 	 */
-	asn(asn: string | number, options?: CommonOptions): Promise<any>;
+	function asn(asn: string | number, options?: OptionsAsn): Promise<WhoisSearchResult>
 
 	/**
-	 * Returns a list of all TLDs, [downloaded from IANA](https://www.iana.org/domains/root/db)
+	 * Get parsed WHOIS data for a domain
 	 *
-	 * @returns {Promise<string[]>}
+	 * @param {string} domain
+	 * @param {OptionsDomain} options
+	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
 	 */
-	allTlds(): Promise<string[]>;
-}
+	function domain(domain: string, options?: OptionsDomain): Promise<WhoisSearchResult>
 
-declare const whoiser: Whoiser;
-export = whoiser;
+	/**
+	 * Get WHOIS data for a IP
+	 *
+	 * @param {string} ip
+	 * @param {OptionsIp} options
+	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
+	 */
+	function ip(ip: string, options?: OptionsIp): Promise<WhoisSearchResult>
+
+	/**
+	 * Query a WHOIS server for data
+	 *
+	 * @param {OptionsQuery} options
+	 * @returns {Promise<string>} Raw WHOIS server response
+	 */
+	function query(options: OptionsQuery): Promise<string>
+
+	/**
+	 * Get WHOIS data for a TLD
+	 *
+	 * @param {string} tld Ex. `.net`
+	 * @param {OptionsTld} options
+	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
+	 */
+	function tld(tld: string, options?: OptionsTld): Promise<WhoisSearchResult>
+
+	/**
+	 * Tries to guess query type and get WHOIS data
+	 *
+	 * @param {string} query
+	 * @param {Options} options
+	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
+	 */
+	function whoiser(query: string, options?: OptionsGeneric): Promise<WhoisSearchResult>
+
+	export = whoiser
+}
