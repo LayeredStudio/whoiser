@@ -5,9 +5,11 @@ describe('#whoiser.domain()', function() {
 
 	describe('Basic domain WHOIS', function() {
 		it('returns WHOIS for "blog.google"', async function() {
-			let whois = await whoiser.domain('blog.google')
-			assert.equal(whois['whois.nic.google']['Domain Name'], 'blog.google', 'Domain name doesn\'t match')
-			assert.equal(whois['whois.nic.google']['Registry Domain ID'], '27CAA9F68-GOOGLE', 'Registry Domain ID doesn\'t match')
+			const whois = await whoiser.domain('blog.google')
+			const firstWhois = whoiser.firstResult(whois)
+
+			assert.equal(firstWhois['Domain Name'], 'blog.google', 'Domain name doesn\'t match')
+			assert.equal(firstWhois['Registry Domain ID'], '27CAA9F68-GOOGLE', 'Registry Domain ID doesn\'t match')
 		});
 
 		it('returns WHOIS for "cloudflare.com" from "whois.cloudflare.com" server (host option)', async function() {

@@ -1,14 +1,14 @@
 const whoiser = require('../index.js');
 
 (async () => {
+	//const domainName = 'cloudflare.com'
 	const domainName = 'an-available-domain.com'
 
 
 	// retrieve WHOIS info from Registrar WHOIS servers
 	const domainWhois = await whoiser(domainName, { follow: 1 })
 
-	const foundWhoisServers = Object.keys(domainWhois)
-	const firstDomainWhois = domainWhois[foundWhoisServers[0]]
+	const firstDomainWhois = whoiser.firstResult(domainWhois)
 	const firstTextLine = (firstDomainWhois.text[0] || '').toLowerCase()
 
 	let domainAvailability = 'unknown'

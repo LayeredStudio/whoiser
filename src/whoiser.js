@@ -183,6 +183,12 @@ const whoisIpOrAsn = async (query, { host = null, timeout = 15000, raw = false }
 	return data
 }
 
+const firstResult = (whoisResults) => {
+	const whoisServers = Object.keys(whoisResults)
+
+	return whoisServers.length ? whoisResults[whoisServers[0]] : null
+}
+
 module.exports = (query, options) => {
 	if (net.isIP(query) || /^(as)?\d+$/i.test(query)) {
 		return whoisIpOrAsn(query, options)
@@ -201,3 +207,4 @@ module.exports.domain = whoisDomain
 module.exports.asn = whoisIpOrAsn
 module.exports.ip = whoisIpOrAsn
 module.exports.allTlds = allTlds
+module.exports.firstResult = firstResult
