@@ -1,6 +1,9 @@
 # Whoiser change log
 
+#### 1.12.0 - 9 June 2021
+
 - Added - Utility function `whoiser.firstResult()` to extract first WHOIS result
+- Updated - TypeScript Types [#36](https://github.com/LayeredStudio/whoiser/pull/36) (thanks to @AKorezin)
 - Removed - Automated tests for NodeJS 12
 
 #### 1.11.0 - 12 April 2021
