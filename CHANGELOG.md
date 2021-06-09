@@ -1,6 +1,7 @@
 # Whoiser change log
 
 - Added - Utility function `whoiser.firstResult()` to extract first WHOIS result
+- Removed - Automated tests for NodeJS 12
 
 #### 1.11.0 - 12 April 2021
 

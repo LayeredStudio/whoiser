@@ -78,13 +78,6 @@ describe('#whoiser.domain()', function() {
 			assert.equal(whois['whois.jprs.jp']['Name Server'].length, 4, 'Incorrect number of NS returned')
 		});
 
-		it('returns WHOIS for "nic.co.ua" with all fields', async function() {
-			let whois = await whoiser.domain('nic.co.ua')
-			assert.equal(whois['whois.ua']['Domain Name'], 'NIC.CO.UA', 'Domain name doesn\'t match')
-			assert.notStrictEqual(whois['whois.ua']['Name Server'].length, 0, 'Does not return NS')
-			assert.notStrictEqual(whois['whois.ua']['Registrant ID'], false, 'Does not return registrant data')
-		});
-
 		it('returns WHOIS for "nic.ua" with fieldsfor all type of contacts', async function() {
 			let whois = await whoiser.domain('nic.ua')
 			assert.equal(whois['whois.ua']['Domain Name'], 'nic.ua', 'Domain name doesn\'t match')
