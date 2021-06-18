@@ -1,5 +1,5 @@
 declare module 'whoiser' {
-	interface Options {
+	export interface Options {
 		/**
 		 * WHOIS server to query.
 		 */
@@ -39,14 +39,14 @@ declare module 'whoiser' {
 		querySuffix?: string
 	}
 
-	type OptionsIp = Pick<Options, 'host' | 'timeout' | 'raw'>
-	type OptionsAsn = OptionsIp
-	type OptionsQuery = Omit<Options, 'raw' | 'follow'>
-	type OptionsTld = Pick<Options, 'timeout' | 'raw'>
-	type OptionsDomain = Omit<Options, 'querySuffix' | 'query' | 'port'>
-	type OptionsGeneric = OptionsIp | OptionsTld | OptionsDomain
+	export type OptionsIp = Pick<Options, 'host' | 'timeout' | 'raw'>
+	export type OptionsAsn = OptionsIp
+	export type OptionsQuery = Omit<Options, 'raw' | 'follow'>
+	export type OptionsTld = Pick<Options, 'timeout' | 'raw'>
+	export type OptionsDomain = Omit<Options, 'querySuffix' | 'query' | 'port'>
+	export type OptionsGeneric = OptionsIp | OptionsTld | OptionsDomain
 
-	interface WhoisSearchResult {
+	export interface WhoisSearchResult {
 		[key: string]: string | Array<string> | WhoisSearchResult
 	}
 
@@ -56,7 +56,7 @@ declare module 'whoiser' {
 	 *
 	 * @returns {Promise<string[]>}
 	 */
-	function allTlds(): Promise<string[]>
+	export function allTlds(): Promise<string[]>
 
 	/**
 	 * Get WHOIS data for an AS number
@@ -65,7 +65,7 @@ declare module 'whoiser' {
 	 * @param {OptionsAsn} options
 	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
 	 */
-	function asn(asn: string | number, options?: OptionsAsn): Promise<WhoisSearchResult>
+	export function asn(asn: string | number, options?: OptionsAsn): Promise<WhoisSearchResult>
 
 	/**
 	 * Get parsed WHOIS data for a domain
@@ -74,7 +74,7 @@ declare module 'whoiser' {
 	 * @param {OptionsDomain} options
 	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
 	 */
-	function domain(domain: string, options?: OptionsDomain): Promise<WhoisSearchResult>
+	export function domain(domain: string, options?: OptionsDomain): Promise<WhoisSearchResult>
 
 	/**
 	 * Get WHOIS data for a IP
@@ -83,7 +83,7 @@ declare module 'whoiser' {
 	 * @param {OptionsIp} options
 	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
 	 */
-	function ip(ip: string, options?: OptionsIp): Promise<WhoisSearchResult>
+	export function ip(ip: string, options?: OptionsIp): Promise<WhoisSearchResult>
 
 	/**
 	 * Query a WHOIS server for data
@@ -91,7 +91,7 @@ declare module 'whoiser' {
 	 * @param {OptionsQuery} options
 	 * @returns {Promise<string>} Raw WHOIS server response
 	 */
-	function query(options: OptionsQuery): Promise<string>
+	export function query(options: OptionsQuery): Promise<string>
 
 	/**
 	 * Get WHOIS data for a TLD
@@ -100,7 +100,7 @@ declare module 'whoiser' {
 	 * @param {OptionsTld} options
 	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
 	 */
-	function tld(tld: string, options?: OptionsTld): Promise<WhoisSearchResult>
+	export function tld(tld: string, options?: OptionsTld): Promise<WhoisSearchResult>
 
 	/**
 	 * Tries to guess query type and get WHOIS data
@@ -109,7 +109,7 @@ declare module 'whoiser' {
 	 * @param {Options} options
 	 * @returns {Promise<WhoisSearchResult>} Parsed WHOIS server response
 	 */
-	function whoiser(query: string, options?: OptionsGeneric): Promise<WhoisSearchResult>
+	export function whoiser(query: string, options?: OptionsGeneric): Promise<WhoisSearchResult>
 
-	export = whoiser
+	export default whoiser
 }
