@@ -11,6 +11,9 @@ let cacheTldWhoisServer = {
 	net: 'whois.verisign-grs.com',
 	org: 'whois.pir.org',
 	co: 'whois.nic.co',
+	ai: 'whois.nic.ai',
+	app: 'whois.nic.google',
+	io: 'whois.nic.io',
 	shop: 'whois.nic.shop',
 	nyc: 'whois.nic.nyc',
 }

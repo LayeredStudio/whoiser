@@ -1,5 +1,7 @@
 # Whoiser change log
 
+- Updated - Cache more TLD WHOIS servers (.ai, .app, .io, .nyc)
+
 #### 1.12.0 - 9 June 2021
 
 - Added - Utility function `whoiser.firstResult()` to extract first WHOIS result
