@@ -181,6 +181,7 @@ const parseDomainWhois = (domain, whois) => {
 		registered: 'Created Date',
 		'created..............': 'Created Date', // found in .ax
 		'domain registered': 'Created Date',
+		'registered date': 'Created Date', // found in .co.jp
 		'last updated': 'Updated Date',
 		changed: 'Updated Date',
 		modified: 'Updated Date',
@@ -189,6 +190,7 @@ const parseDomainWhois = (domain, whois) => {
 		'last modified': 'Updated Date',
 		'relevant dates last updated': 'Updated Date', // found in .uk, .co.uk
 		'last updated on': 'Updated Date', // found in .mx
+		'last update': 'Updated Date', // found in .co.jp
 		'registrar registration expiration date': 'Expiry Date',
 		'registry expiry date': 'Expiry Date',
 		'expires on': 'Expiry Date',

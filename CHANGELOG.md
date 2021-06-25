@@ -1,6 +1,7 @@
 # Whoiser change log
 
 - Updated - Cache more TLD WHOIS servers (.ai, .app, .io, .nyc)
+- Updated - Detect & remove more redacted whois text
 
 #### 1.12.0 - 9 June 2021
 
