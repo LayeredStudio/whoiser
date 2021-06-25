@@ -250,10 +250,7 @@ const parseDomainWhois = (domain, whois) => {
 		'terms',
 	]
 
-	const basicColonFormat = ': '
-	const uaColonFormat = ':'
-
-	let colon = basicColonFormat
+	let colon = ': '
 	let text = []
 	let data = {
 		'Domain Status': [],
@@ -264,13 +261,16 @@ const parseDomainWhois = (domain, whois) => {
 		.split('\n')
 		.map((line) => line.replace('\t', '  '))
 
+
+	// Parse WHOIS info for specific TLDs
+
 	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly') || domain.endsWith('.mx')) {
 		lines = handleMultiLines(lines)
 	}
 
 	if (domain.endsWith('.ua')) {
 		lines = handleDotUa(lines)
-		colon = uaColonFormat
+		colon = ':'
 	}
 
 	if (domain.endsWith('.jp')) {
