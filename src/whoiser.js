@@ -16,6 +16,8 @@ let cacheTldWhoisServer = {
 	io: 'whois.nic.io',
 	shop: 'whois.nic.shop',
 	nyc: 'whois.nic.nyc',
+	us: 'whois.nic.us',
+	xyz: 'whois.nic.xyz',
 }
 
 // misspelled whois servers..
