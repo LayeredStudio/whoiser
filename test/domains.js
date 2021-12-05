@@ -22,8 +22,8 @@ describe('#whoiser.domain()', function() {
 		it('returns WHOIS for "laye.red" from top-level whois server (follow option)', async function() {
 			let whois = await whoiser.domain('laye.red', {follow: 1})
 			assert.equal(Object.values(whois).length, 1, 'Has less or more than 1 WHOIS result')
-			assert.deepStrictEqual(Object.keys(whois), ['whois.afilias.net'], 'Has whois result from server different than "whois.afilias.net"')
-			assert.equal(whois['whois.afilias.net']['Domain Name'], 'LAYE.RED', 'Domain name doesn\'t match')
+			assert.deepStrictEqual(Object.keys(whois), ['whois.nic.red'], 'Has whois result from server different than "whois.nic.red"')
+			assert.equal(whois['whois.nic.red']['Domain Name'], 'laye.red', 'Domain name doesn\'t match')
 		});
 	});
 
