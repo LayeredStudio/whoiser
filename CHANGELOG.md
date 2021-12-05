@@ -1,5 +1,9 @@
 # Whoiser change log
 
+#### 1.13.1 - 5 December 2021
+
+- Added - Included WHOIS server for `.us` & `.xyz`
+
 #### 1.13.0 - 25 June 2021
 
 - Updated - TypeScript Types [#41](https://github.com/LayeredStudio/whoiser/pull/41)
