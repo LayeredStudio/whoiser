@@ -27,7 +27,7 @@
     "test": "mocha -t 5000 -s 3000"
   },
   "devDependencies": {
-    "mocha": "^9.0.0",
+    "mocha": "^10.1.0",
     "prettier": "^2.0.4"
   },
   "dependencies": {
