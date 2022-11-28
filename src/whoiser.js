@@ -15,11 +15,13 @@ let cacheTldWhoisServer = {
 	ai: 'whois.nic.ai',
 	co: 'whois.nic.co',
 	ca: 'whois.cira.ca',
+	gl: 'whois.nic.gl',
 	in: 'whois.registry.in',
 	io: 'whois.nic.io',
 	it: 'whois.nic.it',
 	me: 'whois.nic.me',
 	ro: 'whois.rotld.ro',
+	so: 'whois.nic.so',
 	us: 'whois.nic.us',
 
 	agency: 'whois.nic.agency',
