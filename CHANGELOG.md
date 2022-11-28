@@ -1,5 +1,10 @@
 # Whoiser change log
 
+#### 1.13.2 - 28 November 2022
+
+- Updated - Include more WHOIS servers in lib, speeds-up domain WHOIS queries
+- Updated - Detect & remove more redacted WHOIS text
+
 #### 1.13.1 - 5 December 2021
 
 - Added - Included WHOIS server for `.us` & `.xyz`
