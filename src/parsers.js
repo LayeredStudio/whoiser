@@ -118,6 +118,7 @@ const parseDomainWhois = (domain, whois) => {
 		'not disclosed',
 		'data protected, not disclosed',
 		'data redacted',
+		'not disclosed not disclosed',
 		'not available',
 		'redacted for privacy',
 		'gdpr redacted',
@@ -134,6 +135,9 @@ const parseDomainWhois = (domain, whois) => {
 		'redacted.forprivacy',
 		'redacted | registry policy',
 		'redacted for gdpr privacy',
+		'redacted for gdpr',
+		'redacted redacted',
+		'not available from registry',
 	]
 
 	// WHOIS labels to rename. "From" must be lowercase
