@@ -10,13 +10,29 @@ let cacheTldWhoisServer = {
 	com: 'whois.verisign-grs.com',
 	net: 'whois.verisign-grs.com',
 	org: 'whois.pir.org',
-	co: 'whois.nic.co',
+
+	// ccTLDs
 	ai: 'whois.nic.ai',
-	app: 'whois.nic.google',
+	co: 'whois.nic.co',
+	ca: 'whois.cira.ca',
+	in: 'whois.registry.in',
 	io: 'whois.nic.io',
-	shop: 'whois.nic.shop',
-	nyc: 'whois.nic.nyc',
+	it: 'whois.nic.it',
+	me: 'whois.nic.me',
+	ro: 'whois.rotld.ro',
 	us: 'whois.nic.us',
+
+	agency: 'whois.nic.agency',
+	app: 'whois.nic.google',
+	biz: 'whois.nic.biz',
+	country: 'whois.uniregistry.net', // hardcoded because `whois.iana.org` sometimes returns 'whois.uniregistry.net' or 'whois.nic.country'
+	dev: 'whois.nic.google',
+	info: 'whois.nic.info',
+	link: 'whois.uniregistry.net',
+	nyc: 'whois.nic.nyc',
+	online: 'whois.nic.online',
+	shop: 'whois.nic.shop',
+	site: 'whois.nic.site',
 	xyz: 'whois.nic.xyz',
 }
 
