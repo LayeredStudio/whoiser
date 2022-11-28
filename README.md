@@ -1,6 +1,6 @@
 # 🌍 Whoiser
 
-**whoiser** is a WHOIS client for Node.js than helps with querying WHOIS servers for TLDs, domain names, AS numbers and IPs.
+**whoiser** is a WHOIS client for Node.js that helps with querying WHOIS servers for TLDs, domain names, AS numbers and IPs.
 
 Has support for auto-discovery WHOIS servers for TLDs and IPs allocators, making it easy to get WHOIS info with a single call like `whoiser('google.com')` or `whoiser('1.1.1.1')`.
 Applies minimal parsing to results, returning same data format from different WHOIS servers.
