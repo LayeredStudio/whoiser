@@ -204,7 +204,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 	return results
 }
 
-const whoisIpOrAsn = async (query, { host = null, timeout = 15000, raw = false } = {}) => {
+const whoisIpOrAsn = async (query, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
 	const type = net.isIP(query) ? 'ip' : 'asn'
 	query = String(query)
 
@@ -222,18 +222,27 @@ const whoisIpOrAsn = async (query, { host = null, timeout = 15000, raw = false }
 		throw new Error(`No WHOIS server for "${query}"`)
 	}
 
-	// hardcoded custom queries..
-	if (host === 'whois.arin.net' && type === 'ip') {
-		query = `+ n ${query}`
-	} else if (host === 'whois.arin.net' && type === 'asn') {
-		query = `+ a ${query}`
-	}
+	let data
 
-	const rawResult = await whoisQuery({ host, query, timeout })
-	let data = parseSimpleWhois(rawResult)
+	while (host && follow) {
+		let modifiedQuery = query
 
-	if (raw) {
-		data.__raw = rawResult
+		// hardcoded custom queries..
+		if (host === 'whois.arin.net' && type === 'ip') {
+			modifiedQuery = `+ n ${query}`
+		} else if (host === 'whois.arin.net' && type === 'asn') {
+			modifiedQuery = `+ a ${query}`
+		}
+
+		const rawResult = await whoisQuery({ host, query: modifiedQuery, timeout })
+		data = parseSimpleWhois(rawResult)
+
+		if (raw) {
+			data.__raw = rawResult
+		}
+
+		follow--
+		host = data?.ReferralServer?.split('//')?.[1]
 	}
 
 	return data
