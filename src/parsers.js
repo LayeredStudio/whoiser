@@ -267,7 +267,17 @@ const parseDomainWhois = (domain, whois) => {
 
 	// Parse WHOIS info for specific TLDs
 
-	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly') || domain.endsWith('.mx') || domain.endsWith('.gg') || domain.endsWith('.je') || domain.endsWith('.as')) {
+	if (
+		domain.endsWith('.uk') ||
+		domain.endsWith('.be') ||
+		domain.endsWith('.nl') ||
+		domain.endsWith('.eu') ||
+		domain.endsWith('.ly') ||
+		domain.endsWith('.mx') ||
+		domain.endsWith('.gg') ||
+		domain.endsWith('.je') ||
+		domain.endsWith('.as')
+	) {
 		lines = handleMultiLines(lines)
 	}
 
