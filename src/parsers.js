@@ -267,8 +267,12 @@ const parseDomainWhois = (domain, whois) => {
 
 	// Parse WHOIS info for specific TLDs
 
-	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly') || domain.endsWith('.mx')) {
+	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly') || domain.endsWith('.mx')|| domain.endsWith('.gg')) {
 		lines = handleMultiLines(lines)
+	}
+
+	if (domain.endsWith('.gg')) {
+		lines = handleMissingColons(lines)
 	}
 
 	if (domain.endsWith('.ua')) {
@@ -420,6 +424,18 @@ const handleJpLines = (lines) => {
 		}
 	}
 	return ret.map((line) => line.replace(/\[(.*?)\]/g, '$1:'))
+}
+
+// Handle formats like this:
+// Registrar Gandi SAS
+const handleMissingColons = (lines) => {
+	lines.forEach((line, index) => {
+		if (line.startsWith('Registrar ')) {
+			lines[index] = line.replace('Registrar ', 'Registrar: ')
+		}
+	})
+
+	return lines
 }
 
 module.exports.parseSimpleWhois = parseSimpleWhois
