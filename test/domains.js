@@ -12,6 +12,14 @@ describe('#whoiser.domain()', function() {
 			assert.equal(firstWhois['Registry Domain ID'], '27CAA9F68-GOOGLE', 'Registry Domain ID doesn\'t match')
 		});
 
+		it('returns WHOIS for "google.co.uk"', async function() {
+			const whois = await whoiser.domain('google.co.uk')
+			const firstWhois = whoiser.firstResult(whois)
+
+			assert.equal(firstWhois['Domain Name'], 'google.co.uk', 'Domain name doesn\'t match')
+			assert.equal(firstWhois['Created Date'], '14-Feb-1999', 'Created Date doesn\'t match')
+		});
+
 		it('returns WHOIS for "cloudflare.com" from "whois.cloudflare.com" server (host option)', async function() {
 			let whois = await whoiser.domain('cloudflare.com', {host: 'whois.cloudflare.com'})
 			assert.equal(Object.values(whois).length, 1, 'Has less or more than 1 WHOIS result')

@@ -1,5 +1,6 @@
 const net = require('net')
 const url = require('url')
+const dns = require('dns/promises')
 const punycode = require('punycode')
 const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
 const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
@@ -72,7 +73,29 @@ const allTlds = async () => {
 	return tlds.split('\n').filter((tld) => Boolean(tld) && !tld.startsWith('#'))
 }
 
-const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {
+const whoisTldAlternate = async (query) => {
+	const [whoisCname, whoisSrv] = await Promise.allSettled([
+		// Check sources for whois server
+		dns.resolveCname(`${query}.whois-servers.net`), // Queries public database for whois server
+		dns.resolveSrv(`_nicname._tcp.${query}`), // Queries for whois server published by registry
+	])
+
+	return whoisSrv?.value?.[0]?.name ?? whoisCname?.value?.[0] // Get whois server from results
+}
+
+const whoisTld = async (query, { timeout = 15000, raw = false, domainThirdLevel = false, domainName = '', domainTld = '' } = {}) => {
+	// Check for 3rd level domain
+	if (domainThirdLevel) {
+		let [_, secondTld] = domainName && splitStringBy(domainName, domainName.lastIndexOf('.')) // Parse 3rd level domain
+		const whois = await whoisTldAlternate(secondTld ? `${secondTld}.${domainTld}` : query) // Query alternate sources
+		if (whois)
+			return {
+				refer: whois,
+				domain: domainName,
+				whois,
+			} // Return alternate whois data
+	}
+
 	const result = await whoisQuery({ host: 'whois.iana.org', query, timeout })
 	const data = parseSimpleWhois(result)
 
@@ -81,6 +104,14 @@ const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {
 	}
 
 	if (!data.domain || !data.domain.length) {
+		const whois = await whoisTldAlternate(domainTld) // Query alternate sources
+		if (whois)
+			return {
+				refer: whois,
+				domain: domainName,
+				whois,
+			} // Return alternate whois data
+
 		throw new Error(`TLD "${query}" not found`)
 	}
 
@@ -89,17 +120,18 @@ const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {
 
 const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
 	domain = punycode.toASCII(domain)
+	const domainThirdLevel = domain.lastIndexOf('.') !== domain.indexOf('.')
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
 
 	// find WHOIS server in cache
-	if (!host && cacheTldWhoisServer[domainTld]) {
+	if (!host && !domainThirdLevel && cacheTldWhoisServer[domainTld]) {
 		host = cacheTldWhoisServer[domainTld]
 	}
 
 	// find WHOIS server for TLD
 	if (!host) {
-		const tld = await whoisTld(domain, { timeout })
+		const tld = await whoisTld(domain, { timeout, domainThirdLevel, domainName, domainTld })
 
 		if (!tld.whois) {
 			throw new Error(`TLD for "${domain}" not supported`)
