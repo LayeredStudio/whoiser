@@ -265,7 +265,6 @@ const parseDomainWhois = (domain, whois) => {
 		.split('\n')
 		.map((line) => line.replace('\t', '  '))
 
-
 	// Parse WHOIS info for specific TLDs
 
 	if (domain.endsWith('.uk') || domain.endsWith('.be') || domain.endsWith('.nl') || domain.endsWith('.eu') || domain.endsWith('.ly') || domain.endsWith('.mx')) {
@@ -307,14 +306,12 @@ const parseDomainWhois = (domain, whois) => {
 			if (data[label] && Array.isArray(data[label])) {
 				data[label].push(value)
 			} else if (!ignoreLabels.includes(label.toLowerCase()) && !ignoreTexts.some((text) => label.toLowerCase().includes(text))) {
-
 				// WHOIS field already exists, if so append data
 				if (data[label] && data[label] !== value) {
 					data[label] = `${data[label]} ${value}`.trim()
 				} else {
 					data[label] = value
 				}
-
 			} else {
 				text.push(line)
 			}
@@ -411,13 +408,13 @@ const handleJpLines = (lines) => {
 			line = line.replace(/^[a-z]. \[/, '[')
 		}
 
-		if (line.startsWith("[ ")) {
+		if (line.startsWith('[ ')) {
 			// skip
-		} else if (line.startsWith("[")) {
+		} else if (line.startsWith('[')) {
 			ret.push(line)
-		} else if (line.startsWith(" ")) {
+		} else if (line.startsWith(' ')) {
 			const prev = ret.pop()
-			ret.push(prev + "\n" + line.trim())
+			ret.push(prev + '\n' + line.trim())
 		} else {
 			// skip
 		}
