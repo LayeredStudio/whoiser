@@ -4,6 +4,8 @@
 
 - Added - Support for third level domains [#80](https://github.com/LayeredStudio/whoiser/pull/80)
 - Added - Additional support for TLDs not in the IANA database [#80](https://github.com/LayeredStudio/whoiser/pull/80)
+- Fixed - Follow RIPE referrals [#80](https://github.com/LayeredStudio/whoiser/pull/80)
+- Fixed - Parse .gg, .je, and .as whois data correctly [#80](https://github.com/LayeredStudio/whoiser/pull/80)
 
 #### 1.13.2 - 28 November 2022
 
