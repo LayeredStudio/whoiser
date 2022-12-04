@@ -103,7 +103,7 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainThirdLevel 
 		data.__raw = result
 	}
 
-	if (!data.domain || !data.domain.length) {
+	if (!data.domain || !data.domain.length || !data.whois) {
 		const whois = await whoisTldAlternate(domainTld) // Query alternate sources
 		if (whois)
 			return {
