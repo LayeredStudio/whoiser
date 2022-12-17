@@ -87,11 +87,14 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainThirdLevel 
 	// Check for 3rd level domain
 	if (domainThirdLevel) {
 		let [_, secondTld] = domainName && splitStringBy(domainName, domainName.lastIndexOf('.')) // Parse 3rd level domain
-		const whois = await whoisTldAlternate(secondTld ? `${secondTld}.${domainTld}` : query) // Query alternate sources
+		const finalTld = secondTld ? `${secondTld}.${domainTld}` : query
+
+		const whois = await whoisTldAlternate(finalTld) // Query alternate sources
 		if (whois)
 			return {
 				refer: whois,
 				domain: domainName,
+				finalTld,
 				whois,
 			} // Return alternate whois data
 	}
@@ -138,7 +141,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 		}
 
 		host = tld.whois
-		cacheTldWhoisServer[domainTld] = tld.whois
+		cacheTldWhoisServer[tld.finalTld || domainTld] = tld.whois
 	}
 
 	// query WHOIS servers for data
