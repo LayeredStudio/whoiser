@@ -1,5 +1,6 @@
 const net = require('net')
 const url = require('url')
+const dns = require('dns/promises')
 const punycode = require('punycode')
 const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
 const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
@@ -72,7 +73,32 @@ const allTlds = async () => {
 	return tlds.split('\n').filter((tld) => Boolean(tld) && !tld.startsWith('#'))
 }
 
-const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {
+const whoisTldAlternate = async (query) => {
+	const [whoisCname, whoisSrv] = await Promise.allSettled([
+		// Check sources for whois server
+		dns.resolveCname(`${query}.whois-servers.net`), // Queries public database for whois server
+		dns.resolveSrv(`_nicname._tcp.${query}`), // Queries for whois server published by registry
+	])
+
+	return whoisSrv?.value?.[0]?.name ?? whoisCname?.value?.[0] // Get whois server from results
+}
+
+const whoisTld = async (query, { timeout = 15000, raw = false, domainThirdLevel = false, domainName = '', domainTld = '' } = {}) => {
+	// Check for 3rd level domain
+	if (domainThirdLevel) {
+		let [_, secondTld] = domainName && splitStringBy(domainName, domainName.lastIndexOf('.')) // Parse 3rd level domain
+		const finalTld = secondTld ? `${secondTld}.${domainTld}` : query
+
+		const whois = await whoisTldAlternate(finalTld) // Query alternate sources
+		if (whois)
+			return {
+				refer: whois,
+				domain: domainName,
+				finalTld,
+				whois,
+			} // Return alternate whois data
+	}
+
 	const result = await whoisQuery({ host: 'whois.iana.org', query, timeout })
 	const data = parseSimpleWhois(result)
 
@@ -80,7 +106,15 @@ const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {
 		data.__raw = result
 	}
 
-	if (!data.domain || !data.domain.length) {
+	if (!data.domain || !data.domain.length || !data.whois) {
+		const whois = await whoisTldAlternate(domainTld) // Query alternate sources
+		if (whois)
+			return {
+				refer: whois,
+				domain: domainName,
+				whois,
+			} // Return alternate whois data
+
 		throw new Error(`TLD "${query}" not found`)
 	}
 
@@ -89,24 +123,25 @@ const whoisTld = async (query, { timeout = 15000, raw = false } = {}) => {
 
 const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
 	domain = punycode.toASCII(domain)
+	const domainThirdLevel = domain.lastIndexOf('.') !== domain.indexOf('.')
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
 
 	// find WHOIS server in cache
-	if (!host && cacheTldWhoisServer[domainTld]) {
+	if (!host && !domainThirdLevel && cacheTldWhoisServer[domainTld]) {
 		host = cacheTldWhoisServer[domainTld]
 	}
 
 	// find WHOIS server for TLD
 	if (!host) {
-		const tld = await whoisTld(domain, { timeout })
+		const tld = await whoisTld(domain, { timeout, domainThirdLevel, domainName, domainTld })
 
 		if (!tld.whois) {
 			throw new Error(`TLD for "${domain}" not supported`)
 		}
 
 		host = tld.whois
-		cacheTldWhoisServer[domainTld] = tld.whois
+		cacheTldWhoisServer[tld.finalTld || domainTld] = tld.whois
 	}
 
 	// query WHOIS servers for data
@@ -172,7 +207,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 	return results
 }
 
-const whoisIpOrAsn = async (query, { host = null, timeout = 15000, raw = false } = {}) => {
+const whoisIpOrAsn = async (query, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
 	const type = net.isIP(query) ? 'ip' : 'asn'
 	query = String(query)
 
@@ -190,18 +225,27 @@ const whoisIpOrAsn = async (query, { host = null, timeout = 15000, raw = false }
 		throw new Error(`No WHOIS server for "${query}"`)
 	}
 
-	// hardcoded custom queries..
-	if (host === 'whois.arin.net' && type === 'ip') {
-		query = `+ n ${query}`
-	} else if (host === 'whois.arin.net' && type === 'asn') {
-		query = `+ a ${query}`
-	}
+	let data
 
-	const rawResult = await whoisQuery({ host, query, timeout })
-	let data = parseSimpleWhois(rawResult)
+	while (host && follow) {
+		let modifiedQuery = query
 
-	if (raw) {
-		data.__raw = rawResult
+		// hardcoded custom queries..
+		if (host === 'whois.arin.net' && type === 'ip') {
+			modifiedQuery = `+ n ${query}`
+		} else if (host === 'whois.arin.net' && type === 'asn') {
+			modifiedQuery = `+ a ${query}`
+		}
+
+		const rawResult = await whoisQuery({ host, query: modifiedQuery, timeout })
+		data = parseSimpleWhois(rawResult)
+
+		if (raw) {
+			data.__raw = rawResult
+		}
+
+		follow--
+		host = data?.ReferralServer?.split('//')?.[1]
 	}
 
 	return data
