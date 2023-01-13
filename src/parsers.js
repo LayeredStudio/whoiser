@@ -280,6 +280,10 @@ const parseDomainWhois = (domain, whois) => {
 	if (domain.endsWith('.jp')) {
 		lines = handleJpLines(lines)
 	}
+	
+	if (domain.endsWith('.it')) {
+		lines = handleDotIt(lines)
+	}
 
 	lines = lines.map((l) => l.trim())
 
@@ -355,6 +359,40 @@ const handleDotUa = (lines) => {
 		} else if (!line.startsWith('%') && line.includes(': ')) {
 			if (line.startsWith('registrar')) line = 'id'
 			lines[index] = flag + ' ' + line
+		}
+	})
+	return lines
+}
+
+const handleDotIt = (lines) => {
+	lines.forEach((line, index) => {
+		if (line == 'Registrar' || line == 'Nameservers') {
+			// Check next lines
+			for (let i = 1; i <= 5; i++) {
+				// if no line or empty line
+				if (!lines[index + i] || !lines[index + i].trim().length) {
+					break
+				}
+
+				// if tabbed line or line with value only, prefix the line with main label
+				if ((lines[index + i].startsWith('  ') && lines[index + i].includes(': ')) || !lines[index + i].endsWith(':')) {
+					let label = line.trim()
+					if (label == 'Nameservers') {
+						label = "Name Server:"
+					}
+
+					if (lines[index + i].includes(':') && label.endsWith(':')) {
+						label = label.slice(0, -1)
+					}
+
+					lines[index + i] = label + ' ' + lines[index + i].replace('\t', ' ').trim()
+					addedLabel = true
+				}
+			}
+			// remove this line if it was just a label for other lines
+			if (addedLabel) {
+				lines[index] = ''
+			}
 		}
 	})
 	return lines
