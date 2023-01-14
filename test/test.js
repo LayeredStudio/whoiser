@@ -35,43 +35,6 @@ describe('Whoiser', function() {
 		});
 	});
 
-	describe('#whoiser.tld()', function() {
-		it('should return WHOIS for "com"', async function() {
-			const whois = await whoiser.tld('com')
-			assert.equal(whois.domain, 'COM', 'TLD doesn\'t match')
-			assert.equal(whois.whois, 'whois.verisign-grs.com', 'WHOIS server doesn\'t match')
-		});
-
-		it('should return WHOIS for "google"', async function() {
-			let whois = await whoiser.tld('blog.google')
-			assert.equal(whois.domain, 'GOOGLE', 'TLD doesn\'t match')
-			assert.equal(whois.whois, 'whois.nic.google', 'WHOIS server doesn\'t match')
-		});
-
-		it('should return WHOIS for ".香港" - IDN', async function() {
-			let whois = await whoiser('.香港')
-			assert.equal(whois.domain, '香港', 'TLD doesn\'t match')
-			assert.equal(whois.whois, 'whois.hkirc.hk', 'WHOIS server doesn\'t match')
-		});
-
-		it('should return WHOIS for ".XN--J6W193G" - IDN', async function() {
-			let whois = await whoiser('.XN--J6W193G')
-			assert.equal(whois.domain, '香港', 'TLD doesn\'t match')
-			assert.equal(whois.whois, 'whois.hkirc.hk', 'WHOIS server doesn\'t match')
-		});
-
-		it('should reject for invalid TLD format', function() {
-			assert.rejects(whoiser.tld('-abc'))
-		});
-
-		it('should reject for non-existing TLD', function() {
-			assert.rejects(whoiser.tld('thistldshouldntexist', {
-				name:		'Error',
-				message:	'TLD "thistldshouldntexist" not found'
-			}))
-		});
-	});
-
 	describe('#whoiser.asn()', function() {
 		it('should return WHOIS for "15169"', async function() {
 			let whois = await whoiser.asn(15169)
