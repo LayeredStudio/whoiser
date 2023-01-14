@@ -32,5 +32,8 @@
   },
   "dependencies": {
     "punycode": "^2.1.1"
+  },
+  "engines" : { 
+    "node" : ">=15.0.0"
   }
 }
