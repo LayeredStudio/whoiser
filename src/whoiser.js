@@ -1,5 +1,4 @@
 const net = require('net')
-const url = require('url')
 const dns = require('dns/promises')
 const punycode = require('punycode')
 const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
@@ -190,8 +189,9 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 		if (nextWhoisServer) {
 			// if found, remove protocol and path
 			if (nextWhoisServer.includes('://')) {
-				let parsedUrl = url.parse(nextWhoisServer)
-				nextWhoisServer = parsedUrl.host
+				let parsedUrl = new URL(nextWhoisServer)
+				//todo use parsedUrl.port, if defined
+				nextWhoisServer = parsedUrl.hostname
 			}
 
 			// check if found server is in misspelled list
