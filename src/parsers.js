@@ -109,7 +109,7 @@ const parseSimpleWhois = (whois) => {
 	return data
 }
 
-const parseDomainWhois = (domain, whois) => {
+const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 	// Text saying there's no useful data in a field
 	const noData = [
 		'-',
@@ -317,7 +317,7 @@ const parseDomainWhois = (domain, whois) => {
 			}
 
 			// remove redacted data
-			if (noData.includes(value.toLowerCase())) {
+			if (ignorePrivacy && noData.includes(value.toLowerCase())) {
 				value = ''
 			}
 

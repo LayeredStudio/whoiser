@@ -120,7 +120,7 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainThirdLevel 
 	return data
 }
 
-const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
+const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true} = {}) => {
 	domain = punycode.toASCII(domain)
 	const domainThirdLevel = domain.lastIndexOf('.') !== domain.indexOf('.')
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
@@ -159,7 +159,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 
 		try {
 			resultRaw = await whoisQuery({ host, query, timeout })
-			result = parseDomainWhois(domain, resultRaw)
+			result = parseDomainWhois(domain, resultRaw, ignorePrivacy)
 		} catch (err) {
 			result = { error: err.message }
 		}

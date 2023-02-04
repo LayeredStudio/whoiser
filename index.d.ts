@@ -37,6 +37,13 @@ declare module 'whoiser' {
 		 * @default '\r\n'
 		 */
 		querySuffix?: string
+
+		/**
+		 * Ignore the protected WHOIS data from response
+		 * and eplace them with empty values
+		 * @default true
+		 */
+		ignorePrivacy?: boolean
 	}
 
 	export type OptionsIp = Pick<Options, 'host' | 'timeout' | 'raw'>
