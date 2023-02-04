@@ -13,25 +13,32 @@ let cacheTldWhoisServer = {
 
 	// ccTLDs
 	ai: 'whois.nic.ai',
+	au: 'whois.auda.org.au',
 	co: 'whois.nic.co',
 	ca: 'whois.cira.ca',
+	do: 'whois.nic.do',
 	gl: 'whois.nic.gl',
 	in: 'whois.registry.in',
 	io: 'whois.nic.io',
 	it: 'whois.nic.it',
 	me: 'whois.nic.me',
 	ro: 'whois.rotld.ro',
+	rs: 'whois.rnids.rs',
 	so: 'whois.nic.so',
 	us: 'whois.nic.us',
+	ws: 'whois.website.ws',
 
 	agency: 'whois.nic.agency',
 	app: 'whois.nic.google',
 	biz: 'whois.nic.biz',
 	country: 'whois.uniregistry.net', // hardcoded because `whois.iana.org` sometimes returns 'whois.uniregistry.net' or 'whois.nic.country'
 	dev: 'whois.nic.google',
+	house: 'whois.nic.house',
 	info: 'whois.nic.info',
 	link: 'whois.uniregistry.net',
+	live: 'whois.nic.live',
 	nyc: 'whois.nic.nyc',
+	one: 'whois.nic.one',
 	online: 'whois.nic.online',
 	shop: 'whois.nic.shop',
 	site: 'whois.nic.site',
@@ -173,7 +180,7 @@ const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2
 			false
 
 		// fill in WHOIS servers when missing
-		if (!nextWhoisServer && result['Registrar URL'] && result['Registrar URL'].includes('domains.google')) {
+		if (!nextWhoisServer && result['Registrar URL']?.includes('domains.google')) {
 			nextWhoisServer = 'whois.google.com'
 		}
 
