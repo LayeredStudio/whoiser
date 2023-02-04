@@ -13,25 +13,32 @@ let cacheTldWhoisServer = {
 
 	// ccTLDs
 	ai: 'whois.nic.ai',
+	au: 'whois.auda.org.au',
 	co: 'whois.nic.co',
 	ca: 'whois.cira.ca',
+	do: 'whois.nic.do',
 	gl: 'whois.nic.gl',
 	in: 'whois.registry.in',
 	io: 'whois.nic.io',
 	it: 'whois.nic.it',
 	me: 'whois.nic.me',
 	ro: 'whois.rotld.ro',
+	rs: 'whois.rnids.rs',
 	so: 'whois.nic.so',
 	us: 'whois.nic.us',
+	ws: 'whois.website.ws',
 
 	agency: 'whois.nic.agency',
 	app: 'whois.nic.google',
 	biz: 'whois.nic.biz',
 	country: 'whois.uniregistry.net', // hardcoded because `whois.iana.org` sometimes returns 'whois.uniregistry.net' or 'whois.nic.country'
 	dev: 'whois.nic.google',
+	house: 'whois.nic.house',
 	info: 'whois.nic.info',
 	link: 'whois.uniregistry.net',
+	live: 'whois.nic.live',
 	nyc: 'whois.nic.nyc',
+	one: 'whois.nic.one',
 	online: 'whois.nic.online',
 	shop: 'whois.nic.shop',
 	site: 'whois.nic.site',
@@ -47,6 +54,7 @@ const misspelledWhoisServer = {
 	'www.nic.ru/whois/en/': 'whois.nic.ru',
 	'www.whois.corporatedomains.com': 'whois.corporatedomains.com',
 	'www.safenames.net/DomainNames/WhoisSearch.aspx': 'whois.safenames.net',
+	'WWW.GNAME.COM/WHOIS': 'whois.gname.com',
 }
 
 // Translate WHOIS host to IP, so connection is faster
@@ -82,22 +90,7 @@ const whoisTldAlternate = async (query) => {
 	return whoisSrv?.value?.[0]?.name ?? whoisCname?.value?.[0] // Get whois server from results
 }
 
-const whoisTld = async (query, { timeout = 15000, raw = false, domainThirdLevel = false, domainName = '', domainTld = '' } = {}) => {
-	// Check for 3rd level domain
-	if (domainThirdLevel) {
-		let [_, secondTld] = domainName && splitStringBy(domainName, domainName.lastIndexOf('.')) // Parse 3rd level domain
-		const finalTld = secondTld ? `${secondTld}.${domainTld}` : query
-
-		const whois = await whoisTldAlternate(finalTld) // Query alternate sources
-		if (whois)
-			return {
-				refer: whois,
-				domain: domainName,
-				finalTld,
-				whois,
-			} // Return alternate whois data
-	}
-
+const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } = {}) => {
 	const result = await whoisQuery({ host: 'whois.iana.org', query, timeout })
 	const data = parseSimpleWhois(result)
 
@@ -105,42 +98,48 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainThirdLevel 
 		data.__raw = result
 	}
 
-	if (!data.domain || !data.domain.length || !data.whois) {
-		const whois = await whoisTldAlternate(domainTld) // Query alternate sources
-		if (whois)
-			return {
-				refer: whois,
-				domain: domainName,
-				whois,
-			} // Return alternate whois data
+	// if no whois server found, search in more sources
+	if (!data.whois) {
 
+		//todo
+		// instead of using `domainTld`, split `query` in domain parts and request info for all tld combinations
+		// example: query="example.com.tld" make 3 requests for "example.com.tld" / "com.tld" / "tld"
+
+		const whois = await whoisTldAlternate(domainTld || query)
+
+		if (whois) {
+			data.whois = whois
+			data.domain = data.domain || whois
+		}
+	}
+
+	if (!data.domain && !data.whois) {
 		throw new Error(`TLD "${query}" not found`)
 	}
 
 	return data
 }
 
-const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true} = {}) => {
-	domain = punycode.toASCII(domain)
-	const domainThirdLevel = domain.lastIndexOf('.') !== domain.indexOf('.')
+const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
+	domain = punycode.toASCII(rawDomain)
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
 
 	// find WHOIS server in cache
-	if (!host && !domainThirdLevel && cacheTldWhoisServer[domainTld]) {
+	if (!host && cacheTldWhoisServer[domainTld]) {
 		host = cacheTldWhoisServer[domainTld]
 	}
 
 	// find WHOIS server for TLD
 	if (!host) {
-		const tld = await whoisTld(domain, { timeout, domainThirdLevel, domainName, domainTld })
+		const tld = await whoisTld(domain, { timeout, domainName, domainTld })
 
 		if (!tld.whois) {
 			throw new Error(`TLD for "${domain}" not supported`)
 		}
 
 		host = tld.whois
-		cacheTldWhoisServer[tld.finalTld || domainTld] = tld.whois
+		cacheTldWhoisServer[domainTld] = tld.whois
 	}
 
 	// query WHOIS servers for data
@@ -151,9 +150,8 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 
 		// hardcoded WHOIS queries..
 		if (host === 'whois.denic.de') {
-			query = `-T dn ${query}`
-		}
-		if (host === 'whois.jprs.jp') {
+			query = `-T dn ${rawDomain}`
+		} else if (host === 'whois.jprs.jp') {
 			query = `${query}/e`
 		}
 
@@ -182,7 +180,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 			false
 
 		// fill in WHOIS servers when missing
-		if (!nextWhoisServer && result['Registrar URL'] && result['Registrar URL'].includes('domains.google')) {
+		if (!nextWhoisServer && result['Registrar URL']?.includes('domains.google')) {
 			nextWhoisServer = 'whois.google.com'
 		}
 

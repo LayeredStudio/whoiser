@@ -46,6 +46,12 @@ describe('#whoiser.domain()', function() {
 		});
 		*/
 
+		it('should return WHOIS for "de" when domain includes an umlaut', async function () {
+			// https://github.com/LayeredStudio/whoiser/issues/93
+			const whois = await whoiser.domain('testä.de', { follow: 1 })
+			assert.notEqual(whois['whois.denic.de']['Domain Status'], 'invalid', 'Domain Status is reported as invalid')
+		});
+
 		it('returns WHOIS for "netflix.io" with correct registrar WHOIS server', async function() {
 			let whois = await whoiser.domain('netflix.io', {follow: 1})
 			assert.equal(whois['whois.nic.io']['Registrar WHOIS Server'], 'whois.markmonitor.com', 'Parsing error for WHOIS server')
@@ -100,13 +106,18 @@ describe('#whoiser.domain()', function() {
 			assert.notStrictEqual(whois['whois.ua']['administrative contacts organization-loc'], false, 'Does not return admin name')
 			assert.notStrictEqual(whois['whois.ua']['technical contacts organization-loc'], false, 'Does not return tech name')
 		});
-		
-		it('returns WHOIS for "google.it"', async function() {
+
+		it('returns WHOIS for "google.it"', async function () {
 			let whois = await whoiser.domain('google.it')
 			assert.equal(whois['whois.nic.it']['Domain Name'], 'google.it', 'Domain name doesn\'t match')
 			assert.equal(whois['whois.nic.it']['Name Server'].length, 4, 'Incorrect number of NS returned')
 			assert.equal(whois['whois.nic.it']['Registrar'], 'MarkMonitor International Limited MARKMONITOR-REG', 'Registrar name doesn\'t match')
-		});
+			assert.equal(whois['whois.nic.it']['Created Date'], '1999-12-10 00:00:00', 'Creation date doesn\'t match')
+			for (const property of ['Registrant', 'Admin Contact', 'Technical Contacts']) {
+				const label = `${property} Created`
+				assert.equal(typeof whois['whois.nic.it'][label], 'string', `${label} does not exist, or is not a string`)
+			}
+		})
 	});
 
 });

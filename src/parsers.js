@@ -173,6 +173,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'sponsoring registrar': 'Registrar',
 		url: 'Registrar URL',
 		'registrar website': 'Registrar URL',
+		'registrar web': 'Registrar URL', // found in .it
 		'www..................': 'Registrar URL', // found in .ax
 		'mnt-by': 'Registrar ID', // found in .ua
 		'creation date': 'Created Date',
@@ -209,12 +210,19 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'relevant dates expiry date': 'Expiry Date', // found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
 		expired: 'Expiry Date', // found in .ly
-		registrant: 'Registrant Name',
+		'registry registrantid': 'Registry Registrant ID', // found in .ai
+		registrant: 'Registrant Name', // found in .ai
 		'registrant contact name': 'Registrant Name',
+		'registrantname': 'Registrant Name', // found in .ai
 		'registrant person': 'Registrant Name', // found in .ua
 		'registrant email': 'Registrant Email', // found in .ua
 		'registrant contact email': 'Registrant Email',
+		'registrantemail': 'Registrant Email', // found in .ai
+		'registrantstreet': 'Registrant Street', // found in .ai
+		'registrantcity': 'Registrant City', // found in .ai
+		'registrantcountry': 'Registrant Country', // found in .ai
 		'registrant organisation': 'Registrant Organization',
+		'registrantphone': 'Registrant Phone',
 		'trading as': 'Registrant Organization', // found in .uk, .co.uk
 		org: 'Registrant Organization', // found in .ru
 		'registrant state': 'Registrant State/Province',
@@ -376,37 +384,43 @@ const handleDotUa = (lines) => {
 }
 
 const handleDotIt = (lines) => {
-	lines.forEach((line, index) => {
-		if (line == 'Registrar' || line == 'Nameservers') {
-			// Check next lines
-			for (let i = 1; i <= 5; i++) {
-				// if no line or empty line
-				if (!lines[index + i] || !lines[index + i].trim().length) {
-					break
+	let section = ''
+	const replacement = []
+
+	for (let line of lines) {
+		// Ignore comments and empty lines
+		if (line.startsWith('*') || line === '') {
+			continue
+		}
+
+		// Collapse whitespace
+		const collapsed = line.replace(/\s+/g, ' ').trim()
+
+		// Check for top-level values and new section indicators
+		if (/^[^\s]/.test(line)) {
+			if (line.includes(':')) {
+				replacement.push(collapsed)
+			} else {
+				// Special handling for "Nameservers" section
+				if (line === 'Nameservers') {
+					section = 'Name Server:'
+				} else {
+					section = collapsed
 				}
-
-				// if tabbed line or line with value only, prefix the line with main label
-				if ((lines[index + i].startsWith('  ') && lines[index + i].includes(': ')) || !lines[index + i].endsWith(':')) {
-					let label = line.trim()
-					if (label == 'Nameservers') {
-						label = "Name Server:"
-					}
-
-					if (lines[index + i].includes(':') && label.endsWith(':')) {
-						label = label.slice(0, -1)
-					}
-
-					lines[index + i] = label + ' ' + lines[index + i].replace('\t', ' ').trim()
-					addedLabel = true
-				}
-			}
-			// remove this line if it was just a label for other lines
-			if (addedLabel) {
-				lines[index] = ''
 			}
 		}
-	})
-	return lines
+
+		// Make sure sub-section lines are properly labeled
+		if (/^\s{2}[^\s]/.test(line)) {
+			// New sub-section
+			replacement.push(`${section} ${collapsed}`)
+		} else if (/^\s{4}/.test(line)) {
+			// Continuation of previous line
+			replacement[replacement.length - 1] += `, ${collapsed}`
+		}
+	}
+
+	return replacement
 }
 
 // Fix "label: \n value" format
