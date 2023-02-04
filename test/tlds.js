@@ -35,6 +35,7 @@ describe('#whoiser.tld()', function() {
 
 		it('should return WHOIS for "analytics" (no whois server)', async function() {
 			let whois = await whoiser.tld('analytics')
+			assert.equal(whois.whois, 'whois.nic.analytics', 'WHOIS server doesn\'t match')
 			assert.equal(whois.domain, 'ANALYTICS', 'TLD doesn\'t match')
 			assert.equal(whois.created, '2015-11-20', 'Created date doesn\'t match')
 		});

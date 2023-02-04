@@ -91,23 +91,22 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } 
 		data.__raw = result
 	}
 
-	// query for WHOIS server in more sources
+	// if no whois server found, search in more sources
 	if (!data.whois) {
 
 		//todo
-		// split `query` in domain parts and request info for all tld combinations
-		// ex: query="example.com.tld" make 3 requests for "example.com.tld" "com.tld" "tld"
+		// instead of using `domainTld`, split `query` in domain parts and request info for all tld combinations
+		// example: query="example.com.tld" make 3 requests for "example.com.tld" / "com.tld" / "tld"
 
-		const whois = await whoisTldAlternate(domainTld)
+		const whois = await whoisTldAlternate(domainTld || query)
 
 		if (whois) {
 			data.whois = whois
 			data.domain = data.domain || whois
-			data.refer = data.refer || whois
 		}
 	}
 
-	if (!data.domain || !data.whois) {
+	if (!data.domain && !data.whois) {
 		throw new Error(`TLD "${query}" not found`)
 	}
 
@@ -145,8 +144,7 @@ const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2
 		// hardcoded WHOIS queries..
 		if (host === 'whois.denic.de') {
 			query = `-T dn ${rawDomain}`
-		}
-		if (host === 'whois.jprs.jp') {
+		} else if (host === 'whois.jprs.jp') {
 			query = `${query}/e`
 		}
 
