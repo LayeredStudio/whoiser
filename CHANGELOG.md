@@ -1,5 +1,8 @@
 # Whoiser change log
 
+#### 1.15.0 - 4 February 2023
+
+- Updated - Merge/normalize more WHOIS domain labels
 #### 1.14.0 - 14 January 2023
 
 - Added - Support for third level domains [#80](https://github.com/LayeredStudio/whoiser/pull/80)

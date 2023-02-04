@@ -47,6 +47,7 @@ const misspelledWhoisServer = {
 	'www.nic.ru/whois/en/': 'whois.nic.ru',
 	'www.whois.corporatedomains.com': 'whois.corporatedomains.com',
 	'www.safenames.net/DomainNames/WhoisSearch.aspx': 'whois.safenames.net',
+	'WWW.GNAME.COM/WHOIS': 'whois.gname.com',
 }
 
 // Translate WHOIS host to IP, so connection is faster

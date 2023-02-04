@@ -173,6 +173,7 @@ const parseDomainWhois = (domain, whois) => {
 		'sponsoring registrar': 'Registrar',
 		url: 'Registrar URL',
 		'registrar website': 'Registrar URL',
+		'registrar web': 'Registrar URL', // found in .it
 		'www..................': 'Registrar URL', // found in .ax
 		'mnt-by': 'Registrar ID', // found in .ua
 		'creation date': 'Created Date',
@@ -209,12 +210,19 @@ const parseDomainWhois = (domain, whois) => {
 		'relevant dates expiry date': 'Expiry Date', // found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
 		expired: 'Expiry Date', // found in .ly
-		registrant: 'Registrant Name',
+		'registry registrantid': 'Registry Registrant ID', // found in .ai
+		registrant: 'Registrant Name', // found in .ai
 		'registrant contact name': 'Registrant Name',
+		'registrantname': 'Registrant Name', // found in .ai
 		'registrant person': 'Registrant Name', // found in .ua
 		'registrant email': 'Registrant Email', // found in .ua
 		'registrant contact email': 'Registrant Email',
+		'registrantemail': 'Registrant Email', // found in .ai
+		'registrantstreet': 'Registrant Street', // found in .ai
+		'registrantcity': 'Registrant City', // found in .ai
+		'registrantcountry': 'Registrant Country', // found in .ai
 		'registrant organisation': 'Registrant Organization',
+		'registrantphone': 'Registrant Phone',
 		'trading as': 'Registrant Organization', // found in .uk, .co.uk
 		org: 'Registrant Organization', // found in .ru
 		'registrant state': 'Registrant State/Province',
