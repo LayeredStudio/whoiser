@@ -376,37 +376,43 @@ const handleDotUa = (lines) => {
 }
 
 const handleDotIt = (lines) => {
-	lines.forEach((line, index) => {
-		if (line == 'Registrar' || line == 'Nameservers') {
-			// Check next lines
-			for (let i = 1; i <= 5; i++) {
-				// if no line or empty line
-				if (!lines[index + i] || !lines[index + i].trim().length) {
-					break
+	let section = ''
+	const replacement = []
+
+	for (let line of lines) {
+		// Ignore comments and empty lines
+		if (line.startsWith('*') || line === '') {
+			continue
+		}
+
+		// Collapse whitespace
+		const collapsed = line.replace(/\s+/g, ' ').trim()
+
+		// Check for top-level values and new section indicators
+		if (/^[^\s]/.test(line)) {
+			if (line.includes(':')) {
+				replacement.push(collapsed)
+			} else {
+				// Special handling for "Nameservers" section
+				if (line === 'Nameservers') {
+					section = 'Name Server:'
+				} else {
+					section = collapsed
 				}
-
-				// if tabbed line or line with value only, prefix the line with main label
-				if ((lines[index + i].startsWith('  ') && lines[index + i].includes(': ')) || !lines[index + i].endsWith(':')) {
-					let label = line.trim()
-					if (label == 'Nameservers') {
-						label = "Name Server:"
-					}
-
-					if (lines[index + i].includes(':') && label.endsWith(':')) {
-						label = label.slice(0, -1)
-					}
-
-					lines[index + i] = label + ' ' + lines[index + i].replace('\t', ' ').trim()
-					addedLabel = true
-				}
-			}
-			// remove this line if it was just a label for other lines
-			if (addedLabel) {
-				lines[index] = ''
 			}
 		}
-	})
-	return lines
+
+		// Make sure sub-section lines are properly labeled
+		if (/^\s{2}[^\s]/.test(line)) {
+			// New sub-section
+			replacement.push(`${section} ${collapsed}`)
+		} else if (/^\s{4}/.test(line)) {
+			// Continuation of previous line
+			replacement[replacement.length - 1] += `, ${collapsed}`
+		}
+	}
+
+	return replacement
 }
 
 // Fix "label: \n value" format
