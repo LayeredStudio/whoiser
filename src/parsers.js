@@ -109,7 +109,7 @@ const parseSimpleWhois = (whois) => {
 	return data
 }
 
-const parseDomainWhois = (domain, whois, ignorePrivacy) => {
+const parseDomainWhois = (domain, whois, ignorePrivacy = true) => {
 	// Text saying there's no useful data in a field
 	const noData = [
 		'-',
