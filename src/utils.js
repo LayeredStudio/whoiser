@@ -1,4 +1,4 @@
-const punycode = require('punycode')
+const punycode = require('punycode/')
 const https = require('https')
 const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
 

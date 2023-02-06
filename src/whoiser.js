@@ -1,6 +1,6 @@
 const net = require('net')
 const dns = require('dns/promises')
-const punycode = require('punycode')
+const punycode = require('punycode/')
 const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
 const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
 
