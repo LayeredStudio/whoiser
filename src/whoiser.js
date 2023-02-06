@@ -120,7 +120,7 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } 
 	return data
 }
 
-const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
+const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
 	domain = punycode.toASCII(rawDomain)
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
@@ -157,7 +157,7 @@ const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2
 
 		try {
 			resultRaw = await whoisQuery({ host, query, timeout })
-			result = parseDomainWhois(domain, resultRaw)
+			result = parseDomainWhois(domain, resultRaw, ignorePrivacy)
 		} catch (err) {
 			result = { error: err.message }
 		}

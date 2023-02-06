@@ -55,6 +55,7 @@ Get WHOIS info for domains.
 	- `timeout` - WHOIS server request timeout in ms. Default: 1500
 	- `follow` - How many WHOIS server to query. 1 = registry server (faster), 2 = registry + registrar (more domain details). Default: 2
 	- `raw` - Return the raw WHOIS result in response. Added to `__raw`
+	- `ignorePrivacy` - Show or hide the WHOIS protected data from response, accepts boolean. Default: true
 
 ```js
 const whoiser = require('whoiser');
