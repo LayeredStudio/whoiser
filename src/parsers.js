@@ -272,6 +272,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		.trim()
 		.split('\n')
 		.map((line) => line.replace('\t', '  '))
+		.map((line) => line.replace(/[><]\W+/g, ''))
 
 	// Parse WHOIS info for specific TLDs
 
@@ -301,7 +302,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 	if (domain.endsWith('.jp')) {
 		lines = handleJpLines(lines)
 	}
-	
+
 	if (domain.endsWith('.it')) {
 		lines = handleDotIt(lines)
 	}
