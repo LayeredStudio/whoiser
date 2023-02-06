@@ -1,5 +1,11 @@
 # Whoiser change log
 
+#### 1.16.0 - 6 February 2023
+
+- Added - Option to show/hide domain WHOIS protected data [#96](https://github.com/LayeredStudio/whoiser/pull/96)
+- Fixed - Include `punycode` from userland lib [a2ee6f9](https://github.com/LayeredStudio/whoiser/commit/a2ee6f9d338ff44aeaf57d61adde3df454ff2d07)
+- Fixed - Query WHOIS for .de with umlaut in both ASCII/Unicode [5a7ffd1](https://github.com/LayeredStudio/whoiser/commit/5a7ffd133a4a11d8fd701b4b4d65a033c81012a8)
+
 #### 1.15.0 - 4 February 2023
 
 - Updated - Improved .it parsing, preserve date structure and more [#92](https://github.com/LayeredStudio/whoiser/pull/92)
