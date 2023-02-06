@@ -48,8 +48,10 @@ describe('#whoiser.domain()', function() {
 
 		it('should return WHOIS for "de" when domain includes an umlaut', async function () {
 			// https://github.com/LayeredStudio/whoiser/issues/93
-			const whois = await whoiser.domain('testä.de', { follow: 1 })
-			assert.notEqual(whois['whois.denic.de']['Domain Status'], 'invalid', 'Domain Status is reported as invalid')
+			const whoisUnicode = await whoiser.domain('testä.de', { follow: 1 })
+			const whoisAscii = await whoiser.domain('xn--test-ooa.de', { follow: 1 })
+			assert.notEqual(whoisUnicode['whois.denic.de']['Domain Status'], 'invalid', 'Domain Status is reported as invalid (Unicode)')
+			assert.notEqual(whoisAscii['whois.denic.de']['Domain Status'], 'invalid', 'Domain Status is reported as invalid (ASCII)')
 		});
 
 		it('returns WHOIS for "netflix.io" with correct registrar WHOIS server', async function() {
