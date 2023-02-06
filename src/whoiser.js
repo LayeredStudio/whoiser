@@ -180,7 +180,7 @@ const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2
 			false
 
 		// fill in WHOIS servers when missing
-		if (!nextWhoisServer && result['Registrar URL']?.includes('domains.google')) {
+		if (!nextWhoisServer && result['Registrar URL'] && result['Registrar URL'].includes('domains.google')) {
 			nextWhoisServer = 'whois.google.com'
 		}
 
