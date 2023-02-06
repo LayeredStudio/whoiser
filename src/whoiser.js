@@ -120,8 +120,8 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } 
 	return data
 }
 
-const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
-	domain = punycode.toASCII(rawDomain)
+const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
+	domain = punycode.toASCII(domain)
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
 
@@ -150,7 +150,7 @@ const whoisDomain = async (rawDomain, { host = null, timeout = 15000, follow = 2
 
 		// hardcoded WHOIS queries..
 		if (host === 'whois.denic.de') {
-			query = `-T dn ${rawDomain}`
+			query = `-T dn ${punycode.toUnicode(domain)}`
 		} else if (host === 'whois.jprs.jp') {
 			query = `${query}/e`
 		}
