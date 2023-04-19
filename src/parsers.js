@@ -96,7 +96,7 @@ const parseSimpleWhois = (whois) => {
 			} else if (isGroup) {
 				data[isGroup] = group
 			} else {
-				for (key in group) {
+				for (const key in group) {
 					const label = renameLabels[key] || key
 					data[label] = group[key]
 				}
