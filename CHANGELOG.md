@@ -1,5 +1,10 @@
 # Whoiser change log
 
+#### 1.17.0 - 21 April 2023
+
+- Fixed - Code syntax to allow strict [#99](https://github.com/LayeredStudio/whoiser/pull/99)
+- Updated - Detect more redacted data in domain WHOIS
+
 #### 1.16.0 - 6 February 2023
 
 - Added - Option to show/hide domain WHOIS protected data [#96](https://github.com/LayeredStudio/whoiser/pull/96)
