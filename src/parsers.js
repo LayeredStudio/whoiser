@@ -127,7 +127,6 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'not disclosed! visit www.eurid.eu for webbased whois.',
 		'not available',
 		'redacted for privacy',
-		'privacy protection',
 		'gdpr redacted',
 		'non-public data',
 		'gdpr masked',
