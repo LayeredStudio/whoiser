@@ -271,6 +271,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 	let colon = ': '
 	let text = []
 	let data = {
+		'Domain Name': domain,
 		'Domain Status': [],
 		'Name Server': [],
 	}
