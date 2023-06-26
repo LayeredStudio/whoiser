@@ -1,5 +1,9 @@
 # Whoiser change log
 
+- Added - .tr ccLTDs added.
+- Added - dev.js file added for Development process.
+- Updated - result > "Domain Name" line added.
+
 #### 1.17.0 - 21 April 2023
 
 - Fixed - Code syntax to allow strict [#99](https://github.com/LayeredStudio/whoiser/pull/99)
