@@ -17,6 +17,7 @@ let cacheTldWhoisServer = {
 	co: 'whois.nic.co',
 	ca: 'whois.cira.ca',
 	do: 'whois.nic.do',
+	eu: 'whois.eu',
 	gl: 'whois.nic.gl',
 	in: 'whois.registry.in',
 	io: 'whois.nic.io',
@@ -34,6 +35,7 @@ let cacheTldWhoisServer = {
 	country: 'whois.uniregistry.net', // hardcoded because `whois.iana.org` sometimes returns 'whois.uniregistry.net' or 'whois.nic.country'
 	dev: 'whois.nic.google',
 	house: 'whois.nic.house',
+	health: 'whois.nic.health',
 	info: 'whois.nic.info',
 	link: 'whois.uniregistry.net',
 	live: 'whois.nic.live',

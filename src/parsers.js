@@ -127,6 +127,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'not disclosed! visit www.eurid.eu for webbased whois.',
 		'not available',
 		'redacted for privacy',
+		'redacted | eu data subject',
 		'gdpr redacted',
 		'non-public data',
 		'gdpr masked',
@@ -437,7 +438,7 @@ const handleMultiLines = (lines) => {
 			let addedLabel = false
 
 			// Check next lines
-			for (let i = 1; i <= 5; i++) {
+			for (let i = 1; i <= 8; i++) {
 				// if no line or empty line
 				if (!lines[index + i] || !lines[index + i].trim().length) {
 					break

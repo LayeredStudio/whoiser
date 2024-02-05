@@ -1,5 +1,9 @@
 # Whoiser change log
 
+#### 1.17.2 - 5 February 2024
+
+- Fixed - Properly parse WHOIS data on multi lines for .eu TLD
+
 #### 1.17.0 - 21 April 2023
 
 - Fixed - Code syntax to allow strict [#99](https://github.com/LayeredStudio/whoiser/pull/99)
