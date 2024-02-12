@@ -125,7 +125,7 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } 
 const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
 	domain = punycode.toASCII(domain)
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
-	let results = {}
+	let results = []
 
 	// find WHOIS server in cache
 	if (!host && cacheTldWhoisServer[domainTld]) {
@@ -144,6 +144,8 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 		cacheTldWhoisServer[domainTld] = tld.whois
 	}
 
+	let index = 0
+	let serverChecked = [];
 	// query WHOIS servers for data
 	while (host && follow) {
 		let query = domain
@@ -168,7 +170,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 			result.__raw = resultRaw
 		}
 
-		results[host] = result
+		serverChecked[host] = true
 		follow--
 
 		// check for next WHOIS server
@@ -198,13 +200,31 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 			nextWhoisServer = misspelledWhoisServer[nextWhoisServer] || nextWhoisServer
 
 			// check if found server was queried already
-			nextWhoisServer = !results[nextWhoisServer] ? nextWhoisServer : false
+			nextWhoisServer = !serverChecked[nextWhoisServer] ? nextWhoisServer : false
+		}
+
+		results[index] = {
+			server: host,
+			data: Object.fromEntries(
+				Object.entries(result).map(([key, value]) =>
+					// Modify key here
+					[camelize(key), value]
+				)
+			)
 		}
 
 		host = nextWhoisServer
+		index++
 	}
 
-	return results
+	return JSON.stringify(results, null, 2)
+}
+
+const camelize = (str) => {
+	return str.toLowerCase().replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+		if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+		return index === 0 ? match.toLowerCase() : match.toUpperCase();
+	});
 }
 
 const whoisIpOrAsn = async (query, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
