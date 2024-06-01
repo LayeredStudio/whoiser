@@ -87,7 +87,6 @@ describe('#whoiser.domain()', function() {
 			assert.equal(whois['whois.domain-registry.nl']['Domain Name'], 'google.nl', 'Domain name doesn\'t match')
 			assert.equal(whois['whois.domain-registry.nl']['Name Server'].length, 4, 'Incorrect number of NS returned')
 		});
-		
 
 		it('returns WHOIS for "jprs.jp"', async function() {
 			let whois = await whoiser.domain('jprs.jp')
