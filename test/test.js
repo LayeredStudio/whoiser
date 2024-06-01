@@ -52,8 +52,8 @@ describe('Whoiser', function() {
 	describe('#whoiser.ip()', function() {
 		it('should return WHOIS for "8.8.8.8"', async function() {
 			let whois = await whoiser.ip('8.8.8.8')
-			assert.equal(whois.range, '8.0.0.0 - 8.127.255.255', 'IP Range doesn\'t match')
-			assert.equal(whois.route, '8.0.0.0/9', 'IP Route doesn\'t match')
+			assert.equal(whois.range, '8.8.8.0 - 8.8.8.255', 'IP Range doesn\'t match')
+			assert.equal(whois.route, '8.8.8.0/24', 'IP Route doesn\'t match')
 		});
 
 		it('should return WHOIS for "2606:4700:4700::1111"', async function() {
