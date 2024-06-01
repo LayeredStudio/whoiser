@@ -87,6 +87,7 @@ describe('#whoiser.domain()', function() {
 			assert.equal(whois['whois.domain-registry.nl']['Domain Name'], 'google.nl', 'Domain name doesn\'t match')
 			assert.equal(whois['whois.domain-registry.nl']['Name Server'].length, 4, 'Incorrect number of NS returned')
 		});
+		
 
 		it('returns WHOIS for "jprs.jp"', async function() {
 			let whois = await whoiser.domain('jprs.jp')
@@ -98,6 +99,30 @@ describe('#whoiser.domain()', function() {
 			let whois = await whoiser.domain('ownit.nyc')
 			assert.equal(whois['whois.nic.nyc']['Domain Name'], 'ownit.nyc', 'Domain name doesn\'t match')
 			assert.equal(whois['whois.nic.nyc']['Name Server'].length, 6, 'Incorrect number of NS returned')
+		});
+
+		it('returns WHOIS for "google.bz"', async function() {
+			let whois = await whoiser.domain('google.bz')
+			assert.equal(whois['whois.identity.digital']['Domain Name'], 'google.bz', 'Domain name doesn\'t match')
+			assert.equal(whois['whois.identity.digital']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		});
+
+		it('returns WHOIS for "nic.gi"', async function() {
+			let whois = await whoiser.domain('nic.gi')
+			assert.equal(whois['whois.identity.digital']['Domain Name'], 'nic.gi', 'Domain name doesn\'t match')
+			assert.equal(whois['whois.identity.digital']['Registry Domain ID'], 'e02e27ec0efc4865872b99765745a5e0-DONUTS', 'Domain ID doesn\'t match')
+		});
+
+		it('returns WHOIS for "google.lc"', async function() {
+			let whois = await whoiser.domain('google.lc')
+			assert.equal(whois['whois.identity.digital']['Domain Name'], 'google.lc', 'Domain name doesn\'t match')
+			assert.equal(whois['whois.identity.digital']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		});
+
+		it('returns WHOIS for "google.vc"', async function() {
+			let whois = await whoiser.domain('google.vc')
+			assert.equal(whois['whois.identity.digital']['Domain Name'], 'google.vc', 'Domain name doesn\'t match')
+			assert.equal(whois['whois.identity.digital']['Name Server'].length, 4, 'Incorrect number of NS returned')
 		});
 
 		it('returns WHOIS for "nic.ua" with fieldsfor all type of contacts', async function() {
