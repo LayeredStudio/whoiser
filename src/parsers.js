@@ -145,6 +145,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'redacted for gdpr',
 		'redacted redacted',
 		'not available from registry',
+		'hidden upon user request',
 	]
 
 	// WHOIS labels to rename. "From" must be lowercase
@@ -165,6 +166,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		hostname: 'Name Server',
 		'domain nameservers': 'Name Server',
 		'domain servers in listed order': 'Name Server', // found in .ly
+		'domain servers': 'Name Server', // found in .tr
 		'name servers dns': 'Name Server', // found in .mx
 		flags: 'Domain Status',
 		status: 'Domain Status',
@@ -178,6 +180,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'registrar............': 'Registrar', // found in .ax
 		'record maintained by': 'Registrar',
 		'sponsoring registrar': 'Registrar',
+		'registrar organization name': 'Registrar', // found in .tr
 		url: 'Registrar URL',
 		'registrar website': 'Registrar URL',
 		'registrar web': 'Registrar URL', // found in .it
@@ -189,6 +192,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'relevant dates registered on': 'Created Date',
 		created: 'Created Date',
 		'created on': 'Created Date', // found in .mx
+		'additional info created on..............': 'Created Date', // found in .tr
 		'registration time': 'Created Date',
 		registered: 'Created Date',
 		'created..............': 'Created Date', // found in .ax
@@ -211,6 +215,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'expire date': 'Expiry Date',
 		'expiration date': 'Expiry Date',
 		'expires..............': 'Expiry Date', // found in .ax
+		'additional info expires on..............': 'Expiry Date', // found in .tr
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
 		expire: 'Expiry Date',
@@ -220,16 +225,16 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'registry registrantid': 'Registry Registrant ID', // found in .ai
 		registrant: 'Registrant Name', // found in .ai
 		'registrant contact name': 'Registrant Name',
-		'registrantname': 'Registrant Name', // found in .ai
+		registrantname: 'Registrant Name', // found in .ai
 		'registrant person': 'Registrant Name', // found in .ua
 		'registrant email': 'Registrant Email', // found in .ua
 		'registrant contact email': 'Registrant Email',
-		'registrantemail': 'Registrant Email', // found in .ai
-		'registrantstreet': 'Registrant Street', // found in .ai
-		'registrantcity': 'Registrant City', // found in .ai
-		'registrantcountry': 'Registrant Country', // found in .ai
+		registrantemail: 'Registrant Email', // found in .ai
+		registrantstreet: 'Registrant Street', // found in .ai
+		registrantcity: 'Registrant City', // found in .ai
+		registrantcountry: 'Registrant Country', // found in .ai
 		'registrant organisation': 'Registrant Organization',
-		'registrantphone': 'Registrant Phone',
+		registrantphone: 'Registrant Phone',
 		'trading as': 'Registrant Organization', // found in .uk, .co.uk
 		org: 'Registrant Organization', // found in .ru
 		'registrant state': 'Registrant State/Province',
@@ -308,9 +313,13 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 	if (domain.endsWith('.jp')) {
 		lines = handleJpLines(lines)
 	}
-	
+
 	if (domain.endsWith('.it')) {
 		lines = handleDotIt(lines)
+	}
+
+	if (domain.endsWith('.tr')) {
+		lines = handleDotTr(lines)
 	}
 
 	lines = lines.map((l) => l.trim())
@@ -371,6 +380,51 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 	data.text = text.split('\n')
 
 	return data
+}
+
+const handleDotTr = (lines) => {
+	lines = lines.filter((line) => line.trim() !== '') // Remove blank lines
+
+	const registrantLines = ['Name', undefined, undefined, undefined, undefined] // No clue what the other 4 fields are, all domains have them hidden
+	const replacement = []
+	let section = ''
+	let sectionLine = 0
+
+	for (let line of lines) {
+		line = line.replace(/\s+/g, ' ').replace(' :', ':').trim()
+
+		if (line.startsWith('** Domain')) {
+			// Keep line for domain name/nameservers
+			line = line.replace('** ', '')
+		} else if (line.includes('** ')) {
+			// Start new section
+			section = line.replace(':', '').replace('** ', '').trim()
+			sectionLine = 0
+			continue
+		} else if (section === 'Registrant') {
+			// Add registrant info
+			if (!registrantLines[sectionLine]) continue
+
+			line = `Registrant ${registrantLines[sectionLine]}: ${line}`
+			sectionLine++
+		} else if (!line.includes(': ')) {
+			// Add multi-line information to one line (nameservers and address)
+			replacement[replacement.length - 1] += ` ${line}`
+			continue
+		} else if (section) {
+			// Append section name to each line
+			line = `${section} ${line}`
+		}
+
+		// Remove period at end of dates
+		if (section === 'Additional Info') {
+			line = line.replace(/\.$/, '')
+		}
+
+		replacement.push(line)
+	}
+
+	return replacement
 }
 
 const handleDotUa = (lines) => {

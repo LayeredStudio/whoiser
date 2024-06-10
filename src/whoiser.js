@@ -26,6 +26,7 @@ let cacheTldWhoisServer = {
 	ro: 'whois.rotld.ro',
 	rs: 'whois.rnids.rs',
 	so: 'whois.nic.so',
+	tr: 'whois.nic.tr',
 	us: 'whois.nic.us',
 	ws: 'whois.website.ws',
 
@@ -102,7 +103,6 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } 
 
 	// if no whois server found, search in more sources
 	if (!data.whois) {
-
 		//todo
 		// instead of using `domainTld`, split `query` in domain parts and request info for all tld combinations
 		// example: query="example.com.tld" make 3 requests for "example.com.tld" / "com.tld" / "tld"
