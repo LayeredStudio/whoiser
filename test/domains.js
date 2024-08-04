@@ -120,6 +120,15 @@ describe('#whoiser.domain()', function() {
 				assert.equal(typeof whois['whois.nic.it'][label], 'string', `${label} does not exist, or is not a string`)
 			}
 		})
+
+		it('returns WHOIS for "trabis.gov.tr"', async function () {
+			let whois = await whoiser.domain('trabis.gov.tr')
+			assert.equal(whois['whois.nic.tr']['Domain Name'], 'trabis.gov.tr', 'Domain name doesn\'t match')
+			assert.equal(whois['whois.nic.tr']['Name Server'].length, 5, 'Incorrect number of NS returned')
+			assert.equal(whois['whois.nic.tr']['Registrar'], 'TRABİS KK', 'Registrar name doesn\'t match')
+			assert.equal(whois['whois.nic.tr']['Registrant Name'], 'Bilgi Teknolojileri ve İletişim Kurumu', 'Registrant name doesn\'t match')
+			assert.equal(whois['whois.nic.tr']['Created Date'], '2011-Mar-22', 'Creation date doesn\'t match')
+		})
 	});
 
 });
