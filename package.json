@@ -24,7 +24,9 @@
   "scripts": {
     "prettier": "prettier \"src/*.js\"",
     "prettier:write": "npm run prettier -- --write",
-    "test": "mocha -t 7000 -s 3000"
+    "test": "npm run test-new-with-node-runner && npm run test-old-with-mocha",
+    "test-old-with-mocha": "mocha -t 7000 -s 3000",
+    "test-new-with-node-runner": "node --test test/whois-fr.mjs"
   },
   "devDependencies": {
     "mocha": "^10.1.0",
