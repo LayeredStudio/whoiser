@@ -172,6 +172,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		status: 'Domain Status',
 		state: 'Domain Status', // found in .ru
 		'registration status': 'Domain Status',
+		'eppstatus': 'Domain Status', // found in .fr
 		'sponsoring registrar iana id': 'Registrar IANA ID',
 		organisation: 'Registrar',
 		registrar: 'Registrar',
@@ -207,6 +208,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'relevant dates last updated': 'Updated Date', // found in .uk, .co.uk
 		'last updated on': 'Updated Date', // found in .mx
 		'last update': 'Updated Date', // found in .co.jp
+		'last-update': 'Updated Date', // found in .fr
 		'registrar registration expiration date': 'Expiry Date',
 		'registry expiry date': 'Expiry Date',
 		'expires on': 'Expiry Date',
@@ -224,15 +226,18 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		expired: 'Expiry Date', // found in .ly
 		'registry registrantid': 'Registry Registrant ID', // found in .ai
 		registrant: 'Registrant Name', // found in .ai
+		'registrant contact': 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
 		registrantname: 'Registrant Name', // found in .ai
 		'registrant person': 'Registrant Name', // found in .ua
 		'registrant email': 'Registrant Email', // found in .ua
+		'registrant e-mail': 'Registrant Email', // found in .fr
 		'registrant contact email': 'Registrant Email',
 		registrantemail: 'Registrant Email', // found in .ai
 		registrantstreet: 'Registrant Street', // found in .ai
 		registrantcity: 'Registrant City', // found in .ai
 		registrantcountry: 'Registrant Country', // found in .ai
+		'registrant country': 'Registrant Country', // found in .fr
 		'registrant organisation': 'Registrant Organization',
 		registrantphone: 'Registrant Phone',
 		'trading as': 'Registrant Organization', // found in .uk, .co.uk
@@ -316,6 +321,8 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 
 	if (domain.endsWith('.it')) {
 		lines = handleDotIt(lines)
+	} else if (domain.endsWith('.fr')) {
+		lines = handleDotFr(lines)
 	}
 
 	if (domain.endsWith('.tr')) {
@@ -547,6 +554,82 @@ const handleJpLines = (lines) => {
 		}
 	}
 	return ret.map((line) => line.replace(/\[(.*?)\]/g, '$1:'))
+}
+
+/**
+ * Normalize WHOIS data for .fr ccTld, make it look more like gTLDs
+ * 
+ * @param {string[]} lines 
+ * @returns
+ */
+function handleDotFr(lines) {
+	const groups = []
+	let group = []
+	const finalLines = []
+
+	// split data in groups
+	lines.forEach(line => {
+		if (line.startsWith('%')) {
+			finalLines.push(line)
+		} else if (!line.trim().length && group.length) {
+			// start new group
+			groups.push(group)
+			group = []
+		} else if (line.trim().length && !line.startsWith('source')) {
+			group.push(splitStringBy(line, line.indexOf(':')).map(str => str.trim()))
+		}
+	})
+
+	if (group.length) {
+		groups.push(group)
+	}
+
+	groups.forEach(gr => {
+		if (gr[0][0] === 'domain') {
+			// group with domain info
+			gr.forEach(line => {
+				if (line[0] !== 'status') {
+					finalLines.push(line.join(': '))
+				}
+			})
+		} else if (gr[0][0] === 'registrar') {
+			// group with Registrar info
+			gr.forEach(([label, value]) => {
+				if (label === 'registrar') {
+					finalLines.push(`${label}: ${value}`)
+				} else {
+					finalLines.push(`registrar ${label}: ${value}`)
+				}
+			})
+		} else if (gr[0][0] === 'nic-hdl') {
+			let contactType = ''
+			const contactTypeLine = finalLines.find(line => line.includes(gr[0][1]))
+
+			if (contactTypeLine.startsWith('admin-c')) {
+				contactType = 'admin'
+			} else if (contactTypeLine.startsWith('holder-c')) {
+				contactType = 'registrant'
+			} else if (contactTypeLine.startsWith('tech-c')) {
+				contactType = 'technical'
+			}
+
+			// group with contact info
+			gr.forEach(([label, value]) => {
+				if (label === 'nic-hdl') {
+					finalLines.push(`${contactType} registry id: ${value}`)
+				} else {
+					finalLines.push(`${contactType} ${label}: ${value}`)
+				}
+			})
+		} else {
+			gr.forEach(line => {
+				finalLines.push(line.join(': '))
+			})
+		}
+
+	})
+
+	return finalLines
 }
 
 // Handle formats like this:

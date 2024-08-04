@@ -1,5 +1,9 @@
 # Whoiser change log
 
+#### 1.18.0 - 4 August 2024
+
+- Added - Parse & normalize WHOIS data for .fr
+
 #### 1.17.2 - 5 February 2024
 
 - Fixed - Properly parse WHOIS data on multi lines for .eu TLD
