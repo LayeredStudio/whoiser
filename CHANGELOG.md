@@ -3,6 +3,7 @@
 #### 1.18.0 - 4 August 2024
 
 - Added - Parse & normalize WHOIS data for .fr
+- Added - Parse & normalize WHOIS data for .tr [#111](https://github.com/LayeredStudio/whoiser/pull/111) (thanks to @popeeyy)
 
 #### 1.17.2 - 5 February 2024
 
