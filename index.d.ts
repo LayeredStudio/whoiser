@@ -14,6 +14,8 @@ declare module 'whoiser' {
 		 */
 		timeout?: number
 
+		encoding?: string
+
 		/**
 		 * How many WHOIS server to query.
 		 * 1 = registry server (faster),
