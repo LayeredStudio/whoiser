@@ -172,7 +172,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		status: 'Domain Status',
 		state: 'Domain Status', // found in .ru
 		'registration status': 'Domain Status',
-		'eppstatus': 'Domain Status', // found in .fr
+		eppstatus: 'Domain Status', // found in .fr
 		'sponsoring registrar iana id': 'Registrar IANA ID',
 		organisation: 'Registrar',
 		registrar: 'Registrar',
@@ -558,8 +558,8 @@ const handleJpLines = (lines) => {
 
 /**
  * Normalize WHOIS data for .fr ccTld, make it look more like gTLDs
- * 
- * @param {string[]} lines 
+ *
+ * @param {string[]} lines
  * @returns
  */
 function handleDotFr(lines) {
@@ -568,7 +568,7 @@ function handleDotFr(lines) {
 	const finalLines = []
 
 	// split data in groups
-	lines.forEach(line => {
+	lines.forEach((line) => {
 		if (line.startsWith('%')) {
 			finalLines.push(line)
 		} else if (!line.trim().length && group.length) {
@@ -576,7 +576,7 @@ function handleDotFr(lines) {
 			groups.push(group)
 			group = []
 		} else if (line.trim().length && !line.startsWith('source')) {
-			group.push(splitStringBy(line, line.indexOf(':')).map(str => str.trim()))
+			group.push(splitStringBy(line, line.indexOf(':')).map((str) => str.trim()))
 		}
 	})
 
@@ -584,10 +584,10 @@ function handleDotFr(lines) {
 		groups.push(group)
 	}
 
-	groups.forEach(gr => {
+	groups.forEach((gr) => {
 		if (gr[0][0] === 'domain') {
 			// group with domain info
-			gr.forEach(line => {
+			gr.forEach((line) => {
 				if (line[0] !== 'status') {
 					finalLines.push(line.join(': '))
 				}
@@ -603,7 +603,7 @@ function handleDotFr(lines) {
 			})
 		} else if (gr[0][0] === 'nic-hdl') {
 			let contactType = ''
-			const contactTypeLine = finalLines.find(line => line.includes(gr[0][1]))
+			const contactTypeLine = finalLines.find((line) => line.includes(gr[0][1]))
 
 			if (contactTypeLine.startsWith('admin-c')) {
 				contactType = 'admin'
@@ -622,11 +622,10 @@ function handleDotFr(lines) {
 				}
 			})
 		} else {
-			gr.forEach(line => {
+			gr.forEach((line) => {
 				finalLines.push(line.join(': '))
 			})
 		}
-
 	})
 
 	return finalLines
