@@ -1,18 +1,16 @@
 const punycode = require('punycode/')
-const https = require('https')
+const { request } = require('undici')
+
 const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
 
-const requestGetBody = (url) => {
-	return new Promise((resolve, reject) => {
-		https
-			.get(url, (resp) => {
-				let data = ''
-				resp.on('data', (chunk) => (data += chunk))
-				resp.on('end', () => resolve(data))
-				resp.on('error', reject)
-			})
-			.on('error', reject)
-	})
+const requestGetBody = async (url) => {
+	try {
+		const { body } = await request(url)
+		const data = await body.text()
+		return data
+	} catch (error) {
+		throw error
+	}
 }
 
 const isTld = (tld) => {
