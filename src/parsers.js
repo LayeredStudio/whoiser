@@ -224,6 +224,7 @@ const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		'relevant dates expiry date': 'Expiry Date', // found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
 		expired: 'Expiry Date', // found in .ly
+		"renewal date": 'Expiry Date', // found in .pl
 		'registry registrantid': 'Registry Registrant ID', // found in .ai
 		registrant: 'Registrant Name', // found in .ai
 		'registrant contact': 'Registrant Name',
