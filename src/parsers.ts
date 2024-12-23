@@ -375,6 +375,9 @@ export const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 		.flat()
 		.filter(isDomain)
 
+	//todo sometimes the whois includes duplicate NS for a domain
+	//data['Name Server'] = uniq(data['Name Server'])
+
 	// filter out empty status lines
 	data['Domain Status'] = data['Domain Status'].filter(Boolean)
 

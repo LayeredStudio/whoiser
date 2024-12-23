@@ -1,8 +1,10 @@
 import punycode from 'punycode'
 
-export const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
+export function splitStringBy(string: string, by: number) {
+	return [string.slice(0, by), string.slice(by + 1)]
+}
 
-export const isTld = (tld) => {
+export function isTld(tld: string): boolean {
 	if (tld.startsWith('.')) {
 		tld = tld.substring(1)
 	}
@@ -11,7 +13,7 @@ export const isTld = (tld) => {
 	return /^([a-z]{2,64}|xn[a-z0-9-]{5,})$/i.test(punycode.toASCII(tld))
 }
 
-export const isDomain = (domain) => {
+export function isDomain(domain: string): boolean {
 	if (domain.endsWith('.')) {
 		domain = domain.substring(0, domain.length - 1)
 	}

@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "target": "ES2022",
+      "isolatedModules": true,
+      "outDir": "dist",
+      "lib": ["ES2022", "DOM"],
+      "declaration": true,
+      "strict": true,
+      "noImplicitReturns": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noUncheckedIndexedAccess": true,
+      "noPropertyAccessFromIndexSignature": true
+    },
+    "exclude": [ "node_modules" ],
+    "include": [
+      "src/*.ts"
+    ]
+}
