@@ -1,8 +1,8 @@
-const net = require('net')
-const dns = require('dns/promises')
-const punycode = require('punycode/')
-const { parseSimpleWhois, parseDomainWhois } = require('./parsers.js')
-const { splitStringBy, requestGetBody, isTld, isDomain } = require('./utils.js')
+import net from 'node:net'
+import dns from 'node:dns/promises'
+import punycode from 'punycode'
+import { parseSimpleWhois, parseDomainWhois } from './parsers.js'
+import { splitStringBy, isTld, isDomain } from './utils.js'
 
 // Cache WHOIS servers
 // Basic list of servers, more will be auto-discovered
@@ -64,12 +64,7 @@ const misspelledWhoisServer = {
 	'WWW.GNAME.COM/WHOIS': 'whois.gname.com',
 }
 
-// Translate WHOIS host to IP, so connection is faster
-const whoisHostToIp = {
-	'whois.google.com': '216.239.34.22',
-}
-
-const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', querySuffix = '\r\n' } = {}) => {
+export const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', querySuffix = '\r\n' } = {}) => {
 	return new Promise((resolve, reject) => {
 		let data = ''
 		const socket = net.connect({ host, port }, () => socket.write(query + querySuffix))
@@ -81,10 +76,10 @@ const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', query
 	})
 }
 
-const allTlds = async () => {
-	const tlds = await requestGetBody('https://data.iana.org/TLD/tlds-alpha-by-domain.txt')
+export const allTlds = async () => {
+	//const tlds = await requestGetBody('https://data.iana.org/TLD/tlds-alpha-by-domain.txt')
 
-	return tlds.split('\n').filter((tld) => Boolean(tld) && !tld.startsWith('#'))
+	//return tlds.split('\n').filter((tld) => Boolean(tld) && !tld.startsWith('#'))
 }
 
 const whoisTldAlternate = async (query) => {
@@ -97,7 +92,7 @@ const whoisTldAlternate = async (query) => {
 	return whoisSrv?.value?.[0]?.name ?? whoisCname?.value?.[0] // Get whois server from results
 }
 
-const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } = {}) => {
+export const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } = {}) => {
 	const result = await whoisQuery({ host: 'whois.iana.org', query, timeout })
 	const data = parseSimpleWhois(result)
 
@@ -126,7 +121,7 @@ const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } 
 	return data
 }
 
-const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
+export const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
 	domain = punycode.toASCII(domain)
 	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
 	let results = {}
@@ -211,7 +206,7 @@ const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, r
 	return results
 }
 
-const whoisIpOrAsn = async (query, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
+export const whoisIpOrAsn = async (query, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
 	const type = net.isIP(query) ? 'ip' : 'asn'
 	query = String(query)
 
@@ -255,28 +250,8 @@ const whoisIpOrAsn = async (query, { host = null, timeout = 15000, follow = 2, r
 	return data
 }
 
-const firstResult = (whoisResults) => {
+export const firstResult = (whoisResults) => {
 	const whoisServers = Object.keys(whoisResults)
 
 	return whoisServers.length ? whoisResults[whoisServers[0]] : null
 }
-
-module.exports = (query, options) => {
-	if (net.isIP(query) || /^(as)?\d+$/i.test(query)) {
-		return whoisIpOrAsn(query, options)
-	} else if (isTld(query)) {
-		return whoisTld(query, options)
-	} else if (isDomain(query)) {
-		return whoisDomain(query, options)
-	}
-
-	throw new Error('Unrecognized query. Try a domain (google.com), IP (1.1.1.1) or TLD (.blog)')
-}
-
-module.exports.query = whoisQuery
-module.exports.tld = whoisTld
-module.exports.domain = whoisDomain
-module.exports.asn = whoisIpOrAsn
-module.exports.ip = whoisIpOrAsn
-module.exports.allTlds = allTlds
-module.exports.firstResult = firstResult

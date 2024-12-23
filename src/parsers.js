@@ -1,6 +1,6 @@
-const { splitStringBy, isDomain } = require('./utils.js')
+import { splitStringBy, isDomain } from './utils.js'
 
-const parseSimpleWhois = (whois) => {
+export const parseSimpleWhois = (whois) => {
 	let data = {}
 	let text = []
 
@@ -109,7 +109,7 @@ const parseSimpleWhois = (whois) => {
 	return data
 }
 
-const parseDomainWhois = (domain, whois, ignorePrivacy) => {
+export const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 	// Text saying there's no useful data in a field
 	const noData = [
 		'-',
@@ -643,6 +643,3 @@ const handleMissingColons = (lines) => {
 
 	return lines
 }
-
-module.exports.parseSimpleWhois = parseSimpleWhois
-module.exports.parseDomainWhois = parseDomainWhois

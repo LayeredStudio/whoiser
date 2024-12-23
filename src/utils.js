@@ -1,29 +1,17 @@
-const punycode = require('punycode/')
-const https = require('https')
-const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
+import punycode from 'punycode'
 
-const requestGetBody = (url) => {
-	return new Promise((resolve, reject) => {
-		https
-			.get(url, (resp) => {
-				let data = ''
-				resp.on('data', (chunk) => (data += chunk))
-				resp.on('end', () => resolve(data))
-				resp.on('error', reject)
-			})
-			.on('error', reject)
-	})
-}
+export const splitStringBy = (string, by) => [string.slice(0, by), string.slice(by + 1)]
 
-const isTld = (tld) => {
+export const isTld = (tld) => {
 	if (tld.startsWith('.')) {
 		tld = tld.substring(1)
 	}
 
+	//todo use https://nodejs.org/api/url.html#urldomaintoasciidomain
 	return /^([a-z]{2,64}|xn[a-z0-9-]{5,})$/i.test(punycode.toASCII(tld))
 }
 
-const isDomain = (domain) => {
+export const isDomain = (domain) => {
 	if (domain.endsWith('.')) {
 		domain = domain.substring(0, domain.length - 1)
 	}
@@ -38,8 +26,3 @@ const isDomain = (domain) => {
 		})
 	)
 }
-
-module.exports.splitStringBy = splitStringBy
-module.exports.requestGetBody = requestGetBody
-module.exports.isTld = isTld
-module.exports.isDomain = isDomain

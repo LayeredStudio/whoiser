@@ -1,9 +1,8 @@
 {
   "name": "whoiser",
-  "version": "1.18.0",
-  "description": "Whois info for TLDs, domains and IPs",
-  "types": "./index.d.ts",
-  "typings": "./index.d.ts",
+  "version": "2.0.0-beta.1",
+  "description": "Whois info for domains, TLDs, IPs, and ASN",
+  "type": "module",
   "keywords": [
     "whois",
     "domain",
