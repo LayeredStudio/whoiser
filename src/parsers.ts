@@ -1,17 +1,29 @@
-import { splitStringBy, isDomain } from './utils.js'
+import type { WhoisDataGroup } from './types.ts'
+import { splitStringBy, isDomain } from './utils.ts'
 
-export const parseSimpleWhois = (whois) => {
-	let data = {}
-	let text = []
+interface WhoisData {
+	[key: string]: string | string[] | WhoisDataGroup | {[key: string]: WhoisDataGroup} | undefined
+	contacts?: {[key: string]: WhoisDataGroup}
+	__comments: string[]
+	__raw: string
+}
 
-	const renameLabels = {
+export function parseSimpleWhois(whois: string): WhoisData {
+	const data: WhoisData = {
+		__comments: [],
+		__raw: whois,
+	}
+
+	const renameLabels: {[key: string]: string} = {
 		NetRange: 'range',
 		inetnum: 'range',
 		CIDR: 'route',
 		origin: 'asn',
 		OriginAS: 'asn',
 	}
-	const lineToGroup = {
+
+	// labels of WHOIS data that are actually groups
+	const lineToGroup: {[key: string]: string} = {
 		contact: 'contact',
 		OrgName: 'organisation',
 		organisation: 'organisation',
@@ -28,52 +40,12 @@ export const parseSimpleWhois = (whois) => {
 		return data
 	}
 
-	let resultNum = 0
-	let groups = [{}]
-	let lastLabel
-
-	whois.split('\n').forEach((line) => {
-		// catch comment lines
-		if (line.startsWith('%') || line.startsWith('#')) {
-			// detect if an ASN or IP has multiple WHOIS results
-			if (line.includes('# start')) {
-				// nothing
-			} else if (line.includes('# end')) {
-				resultNum++
-			} else {
-				text.push(line)
-			}
-		} else if (resultNum === 0) {
-			// for the moment, parse only first WHOIS result
-
-			if (line) {
-				if (line.includes(':')) {
-					const [label, value] = splitStringBy(line, line.indexOf(':')).map((info) => info.trim())
-					lastLabel = label
-
-					// 1) Filter out unnecessary info, 2) then detect if the label is already added to group
-					if (value.includes('---')) {
-						// do nothing with useless data
-					} else if (groups[groups.length - 1][label]) {
-						groups[groups.length - 1][label] += '\n' + value
-					} else {
-						groups[groups.length - 1][label] = value
-					}
-				} else {
-					groups[groups.length - 1][lastLabel] += '\n' + line.trim()
-				}
-			} else if (Object.keys(groups[groups.length - 1]).length) {
-				// if empty line, means another info group starts
-				groups.push({})
-			}
-		}
-	})
+	const { groups } = whoisDataToGroups(whois)
 
 	groups
-		.filter((group) => Object.keys(group).length)
 		.forEach((group) => {
 			const groupLabels = Object.keys(group)
-			let isGroup = false
+			let isGroup: string | false = false
 
 			// check if a label is marked as group
 			groupLabels.forEach((groupLabel) => {
@@ -82,8 +54,10 @@ export const parseSimpleWhois = (whois) => {
 				}
 			})
 
-			// check if a info group is a Contact in APNIC result
-			// @Link https://www.apnic.net/manage-ip/using-whois/guide/role/
+			/**
+			 * Check if a info group is a Contact in APNIC result
+			 * @see https://www.apnic.net/manage-ip/using-whois/guide/role/
+			 */
 			if (!isGroup && groupLabels.includes('role')) {
 				isGroup = 'Contact ' + group.role.split(' ')[1]
 			} else if (!isGroup && groupLabels.includes('person')) {
@@ -91,7 +65,7 @@ export const parseSimpleWhois = (whois) => {
 			}
 
 			if (isGroup === 'contact') {
-				data.contacts = data.contacts || {}
+				data.contacts ||= {}
 				data.contacts[group['contact']] = group
 			} else if (isGroup) {
 				data[isGroup] = group
@@ -103,13 +77,10 @@ export const parseSimpleWhois = (whois) => {
 			}
 		})
 
-	// Append the WHOIS comments
-	data.text = text
-
 	return data
 }
 
-export const parseDomainWhois = (domain, whois, ignorePrivacy) => {
+export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: boolean = true) {
 	// Text saying there's no useful data in a field
 	const noData = [
 		'-',
@@ -280,7 +251,7 @@ export const parseDomainWhois = (domain, whois, ignorePrivacy) => {
 	]
 
 	let colon = ': '
-	let text = []
+	let text: string[] = []
 	let data = {
 		'Domain Status': [],
 		'Name Server': [],
@@ -437,7 +408,7 @@ const handleDotTr = (lines) => {
 	return replacement
 }
 
-const handleDotUa = (lines) => {
+const handleDotUa = (lines: string[]) => {
 	const types = ['Registrar', 'Registrant', 'Admin', 'Technical']
 	let flag = ''
 	lines.forEach((line, index) => {
@@ -454,7 +425,7 @@ const handleDotUa = (lines) => {
 	return lines
 }
 
-const handleDotIt = (lines) => {
+const handleDotIt = (lines: string[]) => {
 	let section = ''
 	const replacement = []
 
@@ -495,7 +466,7 @@ const handleDotIt = (lines) => {
 }
 
 // Fix "label: \n value" format
-const handleMultiLines = (lines) => {
+const handleMultiLines = (lines: string[]) => {
 	lines.forEach((line, index) => {
 		// if line is just a WHOIS label ending with ":", then verify next lines
 		if (!line.startsWith('*') && !line.startsWith('%') && line.trim().endsWith(':')) {
@@ -637,7 +608,7 @@ function handleDotFr(lines) {
 
 // Handle formats like this:
 // Registrar Gandi SAS
-const handleMissingColons = (lines) => {
+const handleMissingColons = (lines: string[]) => {
 	lines.forEach((line, index) => {
 		if (line.startsWith('Registrar ')) {
 			lines[index] = line.replace('Registrar ', 'Registrar: ')
@@ -645,4 +616,57 @@ const handleMissingColons = (lines) => {
 	})
 
 	return lines
+}
+
+
+// ----- v2
+
+export function whoisDataToGroups(whois: string) {
+	const comments: string[] = []
+
+	let resultNum: number = 0
+	const groups: WhoisDataGroup[] = [{}]
+	let lastLabel: string
+
+	whois.split('\n').forEach((line) => {
+		// catch comment lines
+		if (line.startsWith('%') || line.startsWith('#')) {
+			// detect if an ASN or IP has multiple WHOIS results
+			if (line.includes('# start')) {
+				// nothing
+			} else if (line.includes('# end')) {
+				resultNum++
+			} else {
+				comments.push(line)
+			}
+		} else if (resultNum === 0) {
+			// for the moment, parse only first WHOIS result
+
+			if (line) {
+				if (line.includes(':')) {
+					const [label, value] = splitStringBy(line, line.indexOf(':')).map((info) => info.trim())
+					lastLabel = label
+
+					// 1) Filter out unnecessary info, 2) then detect if the label is already added to group
+					if (value.includes('---')) {
+						// do nothing with useless data
+					} else if (groups[groups.length - 1][label]) {
+						groups[groups.length - 1][label] += '\n' + value
+					} else {
+						groups[groups.length - 1][label] = value
+					}
+				} else {
+					groups[groups.length - 1][lastLabel] += '\n' + line.trim()
+				}
+			} else if (Object.keys(groups[groups.length - 1]).length) {
+				// if empty line, means another info group starts
+				groups.push({})
+			}
+		}
+	})
+
+	return {
+		comments,
+		groups: groups.filter((group) => Object.keys(group).length > 0)
+	}
 }

@@ -1,8 +1,9 @@
 import net from 'node:net'
-import dns from 'node:dns/promises'
 import punycode from 'punycode'
-import { parseSimpleWhois, parseDomainWhois } from './parsers.js'
-import { splitStringBy, isTld, isDomain } from './utils.js'
+
+import type { TldWhoisResponse } from './types.ts'
+import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'
+import { splitStringBy, validatedTld } from './utils.ts'
 
 // Cache WHOIS servers
 // Basic list of servers, more will be auto-discovered
@@ -64,61 +65,87 @@ const misspelledWhoisServer = {
 	'WWW.GNAME.COM/WHOIS': 'whois.gname.com',
 }
 
-export const whoisQuery = ({ host = null, port = 43, timeout = 15000, query = '', querySuffix = '\r\n' } = {}) => {
+export function whoisQuery(host: string, query: string, { port = 43, timeout = 15000, querySuffix = '\r\n' } = {}): Promise<string> {
 	return new Promise((resolve, reject) => {
 		let data = ''
 		const socket = net.connect({ host, port }, () => socket.write(query + querySuffix))
 		socket.setTimeout(timeout)
 		socket.on('data', (chunk) => (data += chunk))
-		socket.on('close', (hadError) => resolve(data))
+		socket.on('close', () => resolve(data))
 		socket.on('timeout', () => socket.destroy(new Error('Timeout')))
 		socket.on('error', reject)
 	})
 }
 
-export const allTlds = async () => {
-	//const tlds = await requestGetBody('https://data.iana.org/TLD/tlds-alpha-by-domain.txt')
+/**
+ * TLD WHOIS data, from the [IANA WHOIS](https://www.iana.org/whois) server.
+ * 
+ * @param tld TLD/SLD to query. Example: 'com', '.co.uk'
+ * @param timeout 
+ * @returns Normalized WHOIS data
+ * @throws Error if TLD is invalid or not found
+ */
+export async function whoisTld(tld: string, timeout: number = 5000) {
+	tld = validatedTld(tld)
 
-	//return tlds.split('\n').filter((tld) => Boolean(tld) && !tld.startsWith('#'))
-}
+	const whoisData = await whoisQuery('whois.iana.org', tld, { timeout })
 
-const whoisTldAlternate = async (query) => {
-	const [whoisCname, whoisSrv] = await Promise.allSettled([
-		// Check sources for whois server
-		dns.resolveCname(`${query}.whois-servers.net`), // Queries public database for whois server
-		dns.resolveSrv(`_nicname._tcp.${query}`), // Queries for whois server published by registry
-	])
+	const { comments, groups } = whoisDataToGroups(whoisData)
+	const groupWithDomain = groups.find((group) => Object.keys(group).includes('domain'))
 
-	return whoisSrv?.value?.[0]?.name ?? whoisCname?.value?.[0] // Get whois server from results
-}
-
-export const whoisTld = async (query, { timeout = 15000, raw = false, domainTld = '' } = {}) => {
-	const result = await whoisQuery({ host: 'whois.iana.org', query, timeout })
-	const data = parseSimpleWhois(result)
-
-	if (raw) {
-		data.__raw = result
+	if (!groupWithDomain) {
+		throw new Error(`TLD "${tld}" not found`)
 	}
 
-	// if no whois server found, search in more sources
-	if (!data.whois) {
-		//todo
-		// instead of using `domainTld`, split `query` in domain parts and request info for all tld combinations
-		// example: query="example.com.tld" make 3 requests for "example.com.tld" / "com.tld" / "tld"
+	const tldResponse: TldWhoisResponse = {
+		tld: String(groupWithDomain['domain']),
+		organisation: undefined,
+		contacts: [],
+		nserver: [],
+		'ds-rdata': undefined,
+		whois: undefined,
+		status: 'ACTIVE',
+		remarks: '',
+		created: '',
+		changed: '',
+		source: '',
+		__comments: comments,
+		__raw: whoisData,
+	}
 
-		const whois = await whoisTldAlternate(domainTld || query)
+	groups.forEach(group => {
+		if (Object.keys(group).at(0) === 'organisation') {
+			tldResponse.organisation = group
+		} else if (Object.keys(group).at(0) === 'contact') {
+			tldResponse.contacts.push(group)
+		} else {
+			for (const key in group) {
+				const value = group[key]
 
-		if (whois) {
-			data.whois = whois
-			data.domain = data.domain || whois
+				if (value) {
+					if (key === 'status') {
+						tldResponse.status = value as 'ACTIVE' | 'FORMER'
+					} else if (key === 'remarks') {
+						tldResponse.remarks = value
+					} else if (key === 'created') {
+						tldResponse.created = value
+					} else if (key === 'changed') {
+						tldResponse.changed = value
+					} else if (key === 'source') {
+						tldResponse.source = value
+					} else if (key === 'whois') {
+						tldResponse.whois = value
+					} else if (key === 'nserver') {
+						tldResponse.nserver = value.split('\n').map((ns) => ns.trim())
+					} else if (key === 'ds-rdata') {
+						tldResponse['ds-rdata'] = value
+					}
+				}
+			}
 		}
-	}
+	})
 
-	if (!data.domain && !data.whois) {
-		throw new Error(`TLD "${query}" not found`)
-	}
-
-	return data
+	return tldResponse
 }
 
 export const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {

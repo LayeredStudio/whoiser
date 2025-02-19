@@ -5,6 +5,12 @@
 Has support for auto-discovery WHOIS servers for TLDs and IPs allocators, making it easy to get WHOIS info with a single call like `whoiser('google.com')` or `whoiser('1.1.1.1')`.
 Applies minimal parsing to results, returning same data format from different WHOIS servers.
 
+> [!CAUTION]
+> v2 is under active development! The code in `main` branch is for v2. Breaking changes:
+> - ESM only
+> - removed `whoiser()` method, use individual `whoisDomain`, `whoisTld`, `whoisIp`, `whoisAsn`
+> - removed `allTlds()`
+
 ### Highlights
 * Returns WHOIS info for any internet address
 * Requires zero config, but configurable when needed
