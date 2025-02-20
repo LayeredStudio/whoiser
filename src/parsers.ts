@@ -1,19 +1,7 @@
-import type { WhoisDataGroup } from './types.ts'
+import type { WhoisData, WhoisDataGroup } from './types.ts'
 import { splitStringBy, isDomain } from './utils.ts'
 
-interface WhoisData {
-	[key: string]: string | string[] | WhoisDataGroup | {[key: string]: WhoisDataGroup} | undefined
-	contacts?: {[key: string]: WhoisDataGroup}
-	__comments: string[]
-	__raw: string
-}
-
 export function parseSimpleWhois(whois: string): WhoisData {
-	const data: WhoisData = {
-		__comments: [],
-		__raw: whois,
-	}
-
 	const renameLabels: {[key: string]: string} = {
 		NetRange: 'range',
 		inetnum: 'range',
@@ -37,10 +25,15 @@ export function parseSimpleWhois(whois: string): WhoisData {
 	}
 
 	if (whois.includes('returned 0 objects') || whois.includes('No match found')) {
-		return data
+		throw new Error('No WHOIS data found')
 	}
 
-	const { groups } = whoisDataToGroups(whois)
+	const { comments, groups } = whoisDataToGroups(whois)
+
+	const data: WhoisData = {
+		__comments: comments,
+		__raw: whois,
+	}
 
 	groups
 		.forEach((group) => {
@@ -59,7 +52,7 @@ export function parseSimpleWhois(whois: string): WhoisData {
 			 * @see https://www.apnic.net/manage-ip/using-whois/guide/role/
 			 */
 			if (!isGroup && groupLabels.includes('role')) {
-				isGroup = 'Contact ' + group.role.split(' ')[1]
+				isGroup = 'Contact ' + group['role'].split(' ')[1]
 			} else if (!isGroup && groupLabels.includes('person')) {
 				isGroup = 'Contact ' + group['nic-hdl']
 			}

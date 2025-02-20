@@ -1,7 +1,7 @@
 import net from 'node:net'
 import punycode from 'punycode'
 
-import type { TldWhoisResponse } from './types.ts'
+import type { TldWhoisResponse, WhoisData } from './types.ts'
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'
 import { splitStringBy, validatedTld } from './utils.ts'
 
@@ -160,7 +160,7 @@ export const whoisDomain = async (domain, { host = null, timeout = 15000, follow
 
 	// find WHOIS server for TLD
 	if (!host) {
-		const tld = await whoisTld(domain, { timeout, domainName, domainTld })
+		const tld = await whoisTld(domain, timeout)
 
 		if (!tld.whois) {
 			throw new Error(`TLD for "${domain}" not supported`)
@@ -184,7 +184,7 @@ export const whoisDomain = async (domain, { host = null, timeout = 15000, follow
 		}
 
 		try {
-			resultRaw = await whoisQuery({ host, query, timeout })
+			resultRaw = await whoisQuery(host, query, { timeout })
 			result = parseDomainWhois(domain, resultRaw, ignorePrivacy)
 		} catch (err) {
 			result = { error: err.message }
@@ -233,48 +233,65 @@ export const whoisDomain = async (domain, { host = null, timeout = 15000, follow
 	return results
 }
 
-export const whoisIpOrAsn = async (query, { host = null, timeout = 15000, follow = 2, raw = false } = {}) => {
-	const type = net.isIP(query) ? 'ip' : 'asn'
-	query = String(query)
+export async function whoisIp(ip: string, { host = null, timeout = 15000 } = {}): Promise<WhoisData> {
+	if (!net.isIP(ip)) {
+		throw new Error(`Invalid IP address "${ip}"`)
+	}
 
 	// find WHOIS server for IP
 	if (!host) {
-		let whoisResult = await whoisQuery({ host: 'whois.iana.org', query, timeout })
-		whoisResult = parseSimpleWhois(whoisResult)
-
-		if (whoisResult.whois) {
-			host = whoisResult.whois
-		}
+		host = await findWhoisServerInIana(ip)
 	}
 
 	if (!host) {
-		throw new Error(`No WHOIS server for "${query}"`)
+		throw new Error(`No WHOIS server for "${ip}"`)
 	}
 
-	let data
+	let modifiedQuery = ip
 
-	while (host && follow) {
-		let modifiedQuery = query
-
-		// hardcoded custom queries..
-		if (host === 'whois.arin.net' && type === 'ip') {
-			modifiedQuery = `+ n ${query}`
-		} else if (host === 'whois.arin.net' && type === 'asn') {
-			modifiedQuery = `+ a ${query}`
-		}
-
-		const rawResult = await whoisQuery({ host, query: modifiedQuery, timeout })
-		data = parseSimpleWhois(rawResult)
-
-		if (raw) {
-			data.__raw = rawResult
-		}
-
-		follow--
-		host = data?.ReferralServer?.split('//')?.[1]
+	// hardcoded custom queries..
+	if (host === 'whois.arin.net') {
+		modifiedQuery = `+ n ${ip}`
 	}
 
-	return data
+	const ipWhoisResult = await whoisQuery(host, modifiedQuery, { timeout })
+
+	return parseSimpleWhois(ipWhoisResult)
+}
+
+async function findWhoisServerInIana(query: string) {
+	let whoisResult = await whoisQuery('whois.iana.org', query)
+	const { groups } = whoisDataToGroups(whoisResult)
+
+	const groupWithWhois = groups.find((group) => Object.keys(group).includes('whois'))
+
+	return groupWithWhois['whois']
+}
+
+export async function whoisAsn(asn: number, { host = null, timeout = 15000 } = {}) {
+	if (asn < 0 || asn > 4294967295) {
+		throw new Error(`Invalid ASN number "${asn}"`)
+	}
+
+	// find WHOIS server for ASN
+	if (!host) {
+		host = await findWhoisServerInIana(String(asn))
+	}
+
+	if (!host) {
+		throw new Error(`No WHOIS server for "${asn}"`)
+	}
+
+	let modifiedQuery = String(asn)
+
+	// hardcoded custom queries..
+	if (host === 'whois.arin.net') {
+		modifiedQuery = `+ a ${asn}`
+	}
+
+	const asnWhoisResult = await whoisQuery(host, modifiedQuery, { timeout })
+
+	return parseSimpleWhois(asnWhoisResult)
 }
 
 export const firstResult = (whoisResults) => {
