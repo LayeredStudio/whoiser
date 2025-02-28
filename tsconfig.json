@@ -1,20 +1,24 @@
 {
     "compilerOptions": {
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "target": "ES2022",
+      "module": "nodenext",
+      "target": "esnext",
       "isolatedModules": true,
       "outDir": "dist",
-      "lib": ["ES2022", "DOM"],
+      "lib": ["ES2022"],
+      "moduleDetection": "force",
+      "verbatimModuleSyntax": true,
+      "skipLibCheck": true,
+      "allowImportingTsExtensions": true,
+      "rewriteRelativeImportExtensions": true,
       "declaration": true,
-      "strict": true,
+      "strict": false,
       "noImplicitReturns": true,
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "noUncheckedIndexedAccess": true,
       "noPropertyAccessFromIndexSignature": true
     },
-    "exclude": [ "node_modules" ],
+    "exclude": [ "node_modules", "src/*.test.ts" ],
     "include": [
       "src/*.ts"
     ]

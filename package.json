@@ -24,10 +24,10 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc",
-    "dev": "node --enable-source-maps --import tsx/esm --watch src/whoiser.ts",
+    "dev": "node --enable-source-maps --watch src/whoiser.ts",
     "prettier": "prettier \"src/*.js\"",
     "prettier:write": "npm run prettier -- --write",
-    "test": "node --test --import tsx/esm test/**/*.ts"
+    "test": "node --test src/*.test.ts"
   },
   "dependencies": {
     "punycode": "^2.1.1"
@@ -35,7 +35,6 @@
   "devDependencies": {
     "@types/node": "^22.10.2",
     "prettier": "^2.0.4",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }
