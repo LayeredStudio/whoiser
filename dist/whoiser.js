@@ -1,7 +1,7 @@
 import net from 'node:net';
 import punycode from 'punycode';
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from "./parsers.js";
-import { splitStringBy, validatedTld } from "./utils.js";
+import { validatedTld } from "./utils.js";
 // Cache WHOIS servers
 // Basic list of servers, more will be auto-discovered
 let cacheTldWhoisServer = {
@@ -142,9 +142,9 @@ export async function whoisTld(tld, timeout = 5000) {
     });
     return tldResponse;
 }
-export const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
+export async function whoisDomain(domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) {
     domain = punycode.toASCII(domain);
-    const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'));
+    const domainTld = domain.split('.').at(-1);
     let results = {};
     // find WHOIS server in cache
     if (!host && cacheTldWhoisServer[domainTld]) {
@@ -210,7 +210,7 @@ export const whoisDomain = async (domain, { host = null, timeout = 15000, follow
         host = nextWhoisServer;
     }
     return results;
-};
+}
 async function findWhoisServerInIana(query) {
     let whoisResult = await whoisQuery('whois.iana.org', query);
     const { groups } = whoisDataToGroups(whoisResult);

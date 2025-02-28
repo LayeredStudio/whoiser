@@ -1,6 +1,6 @@
 {
   "name": "whoiser",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Whois info for domains, TLDs, IPs, and ASN",
   "type": "module",
   "keywords": [
@@ -16,8 +16,8 @@
     "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
   },
   "homepage": "https://github.com/LayeredStudio/whoiser#readme",
-  "exports": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "exports": "./dist/whoiser.js",
+  "types": "./dist/whoiser.d.ts",
   "files": [
     "dist"
   ],

@@ -3,7 +3,7 @@ import punycode from 'punycode'
 
 import type { TldWhoisResponse, WhoisData } from './types.ts'
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'
-import { splitStringBy, validatedTld } from './utils.ts'
+import { validatedTld } from './utils.ts'
 
 // Cache WHOIS servers
 // Basic list of servers, more will be auto-discovered
@@ -148,9 +148,9 @@ export async function whoisTld(tld: string, timeout: number = 5000) {
 	return tldResponse
 }
 
-export const whoisDomain = async (domain, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) => {
+export async function whoisDomain(domain: string, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) {
 	domain = punycode.toASCII(domain)
-	const [domainName, domainTld] = splitStringBy(domain.toLowerCase(), domain.lastIndexOf('.'))
+	const domainTld = domain.split('.').at(-1)
 	let results = {}
 
 	// find WHOIS server in cache

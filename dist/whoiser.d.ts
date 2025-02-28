@@ -13,13 +13,13 @@ export declare function whoisQuery(host: string, query: string, { port, timeout,
  * @throws Error if TLD is invalid or not found
  */
 export declare function whoisTld(tld: string, timeout?: number): Promise<TldWhoisResponse>;
-export declare const whoisDomain: (domain: any, { host, timeout, follow, raw, ignorePrivacy }?: {
+export declare function whoisDomain(domain: string, { host, timeout, follow, raw, ignorePrivacy }?: {
     host?: any;
     timeout?: number;
     follow?: number;
     raw?: boolean;
     ignorePrivacy?: boolean;
-}) => Promise<{}>;
+}): Promise<{}>;
 export declare function whoisIp(ip: string, { host, timeout }?: {
     host?: any;
     timeout?: number;
