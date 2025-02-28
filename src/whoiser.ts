@@ -233,6 +233,15 @@ export const whoisDomain = async (domain, { host = null, timeout = 15000, follow
 	return results
 }
 
+async function findWhoisServerInIana(query: string) {
+	let whoisResult = await whoisQuery('whois.iana.org', query)
+	const { groups } = whoisDataToGroups(whoisResult)
+
+	const groupWithWhois = groups.find((group) => Object.keys(group).includes('whois'))
+
+	return groupWithWhois['whois']
+}
+
 export async function whoisIp(ip: string, { host = null, timeout = 15000 } = {}): Promise<WhoisData> {
 	if (!net.isIP(ip)) {
 		throw new Error(`Invalid IP address "${ip}"`)
@@ -257,15 +266,6 @@ export async function whoisIp(ip: string, { host = null, timeout = 15000 } = {})
 	const ipWhoisResult = await whoisQuery(host, modifiedQuery, { timeout })
 
 	return parseSimpleWhois(ipWhoisResult)
-}
-
-async function findWhoisServerInIana(query: string) {
-	let whoisResult = await whoisQuery('whois.iana.org', query)
-	const { groups } = whoisDataToGroups(whoisResult)
-
-	const groupWithWhois = groups.find((group) => Object.keys(group).includes('whois'))
-
-	return groupWithWhois['whois']
 }
 
 export async function whoisAsn(asn: number, { host = null, timeout = 15000 } = {}) {

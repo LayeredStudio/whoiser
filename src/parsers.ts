@@ -43,7 +43,7 @@ export function parseSimpleWhois(whois: string): WhoisData {
 			// check if a label is marked as group
 			groupLabels.forEach((groupLabel) => {
 				if (!isGroup && Object.keys(lineToGroup).includes(groupLabel)) {
-					isGroup = lineToGroup[groupLabel]
+					isGroup = lineToGroup[groupLabel] || false
 				}
 			})
 
@@ -248,6 +248,7 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 	let data = {
 		'Domain Status': [],
 		'Name Server': [],
+		text: [],
 	}
 	let lines = whois
 		.trim()
@@ -346,12 +347,12 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 	data['Domain Status'] = data['Domain Status'].filter(Boolean)
 
 	// remove multiple empty lines
-	text = text.join('\n').trim()
-	while (text.includes('\n\n\n')) {
-		text = text.replace('\n\n\n', '\n')
+	let textString = text.join('\n').trim()
+	while (textString.includes('\n\n\n')) {
+		textString = textString.replace('\n\n\n', '\n')
 	}
 
-	data.text = text.split('\n')
+	data.text = textString.split('\n')
 
 	return data
 }
