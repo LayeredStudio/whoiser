@@ -1,7 +1,7 @@
 import net from 'node:net'
 import punycode from 'punycode'
 
-import type { TldWhoisResponse, WhoisData } from './types.ts'
+import type { DomainWhoisOptions, TldWhoisResponse, WhoisData } from './types.ts'
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'
 import { validatedTld } from './utils.ts'
 
@@ -154,19 +154,23 @@ export async function whoisTld(tld: string, timeout: number = 1000) {
 	return tldResponse
 }
 
-export async function whoisDomain(domain: string, { host = null, timeout = 15000, follow = 2, raw = false, ignorePrivacy = true } = {}) {
+/**
+ * Get WHOIS data for a domain name.
+ * @param domain Domain name to query. Example: 'example.com'
+ * @param options Options for querying WHOIS
+ * @returns Object containing WHOIS results
+ */
+export async function whoisDomain(domain: string, options?: DomainWhoisOptions) {
 	domain = punycode.toASCII(domain)
 	const domainTld = domain.split('.').at(-1)
 	let results = {}
 
-	// find WHOIS server in cache
-	if (!host && cacheTldWhoisServer[domainTld]) {
-		host = cacheTldWhoisServer[domainTld]
-	}
+	// set WHOIS server for TLD
+	let host: string | undefined = options?.host || cacheTldWhoisServer[domainTld]
 
 	// find WHOIS server for TLD
 	if (!host) {
-		const tld = await whoisTld(domain, timeout)
+		const tld = await whoisTld(domainTld)
 
 		if (!tld.whois) {
 			throw new Error(`TLD for "${domain}" not supported`)
@@ -176,11 +180,14 @@ export async function whoisDomain(domain: string, { host = null, timeout = 15000
 		cacheTldWhoisServer[domainTld] = tld.whois
 	}
 
+	let follow = options?.follow || 1
+	const queryFn = options?.whoisQuery || whoisQuery
+
 	// query WHOIS servers for data
 	while (host && follow) {
 		let query = domain
 		let result
-		let resultRaw
+		let resultRaw: string
 
 		// hardcoded WHOIS queries..
 		if (host === 'whois.denic.de') {
@@ -190,13 +197,13 @@ export async function whoisDomain(domain: string, { host = null, timeout = 15000
 		}
 
 		try {
-			resultRaw = await whoisQuery(host, query, { timeout })
-			result = parseDomainWhois(domain, resultRaw, ignorePrivacy)
+			resultRaw = await queryFn(host, query, options?.timeout)
+			result = parseDomainWhois(domain, resultRaw, options?.ignorePrivacy ?? true)
 		} catch (err) {
 			result = { error: err.message }
 		}
 
-		if (raw) {
+		if (options?.raw) {
 			result.__raw = resultRaw
 		}
 

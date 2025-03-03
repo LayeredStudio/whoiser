@@ -238,6 +238,7 @@ suite('whoisIp()', () => {
 		const whois = await whoisIp('8.8.8.8')
 
 		assert.equal(whois['NetName'], 'GOGL')
+		assert.ok(whois['organisation'])
 		assert.equal(whois['organisation']['Country'], 'US')
 		assert.equal(whois['range'], '8.8.8.0 - 8.8.8.255', 'IP Range doesn\'t match')
 		assert.equal(whois['route'], '8.8.8.0/24', 'IP Route doesn\'t match')
@@ -248,6 +249,7 @@ suite('whoisIp()', () => {
 
 		assert.equal(whois['asn'], 'AS13335')
 		assert.equal(whois['NetName'], 'CLOUDFLARENET')
+		assert.ok(whois['organisation'])
 		assert.equal(whois['organisation']['Country'], 'US')
 		assert.equal(whois['range'], '2606:4700:: - 2606:4700:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF', 'IP Range doesn\'t match')
 		assert.equal(whois['route'], '2606:4700::/32', 'IP Route doesn\'t match')
@@ -258,6 +260,7 @@ suite('whoisIp()', () => {
 
 		assert.equal(whois['asn'], 'AS15169')
 		assert.equal(whois['NetName'], 'GOOGLE-IPV6')
+		assert.ok(whois['organisation'])
 		assert.equal(whois['organisation']['Country'], 'US')
 		assert.equal(whois['range'], '2001:4860:: - 2001:4860:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF', 'IP Range doesn\'t match')
 		assert.equal(whois['route'], '2001:4860::/32', 'IP Route doesn\'t match')

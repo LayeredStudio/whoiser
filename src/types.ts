@@ -28,3 +28,15 @@ export interface TldWhoisResponse {
 	__comments: string[]
 	__raw: string
 }
+
+/**
+ * Options for querying Domain Name whois
+ */
+export interface DomainWhoisOptions {
+	host?: string
+	timeout?: number
+	follow?: 1 | 2
+	raw?: boolean
+	ignorePrivacy?: boolean
+	whoisQuery?: (host: string, query: string, timeout?: number) => Promise<string>
+}
