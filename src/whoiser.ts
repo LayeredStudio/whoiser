@@ -92,7 +92,7 @@ export function whoisQuery(host: string, query: string, timeout: number = 5000):
  * @returns Normalized WHOIS data
  * @throws Error if TLD is invalid or not found
  */
-export async function whoisTld(tld: string, timeout: number = 1000) {
+export async function whoisTld(tld: string, timeout: number = 1000): Promise<TldWhoisResponse> {
 	tld = validatedTld(tld)
 
 	const whoisData = await whoisQuery('whois.iana.org', tld, timeout)
