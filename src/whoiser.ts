@@ -65,10 +65,17 @@ const misspelledWhoisServer = {
 	'WWW.GNAME.COM/WHOIS': 'whois.gname.com',
 }
 
-export function whoisQuery(host: string, query: string, { port = 43, timeout = 15000, querySuffix = '\r\n' } = {}): Promise<string> {
+/**
+ * Query a WHOIS server and return the result.
+ * @param host WHOIS server hostname
+ * @param query Query string
+ * @param timeout Timeout duration in milliseconds
+ * @returns Result of the WHOIS query
+ */
+export function whoisQuery(host: string, query: string, timeout: number = 5000): Promise<string> {
 	return new Promise((resolve, reject) => {
 		let data = ''
-		const socket = net.connect({ host, port }, () => socket.write(query + querySuffix))
+		const socket = net.connect({ host, port: 43 }, () => socket.write(query + '\r\n'))
 		socket.setTimeout(timeout)
 		socket.on('data', (chunk) => (data += chunk))
 		socket.on('close', () => resolve(data))
@@ -81,15 +88,14 @@ export function whoisQuery(host: string, query: string, { port = 43, timeout = 1
  * TLD WHOIS data, from the [IANA WHOIS](https://www.iana.org/whois) server.
  * 
  * @param tld TLD/SLD to query. Example: 'com', '.co.uk'
- * @param timeout 
+ * @param timeout Timeout for WHOIS query in milliseconds
  * @returns Normalized WHOIS data
  * @throws Error if TLD is invalid or not found
  */
-export async function whoisTld(tld: string, timeout: number = 5000) {
+export async function whoisTld(tld: string, timeout: number = 1000) {
 	tld = validatedTld(tld)
 
-	const whoisData = await whoisQuery('whois.iana.org', tld, { timeout })
-
+	const whoisData = await whoisQuery('whois.iana.org', tld, timeout)
 	const { comments, groups } = whoisDataToGroups(whoisData)
 	const groupWithDomain = groups.find((group) => Object.keys(group).includes('domain'))
 
@@ -234,7 +240,7 @@ export async function whoisDomain(domain: string, { host = null, timeout = 15000
 }
 
 async function findWhoisServerInIana(query: string) {
-	let whoisResult = await whoisQuery('whois.iana.org', query)
+	let whoisResult = await whoisQuery('whois.iana.org', query, 1000)
 	const { groups } = whoisDataToGroups(whoisResult)
 
 	const groupWithWhois = groups.find((group) => Object.keys(group).includes('whois'))
@@ -242,15 +248,20 @@ async function findWhoisServerInIana(query: string) {
 	return groupWithWhois['whois']
 }
 
-export async function whoisIp(ip: string, { host = null, timeout = 15000 } = {}): Promise<WhoisData> {
+/**
+ * IP WHOIS data, from the [IANA WHOIS](https://www.iana.org/whois) server.
+ * 
+ * @param ip IP address to query. Example: '192.0.2.1'
+ * @param options Options for WHOIS query
+ * @returns Normalized WHOIS data
+ * @throws Error if IP is invalid or not found
+ */
+export async function whoisIp(ip: string, options: { host?: string, timeout?: number } = {}): Promise<WhoisData> {
 	if (!net.isIP(ip)) {
 		throw new Error(`Invalid IP address "${ip}"`)
 	}
 
-	// find WHOIS server for IP
-	if (!host) {
-		host = await findWhoisServerInIana(ip)
-	}
+	const host = options.host || await findWhoisServerInIana(ip)
 
 	if (!host) {
 		throw new Error(`No WHOIS server for "${ip}"`)
@@ -263,20 +274,25 @@ export async function whoisIp(ip: string, { host = null, timeout = 15000 } = {})
 		modifiedQuery = `+ n ${ip}`
 	}
 
-	const ipWhoisResult = await whoisQuery(host, modifiedQuery, { timeout })
+	const ipWhoisResult = await whoisQuery(host, modifiedQuery, options.timeout || 1000)
 
 	return parseSimpleWhois(ipWhoisResult)
 }
 
-export async function whoisAsn(asn: number, { host = null, timeout = 15000 } = {}) {
+/**
+ * ASN WHOIS data, from the [IANA WHOIS](https://www.iana.org/whois) server.
+ * @param asn ASN number to query. Example: 12345
+ * @param options Options for WHOIS query
+ * @returns Normalized WHOIS data
+ * @throws Error if ASN is invalid or not found
+ */
+export async function whoisAsn(asn: number, options: { host?: string, timeout?: number } = {}): Promise<WhoisData> {
 	if (asn < 0 || asn > 4294967295) {
 		throw new Error(`Invalid ASN number "${asn}"`)
 	}
 
 	// find WHOIS server for ASN
-	if (!host) {
-		host = await findWhoisServerInIana(String(asn))
-	}
+	const host = options.host || await findWhoisServerInIana(String(asn));
 
 	if (!host) {
 		throw new Error(`No WHOIS server for "${asn}"`)
@@ -289,7 +305,7 @@ export async function whoisAsn(asn: number, { host = null, timeout = 15000 } = {
 		modifiedQuery = `+ a ${asn}`
 	}
 
-	const asnWhoisResult = await whoisQuery(host, modifiedQuery, { timeout })
+	const asnWhoisResult = await whoisQuery(host, modifiedQuery, options.timeout || 1000)
 
 	return parseSimpleWhois(asnWhoisResult)
 }
