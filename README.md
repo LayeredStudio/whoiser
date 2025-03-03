@@ -10,6 +10,8 @@ Applies minimal parsing to results, returning same data format from different WH
 > - ESM only
 > - removed `whoiser()` method, use individual `whoisDomain`, `whoisTld`, `whoisIp`, `whoisAsn`
 > - removed `allTlds()`
+>
+> Until v2 dev is complete, install latest v1. The docs below are for v1
 
 ### Highlights
 * Returns WHOIS info for any internet address
