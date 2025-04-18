@@ -193,6 +193,7 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		'relevant dates expiry date': 'Expiry Date', // found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
 		expired: 'Expiry Date', // found in .ly
+		'renewal date': 'Expiry Date', // found in .pl
 		'registry registrantid': 'Registry Registrant ID', // found in .ai
 		'owner name': 'Registrant Name', // found in .tm
 		registrant: 'Registrant Name', // found in .ai

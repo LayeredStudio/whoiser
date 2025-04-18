@@ -1,6 +1,6 @@
 {
   "name": "whoiser",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.4",
   "description": "Whois info for domains, TLDs, IPs, and ASN",
   "type": "module",
   "keywords": [

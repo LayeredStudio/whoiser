@@ -77,7 +77,6 @@ suite('Basic domain WHOIS', () => {
 });
 
 suite('Domain WHOIS parsing (handles multi-line whois, different labels and more)', function() {
-
 	/* fails because of timeout error..
 	it('return WHOIS for "google.li" when whois data is "label:_EOL_value"', async function() {
 		let whois = await whoiser.domain('google.li', {follow: 1})
@@ -294,7 +293,7 @@ suite('whoisTld()', () => {
 		const whois = await whoisTld('.google')
 
 		assert.equal(whois.tld, 'GOOGLE', 'TLD doesn\'t match')
-		assert.equal(whois.whois, 'whois.nic.google', 'WHOIS server doesn\'t match')
+		assert.equal(whois.created, '2014-09-04', 'Expected creation date to be 2014-09-04')
 	})
 
 	test('.香港 - IDN', async () => {
