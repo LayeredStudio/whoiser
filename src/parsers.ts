@@ -132,11 +132,15 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		'domain servers in listed order': 'Name Server', // found in .ly
 		'domain servers': 'Name Server', // found in .tr
 		'name servers dns': 'Name Server', // found in .mx
+		'ns 1': 'Name Server', // found in .tm
+		'ns 2': 'Name Server', // found in .tm
+		'ns 3': 'Name Server', // found in .tm
+		'ns 4': 'Name Server', // found in .tm
 		flags: 'Domain Status',
 		status: 'Domain Status',
 		state: 'Domain Status', // found in .ru
 		'registration status': 'Domain Status',
-		'eppstatus': 'Domain Status', // found in .fr
+		eppstatus: 'Domain Status', // found in .fr
 		'sponsoring registrar iana id': 'Registrar IANA ID',
 		organisation: 'Registrar',
 		registrar: 'Registrar',
@@ -184,11 +188,13 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		'additional info expires on..............': 'Expiry Date', // found in .tr
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
+		expiry: 'Expiry Date', // found in .tm
 		expire: 'Expiry Date',
 		'relevant dates expiry date': 'Expiry Date', // found in .uk, .co.uk
 		'record will expire on': 'Expiry Date',
 		expired: 'Expiry Date', // found in .ly
 		'registry registrantid': 'Registry Registrant ID', // found in .ai
+		'owner name': 'Registrant Name', // found in .tm
 		registrant: 'Registrant Name', // found in .ai
 		'registrant contact': 'Registrant Name',
 		'registrant contact name': 'Registrant Name',
@@ -202,12 +208,14 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		registrantcity: 'Registrant City', // found in .ai
 		registrantcountry: 'Registrant Country', // found in .ai
 		'registrant country': 'Registrant Country', // found in .fr
+		'owner orgname': 'Registrant Organization', // found in .tm
 		'registrant organisation': 'Registrant Organization',
 		registrantphone: 'Registrant Phone',
 		'trading as': 'Registrant Organization', // found in .uk, .co.uk
 		org: 'Registrant Organization', // found in .ru
 		'registrant state': 'Registrant State/Province',
 		"registrant's address": 'Registrant Street',
+		"owner addr": 'Registrant Street', // found in .tm
 		dnssec: 'DNSSEC',
 	}
 	const ignoreLabels = [

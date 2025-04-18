@@ -65,6 +65,15 @@ suite('Basic domain WHOIS', () => {
 		assert.deepStrictEqual(Object.keys(whois), ['whois.nic.red'], 'Has whois result from server different than "whois.nic.red"')
 		assert.equal(whois['whois.nic.red']['Domain Name'], 'laye.red', 'Domain name doesn\'t match')
 	});
+
+	test('returns WHOIS for "javascript.tm" from top-level whois server', async function() {
+		let whois = await whoisDomain('javascript.tm')
+
+		assert.equal(Object.values(whois).length, 1, 'Has less or more than 1 WHOIS result')
+		assert.deepStrictEqual(Object.keys(whois), ['whois.nic.tm'], 'Expected whois result from server "whois.nic.tm"')
+		assert.equal(whois['whois.nic.tm']['Domain Name'], 'javascript.tm', 'Domain name doesn\'t match')
+		assert.equal(whois['whois.nic.tm']['Registrant Organization'], 'Deno Land Inc.', 'Expected registrant organization to be Deno')
+	});
 });
 
 suite('Domain WHOIS parsing (handles multi-line whois, different labels and more)', function() {
