@@ -75,7 +75,7 @@ const misspelledWhoisServer = {
 export function whoisQuery(host: string, query: string, timeout: number = 5000): Promise<string> {
 	return new Promise((resolve, reject) => {
 		let data = ''
-		const socket = net.connect({ host, port: 43 }, () => socket.write(query + '\r\n'))
+		const socket = net.connect({ host, port: 43, family: 4 }, () => socket.write(query + '\r\n'))
 		socket.setTimeout(timeout)
 		socket.on('data', (chunk) => (data += chunk))
 		socket.on('close', () => resolve(data))
