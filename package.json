@@ -1,40 +1,40 @@
 {
-  "name": "whoiser",
-  "version": "2.0.0-beta.4",
-  "description": "Whois info for domains, TLDs, IPs, and ASN",
-  "type": "module",
-  "keywords": [
-    "whois",
-    "domain",
-    "tld",
-    "ip"
-  ],
-  "author": "Andrei Igna <andrei@laye.red>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
-  },
-  "homepage": "https://github.com/LayeredStudio/whoiser#readme",
-  "exports": "./dist/whoiser.js",
-  "types": "./dist/whoiser.d.ts",
-  "files": [
-    "dist"
-  ],
-  "sideEffects": false,
-  "scripts": {
-    "build": "tsc",
-    "dev": "node --enable-source-maps --watch src/whoiser.ts",
-    "prettier": "prettier \"src/*.js\"",
-    "prettier:write": "npm run prettier -- --write",
-    "test": "node --test src/*.test.ts"
-  },
-  "dependencies": {
-    "punycode": "^2.1.1"
-  },
-  "devDependencies": {
-    "@types/node": "^22.10.2",
-    "prettier": "^2.0.4",
-    "typescript": "^5.7.2"
-  }
+	"name": "whoiser",
+	"version": "2.0.0-beta.5",
+	"description": "Whois info for domains, TLDs, IPs, and ASN",
+	"type": "module",
+	"keywords": [
+		"whois",
+		"domain",
+		"tld",
+		"ip"
+	],
+	"author": "Andrei Igna <andrei@laye.red>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/LayeredStudio/whoiser.git"
+	},
+	"homepage": "https://github.com/LayeredStudio/whoiser#readme",
+	"exports": "./dist/whoiser.js",
+	"types": "./dist/whoiser.d.ts",
+	"files": [
+		"dist"
+	],
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "node --enable-source-maps --watch src/whoiser.ts",
+		"prettier": "prettier \"src/*.js\"",
+		"prettier:write": "npm run prettier -- --write",
+		"test": "node --test src/*.test.ts"
+	},
+	"dependencies": {
+		"punycode": "^2.1.1"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"prettier": "^2.0.4",
+		"typescript": "^5.7.2"
+	}
 }
