@@ -27,6 +27,7 @@ let cacheTldWhoisServer = {
 	it: 'whois.nic.it',
 	lc: 'whois.identity.digital',
 	me: 'whois.nic.me',
+	my: 'whois.mynic.my',
 	ro: 'whois.rotld.ro',
 	rs: 'whois.rnids.rs',
 	so: 'whois.nic.so',
