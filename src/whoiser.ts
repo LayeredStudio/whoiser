@@ -1,5 +1,5 @@
 import net from 'node:net'
-import punycode from 'punycode'
+import punycode from 'punycode/'
 
 import type { DomainWhoisOptions, TldWhoisResponse, WhoisData } from './types.ts'
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'
@@ -86,7 +86,7 @@ export function whoisQuery(host: string, query: string, timeout: number = 5000):
 
 /**
  * TLD WHOIS data, from the [IANA WHOIS](https://www.iana.org/whois) server.
- * 
+ *
  * @param tld TLD/SLD to query. Example: 'com', '.co.uk'
  * @param timeout Timeout for WHOIS query in milliseconds
  * @returns Normalized WHOIS data
@@ -257,7 +257,7 @@ async function findWhoisServerInIana(query: string) {
 
 /**
  * IP WHOIS data, from the [IANA WHOIS](https://www.iana.org/whois) server.
- * 
+ *
  * @param ip IP address to query. Example: '192.0.2.1'
  * @param options Options for WHOIS query
  * @returns Normalized WHOIS data
