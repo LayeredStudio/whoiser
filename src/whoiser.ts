@@ -1,5 +1,5 @@
 import net from 'node:net'
-import punycode from 'punycode'
+import { toASCII, toUnicode } from 'punycode'
 
 import type { DomainWhoisOptions, TldWhoisResponse, WhoisData } from './types.ts'
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'
@@ -161,7 +161,7 @@ export async function whoisTld(tld: string, timeout: number = 1000): Promise<Tld
  * @returns Object containing WHOIS results
  */
 export async function whoisDomain(domain: string, options?: DomainWhoisOptions) {
-	domain = punycode.toASCII(domain)
+	domain = toASCII(domain)
 	const domainTld = domain.split('.').at(-1)
 	let results = {}
 
@@ -191,7 +191,7 @@ export async function whoisDomain(domain: string, options?: DomainWhoisOptions) 
 
 		// hardcoded WHOIS queries..
 		if (host === 'whois.denic.de') {
-			query = `-T dn ${punycode.toUnicode(domain)}`
+			query = `-T dn ${toUnicode(domain)}`
 		} else if (host === 'whois.jprs.jp') {
 			query = `${query}/e`
 		}
