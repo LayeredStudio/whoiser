@@ -1,6 +1,6 @@
 {
 	"name": "whoiser",
-	"version": "2.0.0-beta.7",
+	"version": "2.0.0-beta.8",
 	"description": "Whois info for domains, TLDs, IPs, and ASN",
 	"type": "module",
 	"keywords": [
@@ -33,7 +33,7 @@
 		"punycode-esm": "^1.0.15"
 	},
 	"devDependencies": {
-		"@types/node": "^22.10.2",
+		"@types/node": "^24.2.1",
 		"prettier": "^3.5.3",
 		"typescript": "^5.7.2"
 	}
