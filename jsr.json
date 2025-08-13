@@ -1,6 +1,6 @@
 {
-    "name": "@layered/whoiser",
-    "license": "MIT",
-    "version": "2.0.0-beta.4",
-    "exports": "./src/whoiser.ts"
+	"name": "@layered/whoiser",
+	"license": "MIT",
+	"version": "2.0.0-beta.7",
+	"exports": "./src/whoiser.ts"
 }
