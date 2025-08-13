@@ -1,5 +1,5 @@
 import net from 'node:net'
-import { toASCII, toUnicode } from 'punycode'
+import { toASCII, toUnicode } from 'punycode-esm'
 
 import type { DomainWhoisOptions, TldWhoisResponse, WhoisData } from './types.ts'
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'

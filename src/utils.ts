@@ -1,4 +1,4 @@
-import { toASCII } from 'punycode'
+import { toASCII } from 'punycode-esm'
 
 export function splitStringBy(string: string, by: number): [string, string] {
 	return [string.slice(0, by), string.slice(by + 1)]
