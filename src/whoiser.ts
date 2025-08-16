@@ -1,7 +1,7 @@
 import net from 'node:net'
 import { toASCII, toUnicode } from 'punycode-esm'
 
-import type { DomainWhoisOptions, TldWhoisResponse, WhoisData } from './types.ts'
+import type { DomainWhois, DomainWhoisData, DomainWhoisOptions, TldWhoisResponse, WhoisData } from './types.ts'
 import { parseSimpleWhois, parseDomainWhois, whoisDataToGroups } from './parsers.ts'
 import { validatedTld } from './utils.ts'
 
@@ -160,7 +160,7 @@ export async function whoisTld(tld: string, timeout: number = 1000): Promise<Tld
  * @param options Options for querying WHOIS
  * @returns Object containing WHOIS results
  */
-export async function whoisDomain(domain: string, options?: DomainWhoisOptions) {
+export async function whoisDomain(domain: string, options?: DomainWhoisOptions): Promise<DomainWhois> {
 	domain = toASCII(domain)
 	const domainTld = domain.split('.').at(-1)
 	let results = {}
@@ -317,8 +317,13 @@ export async function whoisAsn(asn: number, options: { host?: string; timeout?: 
 	return parseSimpleWhois(asnWhoisResult)
 }
 
-export const firstResult = (whoisResults) => {
+/**
+ * Return the first WHOIS result from a list of WHOIS results returned by `whoisDomain()`
+ * @param whoisResults
+ * @returns First (single) WHOIS result
+ */
+export function firstResult(whoisResults: DomainWhois): DomainWhoisData {
 	const whoisServers = Object.keys(whoisResults)
 
-	return whoisServers.length ? whoisResults[whoisServers[0]] : null
+	return whoisResults[whoisServers[0]]
 }
