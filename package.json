@@ -25,7 +25,7 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "node --enable-source-maps --watch src/whoiser.ts",
-		"prettier": "prettier \"src/*.js\"",
+		"prettier": "prettier \"src/*.ts\"",
 		"prettier:write": "npm run prettier -- --write",
 		"test": "node --test src/*.test.ts"
 	},
