@@ -16,7 +16,7 @@ let cacheTldWhoisServer = {
 	ai: 'whois.nic.ai',
 	au: 'whois.auda.org.au',
 	bz: 'whois.identity.digital',
-	co: 'whois.nic.co',
+	co: 'whois.registry.co',
 	ca: 'whois.cira.ca',
 	do: 'whois.nic.do',
 	eu: 'whois.eu',

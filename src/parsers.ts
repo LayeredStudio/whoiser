@@ -216,7 +216,7 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		org: 'Registrant Organization', // found in .ru
 		'registrant state': 'Registrant State/Province',
 		"registrant's address": 'Registrant Street',
-		"owner addr": 'Registrant Street', // found in .tm
+		'owner addr': 'Registrant Street', // found in .tm
 		dnssec: 'DNSSEC',
 	}
 	const ignoreLabels = [
@@ -535,8 +535,8 @@ const handleJpLines = (lines) => {
 
 /**
  * Normalize WHOIS data for .fr ccTld, make it look more like gTLDs
- * 
- * @param {string[]} lines 
+ *
+ * @param {string[]} lines
  * @returns
  */
 function handleDotFr(lines) {
@@ -603,7 +603,6 @@ function handleDotFr(lines) {
 				finalLines.push(line.join(': '))
 			})
 		}
-
 	})
 
 	return finalLines
