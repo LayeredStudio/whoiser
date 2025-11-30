@@ -30,7 +30,7 @@ let cacheTldWhoisServer = {
 	ro: 'whois.rotld.ro',
 	rs: 'whois.rnids.rs',
 	so: 'whois.nic.so',
-	tr: 'whois.nic.tr',
+	tr: 'whois.trabis.gov.tr',
 	us: 'whois.nic.us',
 	vc: 'whois.identity.digital',
 	ws: 'whois.website.ws',
