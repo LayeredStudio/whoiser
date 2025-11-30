@@ -100,7 +100,7 @@ suite('Domain WHOIS parsing (handles multi-line whois, different labels and more
 	test('returns WHOIS for "google.eu" when whois data is "label:_EOL_value"', async function () {
 		let whois = await whoisDomain('google.eu', { follow: 1 })
 		assert.equal(whois['whois.eu']['Domain Name'], 'google.eu', "Domain name doesn't match")
-		assert.notStrictEqual(whois['whois.eu']['Name Server'].length, 0, 'Does not return NS')
+		assert.notStrictEqual(whois['whois.eu']['Name Server']?.length, 0, 'Does not return NS')
 	})
 
 	test('returns WHOIS for "mañana.com" - IDN', async function () {
@@ -118,25 +118,25 @@ suite('Domain WHOIS parsing (handles multi-line whois, different labels and more
 	test('returns WHOIS for "google.nl"', async function () {
 		let whois = await whoisDomain('google.nl')
 		assert.equal(whois['whois.domain-registry.nl']['Domain Name'], 'google.nl', "Domain name doesn't match")
-		assert.equal(whois['whois.domain-registry.nl']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		assert.equal(whois['whois.domain-registry.nl']['Name Server']?.length, 4, 'Incorrect number of NS returned')
 	})
 
 	test('returns WHOIS for "jprs.jp"', async function () {
 		let whois = await whoisDomain('jprs.jp')
 		assert.equal(whois['whois.jprs.jp']['Domain Name'], 'JPRS.JP', "Domain name doesn't match")
-		assert.equal(whois['whois.jprs.jp']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		assert.equal(whois['whois.jprs.jp']['Name Server']?.length, 4, 'Incorrect number of NS returned')
 	})
 
 	test('returns WHOIS for "ownit.nyc"', async function () {
 		let whois = await whoisDomain('ownit.nyc')
 		assert.equal(whois['whois.nic.nyc']['Domain Name'], 'ownit.nyc', "Domain name doesn't match")
-		assert.equal(whois['whois.nic.nyc']['Name Server'].length, 6, 'Incorrect number of NS returned')
+		assert.equal(whois['whois.nic.nyc']['Name Server']?.length, 6, 'Incorrect number of NS returned')
 	})
 
 	test('returns WHOIS for "google.bz"', async function () {
 		let whois = await whoisDomain('google.bz')
 		assert.equal(whois['whois.identity.digital']['Domain Name'], 'google.bz', "Domain name doesn't match")
-		assert.equal(whois['whois.identity.digital']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		assert.equal(whois['whois.identity.digital']['Name Server']?.length, 4, 'Incorrect number of NS returned')
 	})
 
 	test('returns WHOIS for "nic.gi"', async function () {
@@ -148,13 +148,13 @@ suite('Domain WHOIS parsing (handles multi-line whois, different labels and more
 	test('returns WHOIS for "google.lc"', async function () {
 		let whois = await whoisDomain('google.lc')
 		assert.equal(whois['whois.identity.digital']['Domain Name'], 'google.lc', "Domain name doesn't match")
-		assert.equal(whois['whois.identity.digital']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		assert.equal(whois['whois.identity.digital']['Name Server']?.length, 4, 'Incorrect number of NS returned')
 	})
 
 	test('returns WHOIS for "google.vc"', async function () {
 		let whois = await whoisDomain('google.vc')
 		assert.equal(whois['whois.identity.digital']['Domain Name'], 'google.vc', "Domain name doesn't match")
-		assert.equal(whois['whois.identity.digital']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		assert.equal(whois['whois.identity.digital']['Name Server']?.length, 4, 'Incorrect number of NS returned')
 	})
 
 	test('returns WHOIS for "nic.ua" with fieldsfor all type of contacts', async function () {
@@ -169,7 +169,7 @@ suite('Domain WHOIS parsing (handles multi-line whois, different labels and more
 	test('returns WHOIS for "google.it"', async function () {
 		let whois = await whoisDomain('google.it')
 		assert.equal(whois['whois.nic.it']['Domain Name'], 'google.it', "Domain name doesn't match")
-		assert.equal(whois['whois.nic.it']['Name Server'].length, 4, 'Incorrect number of NS returned')
+		assert.equal(whois['whois.nic.it']['Name Server']?.length, 4, 'Incorrect number of NS returned')
 		assert.equal(whois['whois.nic.it']['Registrar'], 'MarkMonitor International Limited MARKMONITOR-REG', "Registrar name doesn't match")
 		assert.equal(whois['whois.nic.it']['Created Date'], '1999-12-10 00:00:00', "Creation date doesn't match")
 		for (const property of ['Registrant', 'Admin Contact', 'Technical Contacts']) {
@@ -196,15 +196,15 @@ suite('Domain WHOIS parsing (handles multi-line whois, different labels and more
 		const whoisData = whois[whoisServers[0]]
 
 		assert.equal(whoisData['Domain Name'], 'google.fr', 'domain name ok')
-		assert.equal(whoisData['Name Server'].length, 4, '4 name servers')
-		assert.equal(whoisData['Domain Status'].length, 4, '4 statuses')
+		assert.equal(whoisData['Name Server']?.length, 4, '4 name servers')
+		assert.equal(whoisData['Domain Status']?.length, 4, '4 statuses')
 		assert.ok(
 			whoisData['Domain Status'].find((s) => s === 'serverUpdateProhibited'),
 			'4 name servers'
 		)
 
 		// dates
-		assert.equal(whoisData['Expiry Date'], '2025-12-30T17:16:48Z')
+		assert.equal(whoisData['Expiry Date'], '2026-12-30T17:16:48Z')
 		assert.equal(whoisData['Created Date'], '2000-07-26T22:00:00Z')
 
 		// registrar

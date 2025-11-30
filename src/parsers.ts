@@ -2,7 +2,7 @@ import type { WhoisData, WhoisDataGroup } from './types.ts'
 import { splitStringBy, isDomain } from './utils.ts'
 
 export function parseSimpleWhois(whois: string): WhoisData {
-	const renameLabels: {[key: string]: string} = {
+	const renameLabels: { [key: string]: string } = {
 		NetRange: 'range',
 		inetnum: 'range',
 		CIDR: 'route',
@@ -11,7 +11,7 @@ export function parseSimpleWhois(whois: string): WhoisData {
 	}
 
 	// labels of WHOIS data that are actually groups
-	const lineToGroup: {[key: string]: string} = {
+	const lineToGroup: { [key: string]: string } = {
 		contact: 'contact',
 		OrgName: 'organisation',
 		organisation: 'organisation',
@@ -35,40 +35,39 @@ export function parseSimpleWhois(whois: string): WhoisData {
 		__raw: whois,
 	}
 
-	groups
-		.forEach((group) => {
-			const groupLabels = Object.keys(group)
-			let isGroup: string | false = false
+	groups.forEach((group) => {
+		const groupLabels = Object.keys(group)
+		let isGroup: string | false = false
 
-			// check if a label is marked as group
-			groupLabels.forEach((groupLabel) => {
-				if (!isGroup && Object.keys(lineToGroup).includes(groupLabel)) {
-					isGroup = lineToGroup[groupLabel] || false
-				}
-			})
-
-			/**
-			 * Check if a info group is a Contact in APNIC result
-			 * @see https://www.apnic.net/manage-ip/using-whois/guide/role/
-			 */
-			if (!isGroup && groupLabels.includes('role')) {
-				isGroup = 'Contact ' + group['role'].split(' ')[1]
-			} else if (!isGroup && groupLabels.includes('person')) {
-				isGroup = 'Contact ' + group['nic-hdl']
-			}
-
-			if (isGroup === 'contact') {
-				data.contacts ||= {}
-				data.contacts[group['contact']] = group
-			} else if (isGroup) {
-				data[isGroup] = group
-			} else {
-				for (const key in group) {
-					const label = renameLabels[key] || key
-					data[label] = group[key]
-				}
+		// check if a label is marked as group
+		groupLabels.forEach((groupLabel) => {
+			if (!isGroup && Object.keys(lineToGroup).includes(groupLabel)) {
+				isGroup = lineToGroup[groupLabel] || false
 			}
 		})
+
+		/**
+		 * Check if a info group is a Contact in APNIC result
+		 * @see https://www.apnic.net/manage-ip/using-whois/guide/role/
+		 */
+		if (!isGroup && groupLabels.includes('role')) {
+			isGroup = 'Contact ' + group['role'].split(' ')[1]
+		} else if (!isGroup && groupLabels.includes('person')) {
+			isGroup = 'Contact ' + group['nic-hdl']
+		}
+
+		if (isGroup === 'contact') {
+			data.contacts ||= {}
+			data.contacts[group['contact']] = group
+		} else if (isGroup) {
+			data[isGroup] = group
+		} else {
+			for (const key in group) {
+				const label = renameLabels[key] || key
+				data[label] = group[key]
+			}
+		}
+	})
 
 	return data
 }
@@ -545,7 +544,7 @@ function handleDotFr(lines) {
 	const finalLines = []
 
 	// split data in groups
-	lines.forEach(line => {
+	lines.forEach((line) => {
 		if (line.startsWith('%')) {
 			finalLines.push(line)
 		} else if (!line.trim().length && group.length) {
@@ -553,7 +552,7 @@ function handleDotFr(lines) {
 			groups.push(group)
 			group = []
 		} else if (line.trim().length && !line.startsWith('source')) {
-			group.push(splitStringBy(line, line.indexOf(':')).map(str => str.trim()))
+			group.push(splitStringBy(line, line.indexOf(':')).map((str) => str.trim()))
 		}
 	})
 
@@ -561,10 +560,10 @@ function handleDotFr(lines) {
 		groups.push(group)
 	}
 
-	groups.forEach(gr => {
+	groups.forEach((gr) => {
 		if (gr[0][0] === 'domain') {
 			// group with domain info
-			gr.forEach(line => {
+			gr.forEach((line) => {
 				if (line[0] !== 'status') {
 					finalLines.push(line.join(': '))
 				}
@@ -580,7 +579,7 @@ function handleDotFr(lines) {
 			})
 		} else if (gr[0][0] === 'nic-hdl') {
 			let contactType = ''
-			const contactTypeLine = finalLines.find(line => line.includes(gr[0][1]))
+			const contactTypeLine = finalLines.find((line) => line.includes(gr[0][1]))
 
 			if (contactTypeLine.startsWith('admin-c')) {
 				contactType = 'admin'
@@ -599,7 +598,7 @@ function handleDotFr(lines) {
 				}
 			})
 		} else {
-			gr.forEach(line => {
+			gr.forEach((line) => {
 				finalLines.push(line.join(': '))
 			})
 		}
@@ -619,7 +618,6 @@ const handleMissingColons = (lines: string[]) => {
 
 	return lines
 }
-
 
 // ----- v2
 
@@ -669,6 +667,6 @@ export function whoisDataToGroups(whois: string) {
 
 	return {
 		comments,
-		groups: groups.filter((group) => Object.keys(group).length > 0)
+		groups: groups.filter((group) => Object.keys(group).length > 0),
 	}
 }
