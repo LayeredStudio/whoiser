@@ -116,7 +116,6 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 	const renameLabels = {
 		'domain name': 'Domain Name',
 		domain: 'Domain Name',
-		'domain...............': 'Domain Name', // found in .ax
 		'idn tag': 'IDN',
 		'internationalized domain name': 'IDN',
 		nameserver: 'Name Server',
@@ -125,7 +124,6 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		'name servers': 'Name Server',
 		'name server information': 'Name Server',
 		dns: 'Name Server',
-		'nserver..............': 'Name Server', // found in .ax
 		hostname: 'Name Server',
 		'domain nameservers': 'Name Server',
 		'domain servers in listed order': 'Name Server', // found in .ly
@@ -145,14 +143,13 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		registrar: 'Registrar',
 		'registrar name': 'Registrar',
 		'registrar organization': 'Registrar',
-		'registrar............': 'Registrar', // found in .ax
 		'record maintained by': 'Registrar',
 		'sponsoring registrar': 'Registrar',
 		'registrar organization name': 'Registrar', // found in .tr
 		url: 'Registrar URL',
 		'registrar website': 'Registrar URL',
 		'registrar web': 'Registrar URL', // found in .it
-		'www..................': 'Registrar URL', // found in .ax
+		'www': 'Registrar URL',
 		'mnt-by': 'Registrar ID', // found in .ua
 		'creation date': 'Created Date',
 		'registered on': 'Created Date',
@@ -160,10 +157,9 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		'relevant dates registered on': 'Created Date',
 		created: 'Created Date',
 		'created on': 'Created Date', // found in .mx
-		'additional info created on..............': 'Created Date', // found in .tr
+		'additional info created on': 'Created Date', // found in .tr
 		'registration time': 'Created Date',
 		registered: 'Created Date',
-		'created..............': 'Created Date', // found in .ax
 		'domain registered': 'Created Date',
 		'registered date': 'Created Date', // found in .co.jp
 		'last updated': 'Updated Date',
@@ -183,8 +179,7 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 		'expiration time': 'Expiry Date',
 		'expire date': 'Expiry Date',
 		'expiration date': 'Expiry Date',
-		'expires..............': 'Expiry Date', // found in .ax
-		'additional info expires on..............': 'Expiry Date', // found in .tr
+		'additional info expires on': 'Expiry Date', // found in .tr
 		'paid-till': 'Expiry Date',
 		'expiry date': 'Expiry Date',
 		expiry: 'Expiry Date', // found in .tm
@@ -314,6 +309,9 @@ export function parseDomainWhois(domain: string, whois: string, ignorePrivacy: b
 			}
 
 			value = value.trim()
+
+			// Remove trailing dots from e.g. .ax "expires.............."
+			label = label.replace(/\.+$/, '')
 
 			// rename labels to more common format
 			if (renameLabels[label.toLowerCase()]) {
