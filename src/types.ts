@@ -46,8 +46,9 @@ export interface TldWhoisResponse {
 export interface DomainWhoisOptions {
 	host?: string
 	timeout?: number
+	encoding?: BufferEncoding
 	follow?: 1 | 2
 	raw?: boolean
 	ignorePrivacy?: boolean
-	whoisQuery?: (host: string, query: string, timeout?: number) => Promise<string>
+	whoisQuery?: (host: string, query: string, timeout?: number, encoding?: BufferEncoding) => Promise<string>
 }

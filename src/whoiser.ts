@@ -70,13 +70,15 @@ const misspelledWhoisServer = {
  * @param host WHOIS server hostname
  * @param query Query string
  * @param timeout Timeout duration in milliseconds
+ * @param encoding Encoding used to decode the response, for servers that don't reply in UTF-8. Example: 'latin1'. Default: UTF-8
  * @returns Result of the WHOIS query
  */
-export function whoisQuery(host: string, query: string, timeout: number = 5000): Promise<string> {
+export function whoisQuery(host: string, query: string, timeout: number = 5000, encoding?: BufferEncoding): Promise<string> {
 	return new Promise((resolve, reject) => {
 		let data = ''
 		const socket = net.connect({ host, port: 43, family: 4 }, () => socket.write(query + '\r\n'))
 		socket.setTimeout(timeout)
+		if (encoding) socket.setEncoding(encoding)
 		socket.on('data', (chunk) => (data += chunk))
 		socket.on('close', () => resolve(data))
 		socket.on('timeout', () => socket.destroy(new Error('Timeout')))
@@ -197,7 +199,7 @@ export async function whoisDomain(domain: string, options?: DomainWhoisOptions):
 		}
 
 		try {
-			resultRaw = await queryFn(host, query, options?.timeout)
+			resultRaw = await queryFn(host, query, options?.timeout, options?.encoding)
 			result = parseDomainWhois(domain, resultRaw, options?.ignorePrivacy ?? true)
 		} catch (err) {
 			result = { error: err.message }
@@ -263,7 +265,7 @@ async function findWhoisServerInIana(query: string) {
  * @returns Normalized WHOIS data
  * @throws Error if IP is invalid or not found
  */
-export async function whoisIp(ip: string, options: { host?: string; timeout?: number } = {}): Promise<WhoisData> {
+export async function whoisIp(ip: string, options: { host?: string; timeout?: number; encoding?: BufferEncoding } = {}): Promise<WhoisData> {
 	if (!net.isIP(ip)) {
 		throw new Error(`Invalid IP address "${ip}"`)
 	}
@@ -281,7 +283,7 @@ export async function whoisIp(ip: string, options: { host?: string; timeout?: nu
 		modifiedQuery = `+ n ${ip}`
 	}
 
-	const ipWhoisResult = await whoisQuery(host, modifiedQuery, options.timeout || 1000)
+	const ipWhoisResult = await whoisQuery(host, modifiedQuery, options.timeout || 1000, options.encoding)
 
 	return parseSimpleWhois(ipWhoisResult)
 }
@@ -293,7 +295,7 @@ export async function whoisIp(ip: string, options: { host?: string; timeout?: nu
  * @returns Normalized WHOIS data
  * @throws Error if ASN is invalid or not found
  */
-export async function whoisAsn(asn: number, options: { host?: string; timeout?: number } = {}): Promise<WhoisData> {
+export async function whoisAsn(asn: number, options: { host?: string; timeout?: number; encoding?: BufferEncoding } = {}): Promise<WhoisData> {
 	if (asn < 0 || asn > 4294967295) {
 		throw new Error(`Invalid ASN number "${asn}"`)
 	}
@@ -312,7 +314,7 @@ export async function whoisAsn(asn: number, options: { host?: string; timeout?: 
 		modifiedQuery = `+ a ${asn}`
 	}
 
-	const asnWhoisResult = await whoisQuery(host, modifiedQuery, options.timeout || 1000)
+	const asnWhoisResult = await whoisQuery(host, modifiedQuery, options.timeout || 1000, options.encoding)
 
 	return parseSimpleWhois(asnWhoisResult)
 }
