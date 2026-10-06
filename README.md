@@ -61,6 +61,7 @@ Get WHOIS info for domains.
 - `options` - Object of options to use, all optional:
 	- `host` - WHOIS server to query. Default: WHOIS server from IANA
 	- `timeout` - WHOIS server request timeout in ms. Default: 1500
+	- `encoding` - Encoding used to decode the WHOIS response
 	- `follow` - How many WHOIS server to query. 1 = registry server (faster), 2 = registry + registrar (more domain details). Default: 2
 	- `raw` - Return the raw WHOIS result in response. Added to `__raw`
 	- `ignorePrivacy` - Show or hide the WHOIS protected data from response, accepts boolean. Default: true
@@ -118,6 +119,7 @@ Get WHOIS info for IPs
 - `options` - Object of options to use, all optional:
 	- `host` - WHOIS server to query. Default: WHOIS server from IANA
 	- `timeout` - WHOIS server request timeout in ms. Default: 1500
+	- `encoding` - Encoding used to decode the WHOIS response
 	- `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
@@ -160,6 +162,7 @@ Get WHOIS info for an AS number
 - `options` - Object of options to use, all optional:
 	- `host` - WHOIS server to query. Default: WHOIS server from IANA
 	- `timeout` - WHOIS server request timeout in ms. Default: 1500
+	- `encoding` - Encoding used to decode the WHOIS response
 	- `raw` - Return the raw WHOIS result in response. Added to `__raw`
 
 ```js
